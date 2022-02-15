@@ -3,7 +3,7 @@ import { Balance } from "./balance/balance";
 import { OrderBook } from "./OrderBook";
 import { PriceChart } from "./PriceChart";
 import { Trades } from "./Trades";
-import { NewOrder } from "./NewOrder";
+import { NewOrder } from "./new-order/new-order";
 import { MyTransactions } from "./MyTransactions";
 
 const StyledContent = styled.div`
