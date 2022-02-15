@@ -14,11 +14,11 @@ export const WithdrawPanel = () => (
     <Table>
       <thead>
         <tr>
-          <td>Token</td>
+          <th>Token</th>
 
-          <td>Wallet</td>
+          <th>Wallet</th>
 
-          <td>Exchange</td>
+          <th>Exchange</th>
         </tr>
       </thead>
 

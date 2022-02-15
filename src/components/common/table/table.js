@@ -9,7 +9,8 @@ export const Table = styled.table`
     border-bottom: 2px solid grey;
   }
 
-  & td {
+  & th,
+  td {
     padding: 4px;
   }
 

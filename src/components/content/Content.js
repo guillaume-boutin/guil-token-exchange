@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Balance } from "./balance/balance";
-import { OrderBook } from "./OrderBook";
+import { OrderBook } from "./order-book/order-book";
 import { PriceChart } from "./PriceChart";
 import { Trades } from "./Trades";
 import { NewOrder } from "./new-order/new-order";
