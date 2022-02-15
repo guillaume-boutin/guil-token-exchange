@@ -1,5 +1,5 @@
 import { Header } from "../Header/Header";
-import { Content } from "../Content/Content";
+import { Content } from "../content/Content";
 import styled from "styled-components";
 
 const StyledApp = styled.div`

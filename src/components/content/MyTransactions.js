@@ -1,5 +1,5 @@
-import { Card } from "../common/card/card";
-import { CardHeader } from "../common/card/card-header";
+import { Card } from "../common/card/Card";
+import { CardHeader } from "../common/card/CardHeader";
 
 export const MyTransactions = () => {
   return (
