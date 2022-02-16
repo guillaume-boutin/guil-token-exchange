@@ -12,6 +12,7 @@ module.exports = {
   },
   contracts_directory: "./ethereum/contracts/",
   contracts_build_directory: "./ethereum/abis/",
+  migrations_directory: "./ethereum/migrations/",
 
   // Configure your compilers
   compilers: {
