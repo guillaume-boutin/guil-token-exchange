@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { Balance } from "./balance/balance";
 import { OrderBook } from "./order-book/order-book";
 import { PriceChart } from "./PriceChart";
-import { Trades } from "./Trades";
+import { Trades } from "./trades/trades";
 import { NewOrder } from "./new-order/new-order";
 import { MyTransactions } from "./my-transactions/my-transactions";
 
