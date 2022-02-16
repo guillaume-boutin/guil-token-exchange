@@ -4,7 +4,7 @@ import { OrderBook } from "./order-book/order-book";
 import { PriceChart } from "./PriceChart";
 import { Trades } from "./Trades";
 import { NewOrder } from "./new-order/new-order";
-import { MyTransactions } from "./MyTransactions";
+import { MyTransactions } from "./my-transactions/my-transactions";
 
 const StyledContent = styled.div`
   height: 100%;
