@@ -19,10 +19,10 @@ contract("GuilToken", ([deployer, user]) => {
     const deployerBalance = await contract.balanceOf(deployer);
     const userBalance = await contract.balanceOf(user);
 
-    assert.equal(userBalance.toString(), toWei(transferAmount));
+    assert.equal(toWei(transferAmount), userBalance.toString());
     assert.equal(
-      deployerBalance.toString(),
-      toWei(totalBalance - transferAmount)
+      toWei(totalBalance - transferAmount),
+      deployerBalance.toString()
     );
   });
 
@@ -35,10 +35,10 @@ contract("GuilToken", ([deployer, user]) => {
 
     const [log] = result.logs;
 
-    assert.equal("Transfer", log.event);
-    assert.equal(deployer, log.args.from);
-    assert.equal(user, log.args.to);
-    assert.equal(toWei(transferAmount), log.args.value.toString());
+    assert.equal(log.event, "Transfer");
+    assert.equal(log.args.from, deployer);
+    assert.equal(log.args.to, user);
+    assert.equal(log.args.value.toString(), toWei(transferAmount));
   });
 
   it("should reject a transfer when sender has insufficient funds", async () => {
