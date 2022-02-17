@@ -14,6 +14,7 @@ contract GuilToken {
 
   event Transfer(address indexed from, address indexed to, uint value);
   event Approve(address indexed from, address indexed to, uint value);
+  event Unapprove(address indexed from, address indexed to, uint value);
 
   constructor() public {
     totalSupply = 1000000 * 10 ** decimals;
@@ -36,7 +37,12 @@ contract GuilToken {
   }
 
   function unapprove(address _to, uint _value) public returns (bool success) {
+    require(_to != address(0));
+    _subtractFromAllowance(msg.sender, _to, _value);
+    _addTo(msg.sender, _value);
+    emit Unapprove(msg.sender, _to, _value);
 
+    return true;
   }
 
   function _handleTransfer(address _from, address _to, uint _value) internal returns (bool success) {
@@ -57,6 +63,12 @@ contract GuilToken {
   function _subtractFrom(address _subject, uint _value) internal returns (bool success) {
     require(balanceOf[_subject] >= _value);
     balanceOf[_subject] = balanceOf[_subject].sub(_value);
+    return true;
+  }
+
+  function _subtractFromAllowance(address _allocator, address _subject, uint _value) internal returns (bool success) {
+    require(allowance[_allocator][_subject] >= _value);
+    allowance[_allocator][_subject] = allowance[_allocator][_subject].sub(_value);
     return true;
   }
 }
