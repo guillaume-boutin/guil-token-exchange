@@ -52,6 +52,8 @@ contract GuilToken {
     _subtractFromAllowance(_from, msg.sender, _value);
     _addTo(_to, _value);
 
+    emit Transfer(_from, _to, _value);
+
     return true;
   }
 
