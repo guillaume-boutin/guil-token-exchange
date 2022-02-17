@@ -26,6 +26,21 @@ contract("GuilToken", ([deployer, user]) => {
     );
   });
 
+  it("emits a Transfer event", async () => {
+    const transferAmount = 100;
+
+    const result = await contract.transfer(user, toWei(transferAmount), {
+      from: deployer,
+    });
+
+    const [log] = result.logs;
+
+    assert.equal("Transfer", log.event);
+    assert.equal(deployer, log.args.from);
+    assert.equal(user, log.args.to);
+    assert.equal(toWei(transferAmount), log.args.value.toString());
+  });
+
   it("should reject a transfer when sender has insufficient funds", async () => {
     const transferAmount = totalBalance * 2;
 
@@ -37,11 +52,11 @@ contract("GuilToken", ([deployer, user]) => {
     } catch (err) {}
   });
 
-  it("should reject a transfer when receiving address doesn't exist", async () => {
+  it("should reject invalid recipient address", async () => {
     const transferAmount = 100;
 
     try {
-      await contract.transfer("bad_address", toWei(transferAmount), {
+      await contract.transfer(0x0, toWei(transferAmount), {
         from: deployer,
       });
       assert.fail(EVM_REVERT);
