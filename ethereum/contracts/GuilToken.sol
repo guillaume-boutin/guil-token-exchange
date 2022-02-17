@@ -13,6 +13,7 @@ contract GuilToken {
   mapping(address => mapping(address => uint)) public allowance;
 
   event Transfer(address indexed from, address indexed to, uint value);
+  event Approve(address indexed from, address indexed to, uint value);
 
   constructor() public {
     totalSupply = 1000000 * 10 ** decimals;
@@ -25,6 +26,17 @@ contract GuilToken {
     emit Transfer(msg.sender, _to, _value);
 
     return true;
+  }
+
+  function approve(address _to, uint _value) public returns (bool success) {
+    _subtractFrom(msg.sender, _value);
+    allowance[msg.sender][_to] = allowance[msg.sender][_to].add(_value);
+    emit Approve(msg.sender, _to, _value);
+    return true;
+  }
+
+  function unapprove(address _to, uint _value) public returns (bool success) {
+
   }
 
   function _handleTransfer(address _from, address _to, uint _value) internal returns (bool success) {
