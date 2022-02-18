@@ -15,16 +15,22 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
   });
 
   it("deposits tokens", async () => {
-    await exchange.deposit(guilToken.address, toWei(100), { from: user });
+    await exchange.deposit(
+      { contractAddress: guilToken.address, amount: toWei(100) },
+      { from: user }
+    );
 
     const balanceOf = await exchange.balanceOf(user, guilToken.address);
     assert.equal(balanceOf.toString(), toWei(100));
   });
 
   it("emits a Deposit event", async () => {
-    const result = await exchange.deposit(guilToken.address, toWei(100), {
-      from: user,
-    });
+    const result = await exchange.deposit(
+      { contractAddress: guilToken.address, amount: toWei(100) },
+      {
+        from: user,
+      }
+    );
 
     const [log] = result.logs;
 
@@ -37,7 +43,10 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
 
   it("rejects an amount greater than the approval", async () => {
     try {
-      await exchange.deposit(guilToken.address, toWei(200), { from: user });
+      await exchange.deposit(
+        { contractAddress: guilToken.address, amount: toWei(200) },
+        { from: user }
+      );
       assert.fail(EVM_REVERT);
     } catch (e) {}
   });

@@ -23,11 +23,29 @@ contract Exchange {
   using SafeMath for uint;
 
   address public feeAccount;
+
   uint public feePercent;
 
   mapping(address => mapping(address => uint)) internal balances;
 
   event Deposit(address user, address token, uint amount, uint balance);
+
+  struct _Token {
+    address contractAddress;
+    uint amount;
+  }
+
+  struct _Trade {
+    _Token offer;
+    _Token demand;
+  }
+
+  struct _Order {
+    uint id;
+    address user;
+    _Trade exchange;
+    uint timestamp;
+  }
 
   constructor(address _feeAccount, uint _feePercent) {
     feeAccount = _feeAccount;
@@ -38,17 +56,23 @@ contract Exchange {
     return balances[_user][_token];
   }
 
-  function deposit(address _token, uint _amount) public {
-    require(_token != address(0));
+  function deposit(_Token memory _token) public {
+    require(_token.contractAddress != address(0));
 
-    bool _transferred = GuilToken(_token).transferFrom(msg.sender, address(this), _amount);
+    bool _transferred = GuilToken(_token.contractAddress).transferFrom(msg.sender, address(this), _token.amount);
     require(_transferred);
 
-    _handleDeposit(msg.sender, _token, _amount);
+    _handleDeposit(msg.sender, _token);
   }
 
-  function _handleDeposit(address _user, address _token, uint _amount) internal {
-    balances[_user][_token] = balances[_user][_token].add(_amount);
-    emit Deposit(_user, _token, _amount, balances[_user][_token]);
+  function _handleDeposit(address _user, _Token memory _token) internal {
+    _addToBalance(_user, _token);
+    emit Deposit(_user, _token.contractAddress, _token.amount, balances[_user][_token.contractAddress]);
   }
+
+  function _addToBalance(address _user, _Token memory _token) internal {
+    balances[_user][_token.contractAddress] = balances[_user][_token.contractAddress].add(_token.amount);
+  }
+
+
 }

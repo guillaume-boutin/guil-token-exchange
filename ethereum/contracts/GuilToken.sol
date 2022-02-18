@@ -6,23 +6,41 @@ contract GuilToken {
   using SafeMath for uint;
 
   string public name = "Guil Token";
+
   string public symbol = "GUIL";
+
   uint public decimals = 18;
+
   uint public totalSupply;
-  mapping(address => uint) public balanceOf;
-  mapping(address => mapping(address => uint)) public allowance;
+
+  mapping(address => uint) internal _balances;
+
+  mapping(address => mapping(address => uint)) internal _allowances;
 
   event Transfer(address indexed from, address indexed to, uint value);
+
   event Approve(address indexed from, address indexed to, uint value);
+
   event Unapprove(address indexed from, address indexed to, uint value);
 
-  constructor() public {
+  constructor() {
     totalSupply = 1000000 * 10 ** decimals;
-    balanceOf[msg.sender] = totalSupply;
+    _balances[msg.sender] = totalSupply;
+  }
+
+  function balanceOf(address _owner) public view returns (uint) {
+    return _balances[_owner];
+  }
+
+  function allowance(address _owner, address _spender) public view returns (uint) {
+    return _allowances[_owner][_spender];
   }
 
   function transfer (address _to, uint _value) public returns (bool success) {
-    bool _result = _handleTransfer(msg.sender, _to, _value);
+    require(_to != address(0));
+
+    bool _transferred = _handleTransfer(msg.sender, _to, _value);
+    require(_transferred);
     emit Transfer(msg.sender, _to, _value);
 
     return true;
@@ -30,7 +48,7 @@ contract GuilToken {
 
   function approve(address _to, uint _value) public returns (bool success) {
     _subtractFrom(msg.sender, _value);
-    allowance[msg.sender][_to] = allowance[msg.sender][_to].add(_value);
+    _allowances[msg.sender][_to] = _allowances[msg.sender][_to].add(_value);
     emit Approve(msg.sender, _to, _value);
 
     return true;
@@ -68,21 +86,21 @@ contract GuilToken {
   }
 
   function _addTo(address _subject, uint _value) internal returns (bool success) {
-    balanceOf[_subject] = balanceOf[_subject].add(_value);
+    _balances[_subject] = _balances[_subject].add(_value);
 
     return true;
   }
 
   function _subtractFrom(address _subject, uint _value) internal returns (bool success) {
-    require(balanceOf[_subject] >= _value);
-    balanceOf[_subject] = balanceOf[_subject].sub(_value);
+    require(_balances[_subject] >= _value);
+    _balances[_subject] = _balances[_subject].sub(_value);
 
     return true;
   }
 
   function _subtractFromAllowance(address _allocator, address _subject, uint _value) internal returns (bool success) {
-    require(allowance[_allocator][_subject] >= _value);
-    allowance[_allocator][_subject] = allowance[_allocator][_subject].sub(_value);
+    require(_allowances[_allocator][_subject] >= _value);
+    _allowances[_allocator][_subject] = _allowances[_allocator][_subject].sub(_value);
 
     return true;
   }
