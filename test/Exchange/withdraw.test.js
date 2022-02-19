@@ -12,40 +12,49 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
     guilToken = await GuilToken.new();
     await guilToken.transfer(user, toWei(100), { from: deployer });
     await guilToken.approve(exchange.address, toWei(100), { from: user });
-  });
-
-  it("deposits tokens", async () => {
     await exchange.deposit(
       { contractAddress: guilToken.address, amount: toWei(100) },
       { from: user }
     );
-
-    const balanceOf = await exchange.balanceOf(user, guilToken.address);
-    assert.equal(balanceOf.toString(), toWei(100));
   });
 
-  it("emits a Deposit event", async () => {
-    const result = await exchange.deposit(
-      { contractAddress: guilToken.address, amount: toWei(100) },
+  it("withdraws tokens", async () => {
+    await exchange.withdraw(
+      {
+        contractAddress: guilToken.address,
+        amount: toWei(30),
+      },
+      { from: user }
+    );
+    const exchangeBalance = await exchange.balanceOf(user, guilToken.address);
+    const guilBalance = await guilToken.balanceOf(user);
+
+    assert.equal(exchangeBalance.toString(), toWei(70));
+    assert.equal(guilBalance.toString(), toWei(30));
+  });
+
+  it("emits a Withdraw event", async () => {
+    const result = await exchange.withdraw(
+      { contractAddress: guilToken.address, amount: toWei(30) },
       {
         from: user,
       }
     );
-
     const [log] = result.logs;
-
-    assert.equal(log.event, "Deposit");
+    assert.equal(log.event, "Withdraw");
     assert.equal(log.args.user, user);
     assert.equal(log.args.token.contractAddress, guilToken.address);
-    assert.equal(log.args.token.amount, toWei(100));
-    assert.equal(log.args.balance, toWei(100));
+    assert.equal(log.args.token.amount, toWei(30));
+    assert.equal(log.args.balance, toWei(70));
   });
 
-  it("rejects an amount greater than the approval", async () => {
+  it("rejects amounts greater than the balance", async () => {
     try {
-      await exchange.deposit(
+      await exchange.withdraw(
         { contractAddress: guilToken.address, amount: toWei(200) },
-        { from: user }
+        {
+          from: user,
+        }
       );
       assert.fail(EVM_REVERT);
     } catch (e) {}

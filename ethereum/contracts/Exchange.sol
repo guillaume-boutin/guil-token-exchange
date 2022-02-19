@@ -28,7 +28,9 @@ contract Exchange {
 
   mapping(address => mapping(address => uint)) internal balances;
 
-  event Deposit(address user, address token, uint amount, uint balance);
+  event Deposit(address user, _Token token, uint balance);
+
+  event Withdraw(address user, _Token token, uint balance);
 
   struct _Token {
     address contractAddress;
@@ -58,21 +60,36 @@ contract Exchange {
 
   function deposit(_Token memory _token) public {
     require(_token.contractAddress != address(0));
-
-    bool _transferred = GuilToken(_token.contractAddress).transferFrom(msg.sender, address(this), _token.amount);
-    require(_transferred);
-
     _handleDeposit(msg.sender, _token);
   }
 
+  function withdraw(_Token memory _token) public {
+    require(_token.contractAddress != address(0));
+
+    _handleWithdraw(msg.sender, _token);
+  }
+
   function _handleDeposit(address _user, _Token memory _token) internal {
+    bool _transferred = GuilToken(_token.contractAddress).transferFrom(msg.sender, address(this), _token.amount);
+    require(_transferred);
     _addToBalance(_user, _token);
-    emit Deposit(_user, _token.contractAddress, _token.amount, balances[_user][_token.contractAddress]);
+    emit Deposit(_user, _token, balances[_user][_token.contractAddress]);
+  }
+
+  function _handleWithdraw(address _user, _Token memory _token) internal {
+    require(balanceOf(msg.sender, _token.contractAddress) >= _token.amount);
+    bool _transferred = GuilToken(_token.contractAddress).transfer(msg.sender, _token.amount);
+    require(_transferred);
+    _subtractFromBalance(_user, _token);
+    emit Withdraw(_user, _token, balances[_user][_token.contractAddress]);
   }
 
   function _addToBalance(address _user, _Token memory _token) internal {
     balances[_user][_token.contractAddress] = balances[_user][_token.contractAddress].add(_token.amount);
   }
 
-
+  function _subtractFromBalance(address _user, _Token memory _token) internal {
+    require(balances[_user][_token.contractAddress] >= _token.amount);
+    balances[_user][_token.contractAddress] = balances[_user][_token.contractAddress].sub(_token.amount);
+  }
 }
