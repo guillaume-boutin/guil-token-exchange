@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { EVM_REVERT, toWei } from "../helpers";
+import { ETHER_ADDRESS, EVM_REVERT, toWei } from "../helpers";
 
 const GuilToken = artifacts.require("./GuilToken");
 const Exchange = artifacts.require("./Exchange");
@@ -45,6 +45,16 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
     try {
       await exchange.deposit(
         { contractAddress: guilToken.address, amount: toWei(200) },
+        { from: user }
+      );
+      assert.fail(EVM_REVERT);
+    } catch (e) {}
+  });
+
+  it("rejects deposits for Ether", async () => {
+    try {
+      await exchange.deposit(
+        { contractAddress: ETHER_ADDRESS, amount: toWei(200) },
         { from: user }
       );
       assert.fail(EVM_REVERT);

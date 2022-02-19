@@ -12,7 +12,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 // [ ] Deposit Ether
 // [ ] Withdraw Ether
 // [x] Deposit Tokens
-// [ ] Withdraw Tokens
+// [x] Withdraw Tokens
 // [ ] Check balances
 // [ ] Make order
 // [ ] Cancel order
@@ -60,6 +60,8 @@ contract Exchange {
 
   function deposit(_Token memory _token) public {
     require(_token.contractAddress != address(0));
+    bool _transferred = GuilToken(_token.contractAddress).transferFrom(msg.sender, address(this), _token.amount);
+    require(_transferred);
     _handleDeposit(msg.sender, _token);
   }
 
@@ -69,9 +71,12 @@ contract Exchange {
     _handleWithdraw(msg.sender, _token);
   }
 
+  function depositEther(_Token memory _token) public {
+    require(_token.contractAddress == address(0));
+    _handleDeposit(msg.sender, _token);
+  }
+
   function _handleDeposit(address _user, _Token memory _token) internal {
-    bool _transferred = GuilToken(_token.contractAddress).transferFrom(msg.sender, address(this), _token.amount);
-    require(_transferred);
     _addToBalance(_user, _token);
     emit Deposit(_user, _token, balances[_user][_token.contractAddress]);
   }
