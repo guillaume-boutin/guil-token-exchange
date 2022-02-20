@@ -24,7 +24,7 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
   });
 
   it("places an Order", async () => {
-    await exchange.placeOrder(
+    const result = await exchange.placeOrder(
       {
         contractAddress: guilToken.address,
         amount: toWei(80),
@@ -35,12 +35,17 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
       },
       { from: user }
     );
+    const orderId = result.logs[0].args.id;
 
     const offerBalance = await exchange.offerBalance(user, guilToken.address);
     const balance = await exchange.balanceOf(user, guilToken.address);
+    const order = await exchange.order(orderId);
+    const openOrder = await exchange.openOrder(orderId);
 
-    assert.equal(offerBalance, toWei(80));
-    assert.equal(balance, toWei(20));
+    assert.equal(offerBalance.toString(), toWei(80));
+    assert.equal(balance.toString(), toWei(20));
+    assert.equal(order.id, orderId);
+    assert.equal(openOrder.id, orderId);
   });
 
   it("emits an Order event", async () => {

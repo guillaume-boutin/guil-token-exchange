@@ -14,7 +14,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 // [x] Deposit Tokens
 // [x] Withdraw Tokens
 // [x] Check balances
-// [ ] Make order
+// [x] Place order
 // [ ] Cancel order
 // [ ] Fill order
 // [ ] Charge fees
@@ -28,9 +28,15 @@ contract Exchange {
 
   mapping(address => mapping(address => uint)) internal balances;
 
+  uint internal ordersCount = 0;
+
   mapping(uint => _Order) internal orders;
 
-  uint internal ordersCount = 0;
+  mapping(uint => _Order) internal openOrders;
+
+  mapping(uint => _Order) internal cancelledOrders;
+
+  mapping(uint => _Order) internal filledOrders;
 
   mapping(address => mapping(address => uint)) internal offerBalances;
 
@@ -39,6 +45,8 @@ contract Exchange {
   event Withdraw(address user, _Token token, uint balance);
 
   event Order(uint id, address user, _Token offer, _Token demand, uint timestamp);
+
+  event Cancel(_Order order, uint timestamp);
 
   struct _Token {
     address contractAddress;
@@ -87,6 +95,26 @@ contract Exchange {
     payable(msg.sender).transfer(_amount);
   }
 
+  function order(uint _id) public view returns (_Order memory) {
+    return orders[_id];
+  }
+
+  function openOrder(uint _id) public view returns (_Order memory) {
+    return openOrders[_id];
+  }
+
+  function cancelledOrder(uint _id) public view returns (_Order memory) {
+    return cancelledOrders[_id];
+  }
+
+  function filledOrder(uint _id) public view returns (_Order memory) {
+    return filledOrders[_id];
+  }
+
+  function offerBalance(address _user, address _token) public view returns (uint) {
+    return offerBalances[_user][_token];
+  }
+
   function placeOrder(_Token memory _offer, _Token memory _demand) public {
     require(_offer.amount > 0);
     require(_demand.amount > 0);
@@ -94,19 +122,26 @@ contract Exchange {
 
     uint _id = ordersCount.add(1);
     uint _timestamp = block.timestamp;
+
     orders[_id] = _Order(_id, msg.sender, _offer, _demand, _timestamp);
+    openOrders[_id] = _Order(_id, msg.sender, _offer, _demand, _timestamp);
     _subtractFromBalance(msg.sender, _offer);
     offerBalances[msg.sender][_offer.contractAddress] = offerBalances[msg.sender][_offer.contractAddress].add(_offer.amount);
 
     emit Order(_id, msg.sender, _offer, _demand, _timestamp);
   }
 
-  function order(uint _id) public view returns (_Order memory) {
-    return orders[_id];
-  }
+  function cancelOrder(uint _id) public {
+    _Order storage _order = orders[_id];
 
-  function offerBalance(address _user, address _token) public view returns (uint) {
-    return offerBalances[_user][_token];
+    require(_order.id == _id);
+    require(_order.user == msg.sender);
+    require(cancelledOrders[_id].id == 0);
+
+    cancelledOrders[_id] = _order;
+    delete openOrders[_id];
+
+    emit Cancel(_order, block.timestamp);
   }
 
   function _handleDeposit(address _user, _Token memory _token) internal {
