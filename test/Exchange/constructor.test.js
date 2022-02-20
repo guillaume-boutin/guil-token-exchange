@@ -8,6 +8,11 @@ contract("Exchange", ([deployer, feeAccount]) => {
     const contract = await ExchangeContract.new(feeAccount, toWei(3.14));
     const trackedFeeAccount = await contract.feeAccount();
 
+    const senderAddress = await contract.senderAddress();
+    const contractAddress = await contract.contractAddress();
+
+    console.log([deployer, contract.address, senderAddress, contractAddress]);
+
     assert.equal(trackedFeeAccount, feeAccount);
   });
 

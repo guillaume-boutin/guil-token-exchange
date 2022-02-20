@@ -11,20 +11,19 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
   });
 
   it("deposits ether", async () => {
-    await exchange.depositEther(
-      { contractAddress: ETHER_ADDRESS, amount: toWei(1) },
-      { from: user }
-    );
+    const userBeforeBalance = await web3.eth.getBalance(user);
+    await exchange.depositEther({ from: user, value: toWei(1) });
+    const userAfterBalance = await web3.eth.getBalance(user);
     const balance = await exchange.balanceOf(user, ETHER_ADDRESS);
+    const contractBalance = await web3.eth.getBalance(exchange.address);
 
     assert.equal(balance.toString(), toWei(1));
+    assert.isTrue(userBeforeBalance - userAfterBalance >= toWei(1));
+    assert.equal(contractBalance.toString(), toWei(1));
   });
 
   it("emits a Deposit event", async () => {
-    const result = await exchange.depositEther(
-      { contractAddress: ETHER_ADDRESS, amount: toWei(1) },
-      { from: user }
-    );
+    const result = await exchange.depositEther({ from: user, value: toWei(1) });
 
     const [log] = result.logs;
 
@@ -33,15 +32,5 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
     assert.equal(log.args.token.contractAddress, ETHER_ADDRESS);
     assert.equal(log.args.token.amount, toWei(1));
     assert.equal(log.args.balance, toWei(1));
-  });
-
-  it("rejects non Ether tokens", async () => {
-    try {
-      await exchange.depositEther({
-        contractAddress: ETHER_ADDRESS,
-        amount: toWei(1),
-      });
-      assert.fail(EVM_REVERT);
-    } catch (e) {}
   });
 });
