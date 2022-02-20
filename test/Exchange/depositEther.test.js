@@ -4,7 +4,7 @@ import { ETHER_ADDRESS, EVM_REVERT, toWei } from "../helpers";
 const Exchange = artifacts.require("./Exchange");
 
 contract("Exchange", ([deployer, feeAccount, user]) => {
-  let exchange, guilToken;
+  let exchange;
 
   beforeEach(async () => {
     exchange = await Exchange.new(feeAccount, toWei(3.14));

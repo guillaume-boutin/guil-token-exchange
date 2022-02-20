@@ -9,8 +9,8 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 // TODO:
 // [x] Set the fee account
-// [ ] Deposit Ether
-// [ ] Withdraw Ether
+// [x] Deposit Ether
+// [x] Withdraw Ether
 // [x] Deposit Tokens
 // [x] Withdraw Tokens
 // [ ] Check balances
@@ -21,10 +21,6 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 contract Exchange {
   using SafeMath for uint;
-
-  address private _sender;
-
-  address _contractAddress;
 
   address public feeAccount;
 
@@ -56,19 +52,9 @@ contract Exchange {
   constructor(address _feeAccount, uint _feePercent) {
     feeAccount = _feeAccount;
     feePercent = _feePercent;
-    _sender = msg.sender;
-    _contractAddress = address(this);
   }
 
-  function senderAddress() public view returns (address) {
-    return _sender;
-  }
-
-  function contractAddress() public view returns (address) {
-    return _contractAddress;
-  }
-
-  function balanceOf(address _user, address _token) public view returns (uint balance) {
+  function balanceOf(address _user, address _token) public view returns (uint) {
     return balances[_user][_token];
   }
 
