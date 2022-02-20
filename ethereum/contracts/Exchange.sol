@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 // [x] Withdraw Ether
 // [x] Deposit Tokens
 // [x] Withdraw Tokens
-// [ ] Check balances
+// [x] Check balances
 // [ ] Make order
 // [ ] Cancel order
 // [ ] Fill order
@@ -28,24 +28,28 @@ contract Exchange {
 
   mapping(address => mapping(address => uint)) internal balances;
 
+  mapping(uint => _Order) internal orders;
+
+  uint internal ordersCount = 0;
+
+  mapping(address => mapping(address => uint)) internal offerBalances;
+
   event Deposit(address user, _Token token, uint balance);
 
   event Withdraw(address user, _Token token, uint balance);
+
+  event Order(uint id, address user, _Token offer, _Token demand, uint timestamp);
 
   struct _Token {
     address contractAddress;
     uint amount;
   }
 
-  struct _Trade {
-    _Token offer;
-    _Token demand;
-  }
-
   struct _Order {
     uint id;
     address user;
-    _Trade exchange;
+    _Token offer;
+    _Token demand;
     uint timestamp;
   }
 
@@ -81,6 +85,28 @@ contract Exchange {
   function withdrawEther(uint _amount) public {
     _handleWithdraw(msg.sender, _Token(address(0), _amount));
     payable(msg.sender).transfer(_amount);
+  }
+
+  function placeOrder(_Token memory _offer, _Token memory _demand) public {
+    require(_offer.amount > 0);
+    require(_demand.amount > 0);
+    require(balances[msg.sender][_offer.contractAddress] >= _offer.amount);
+
+    uint _id = ordersCount.add(1);
+    uint _timestamp = block.timestamp;
+    orders[_id] = _Order(_id, msg.sender, _offer, _demand, _timestamp);
+    _subtractFromBalance(msg.sender, _offer);
+    offerBalances[msg.sender][_offer.contractAddress] = offerBalances[msg.sender][_offer.contractAddress].add(_offer.amount);
+
+    emit Order(_id, msg.sender, _offer, _demand, _timestamp);
+  }
+
+  function order(uint _id) public view returns (_Order memory) {
+    return orders[_id];
+  }
+
+  function offerBalance(address _user, address _token) public view returns (uint) {
+    return offerBalances[_user][_token];
   }
 
   function _handleDeposit(address _user, _Token memory _token) internal {
