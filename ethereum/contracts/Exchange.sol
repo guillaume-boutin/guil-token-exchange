@@ -15,7 +15,7 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 // [x] Withdraw Tokens
 // [x] Check balances
 // [x] Place order
-// [ ] Cancel order
+// [x] Cancel order
 // [ ] Fill order
 // [ ] Charge fees
 
@@ -45,6 +45,8 @@ contract Exchange {
   event Withdraw(address user, _Token token, uint balance);
 
   event Order(uint id, address user, _Token offer, _Token demand, uint timestamp);
+
+  event Trade(_Order order, uint timestamp);
 
   event Cancel(_Order order, uint timestamp);
 
@@ -126,7 +128,7 @@ contract Exchange {
     orders[_id] = _Order(_id, msg.sender, _offer, _demand, _timestamp);
     openOrders[_id] = _Order(_id, msg.sender, _offer, _demand, _timestamp);
     _subtractFromBalance(msg.sender, _offer);
-    offerBalances[msg.sender][_offer.contractAddress] = offerBalances[msg.sender][_offer.contractAddress].add(_offer.amount);
+    _addToOfferBalance(msg.sender, _offer);
 
     emit Order(_id, msg.sender, _offer, _demand, _timestamp);
   }
@@ -142,6 +144,36 @@ contract Exchange {
     delete openOrders[_id];
 
     emit Cancel(_order, block.timestamp);
+  }
+
+  function fillOrder(uint _id) public {
+    _Order memory _order = openOrders[_id];
+
+    require(_order.id == _id);
+    require(_order.user != msg.sender);
+
+    uint _buyerBalance = balanceOf(msg.sender, _order.demand.contractAddress);
+    uint _feeAmount = _order.demand.amount.mul(feePercent).div(10000);
+
+    require(_buyerBalance >= _order.demand.amount.add(_feeAmount));
+
+    uint _sellerBalance = offerBalances[_order.user][_order.offer.contractAddress];
+    require(_sellerBalance >= _order.offer.amount);
+
+    _Token memory _feeAddedDemand = _Token(_order.demand.contractAddress, _order.demand.amount.add(_feeAmount));
+
+    _subtractFromBalance(msg.sender, _feeAddedDemand);
+    _addToBalance(_order.user, _order.demand);
+
+    _subtractFromOfferBalance(_order.user, _order.offer);
+    _addToBalance(msg.sender, _order.offer);
+
+    _addToBalance(feeAccount, _Token(_order.demand.contractAddress, _feeAmount));
+
+    filledOrders[_id] = _order;
+    delete openOrders[_id];
+
+    emit Trade(_order, block.timestamp);
   }
 
   function _handleDeposit(address _user, _Token memory _token) internal {
@@ -163,5 +195,14 @@ contract Exchange {
   function _subtractFromBalance(address _user, _Token memory _token) internal {
     require(balances[_user][_token.contractAddress] >= _token.amount);
     balances[_user][_token.contractAddress] = balances[_user][_token.contractAddress].sub(_token.amount);
+  }
+
+  function _addToOfferBalance(address _user, _Token memory _token) internal {
+    offerBalances[_user][_token.contractAddress] = offerBalances[_user][_token.contractAddress].add(_token.amount);
+  }
+
+  function _subtractFromOfferBalance(address _user, _Token memory _token) internal {
+    require(offerBalances[_user][_token.contractAddress] >= _token.amount);
+    offerBalances[_user][_token.contractAddress] = offerBalances[_user][_token.contractAddress].sub(_token.amount);
   }
 }
