@@ -16,8 +16,8 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 // [x] Check balances
 // [x] Place order
 // [x] Cancel order
-// [ ] Fill order
-// [ ] Charge fees
+// [x] Fill order
+// [x] Charge fees
 
 contract Exchange {
   using SafeMath for uint;
@@ -134,11 +134,14 @@ contract Exchange {
   }
 
   function cancelOrder(uint _id) public {
-    _Order storage _order = orders[_id];
+    _Order memory _order = orders[_id];
 
     require(_order.id == _id);
     require(_order.user == msg.sender);
     require(cancelledOrders[_id].id == 0);
+
+    _subtractFromOfferBalance(msg.sender, _order.offer);
+    _addToBalance(msg.sender, _order.offer);
 
     cancelledOrders[_id] = _order;
     delete openOrders[_id];

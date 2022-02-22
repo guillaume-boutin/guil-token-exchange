@@ -45,6 +45,12 @@ contract("Exchange", ([deployer, feeAccount, user1, user2]) => {
     assert.equal(result.id, orderId);
     assert.equal(cancelledOrder.id, orderId);
     assert.equal(openOrder.id, 0);
+
+    const offerBalance = await exchange.offerBalance(user1, guilToken.address);
+    assert.equal(offerBalance.toString(), 0);
+
+    const balance = await exchange.balanceOf(user1, guilToken.address);
+    assert.equal(balance.toString(), toWei(100));
   });
 
   it("emits a Cancel event", async () => {
