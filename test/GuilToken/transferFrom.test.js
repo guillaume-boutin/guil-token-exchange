@@ -1,5 +1,10 @@
-import { assert } from "chai";
-import { EVM_REVERT, toWei } from "../helpers";
+import _chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { ETHER_ADDRESS, EVM_REVERT, toWei } from "../helpers";
+
+const chai = _chai.use(chaiAsPromised);
+const assert = chai.assert;
+chai.should();
 
 const GuilTokenContract = artifacts.require("./GuilToken");
 
@@ -35,23 +40,20 @@ contract("GuilToken", ([deployer, user1, user2, user3]) => {
   });
 
   it("rejects an invalid From address", async () => {
-    try {
-      await contract.transferFrom(0x0, user3, toWei(30), { from: user2 });
-      assert.fail(EVM_REVERT);
-    } catch (e) {}
+    await contract
+      .transferFrom(ETHER_ADDRESS, user3, toWei(30), { from: user2 })
+      .should.be.rejectedWith(EVM_REVERT);
   });
 
   it("rejects an invalid To address", async () => {
-    try {
-      await contract.transferFrom(user1, 0x0, toWei(30), { from: user2 });
-      assert.fail(EVM_REVERT);
-    } catch (e) {}
+    await contract
+      .transferFrom(user1, ETHER_ADDRESS, toWei(30), { from: user2 })
+      .should.be.rejectedWith(EVM_REVERT);
   });
 
   it("rejects an amount greater than the allowance", async () => {
-    try {
-      await contract.transferFrom(user1, user3, toWei(200), { from: user2 });
-      assert.fail(EVM_REVERT);
-    } catch (e) {}
+    await contract
+      .transferFrom(user1, user3, toWei(200), { from: user2 })
+      .should.be.rejectedWith(EVM_REVERT);
   });
 });

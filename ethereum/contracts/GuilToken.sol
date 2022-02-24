@@ -38,6 +38,7 @@ contract GuilToken {
 
   function transfer (address _to, uint _value) public returns (bool success) {
     require(_to != address(0));
+    require(_value > 0);
 
     bool _transferred = _handleTransfer(msg.sender, _to, _value);
     require(_transferred);

@@ -1,5 +1,10 @@
-import { assert } from "chai";
-import { EVM_REVERT, toWei } from "../helpers";
+import _chai from "chai";
+import chaiAsPromised from "chai-as-promised";
+import { ETHER_ADDRESS, EVM_REVERT, toWei } from "../helpers";
+
+const chai = _chai.use(chaiAsPromised);
+const assert = chai.assert;
+chai.should();
 
 const GuilTokenContract = artifacts.require("./GuilToken");
 
@@ -44,33 +49,30 @@ contract("GuilToken", ([deployer, user]) => {
   it("should reject a transfer when sender has insufficient funds", async () => {
     const transferAmount = totalBalance * 2;
 
-    try {
-      await contract.transfer(user, toWei(transferAmount), {
+    await contract
+      .transfer(user, toWei(transferAmount), {
         from: deployer,
-      });
-      assert.fail(EVM_REVERT);
-    } catch (err) {}
+      })
+      .should.be.rejectedWith(EVM_REVERT);
   });
 
   it("should reject invalid recipient address", async () => {
     const transferAmount = 100;
 
-    try {
-      await contract.transfer(0x0, toWei(transferAmount), {
+    await contract
+      .transfer(ETHER_ADDRESS, toWei(transferAmount), {
         from: deployer,
-      });
-      assert.fail(EVM_REVERT);
-    } catch (err) {}
+      })
+      .should.be.rejectedWith(EVM_REVERT);
   });
 
   it("should reject a transfer when amount is 0", async () => {
     const transferAmount = 0;
 
-    try {
-      await contract.transfer("bad_address", toWei(transferAmount), {
+    await contract
+      .transfer(user, toWei(0), {
         from: deployer,
-      });
-      assert.fail(EVM_REVERT);
-    } catch (err) {}
+      })
+      .should.be.rejectedWith(EVM_REVERT);
   });
 });

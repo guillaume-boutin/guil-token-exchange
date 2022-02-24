@@ -1,5 +1,10 @@
-import { assert } from "chai";
+import _chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { ETHER_ADDRESS, EVM_REVERT, toWei } from "../helpers";
+
+const chai = _chai.use(chaiAsPromised);
+const assert = chai.assert;
+chai.should();
 
 const GuilToken = artifacts.require("./GuilToken");
 const Exchange = artifacts.require("./Exchange");
@@ -42,22 +47,20 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
   });
 
   it("rejects an amount greater than the approval", async () => {
-    try {
-      await exchange.deposit(
+    await exchange
+      .deposit(
         { contractAddress: guilToken.address, amount: toWei(200) },
         { from: user }
-      );
-      assert.fail(EVM_REVERT);
-    } catch (e) {}
+      )
+      .should.be.rejectedWith(EVM_REVERT);
   });
 
   it("rejects deposits for Ether", async () => {
-    try {
-      await exchange.deposit(
+    await exchange
+      .deposit(
         { contractAddress: ETHER_ADDRESS, amount: toWei(200) },
         { from: user }
-      );
-      assert.fail(EVM_REVERT);
-    } catch (e) {}
+      )
+      .should.be.rejectedWith(EVM_REVERT);
   });
 });

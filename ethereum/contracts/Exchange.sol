@@ -75,7 +75,7 @@ contract Exchange {
   function deposit(_Token memory _token) public {
     require(_token.contractAddress != address(0));
     bool _transferred = GuilToken(_token.contractAddress).transferFrom(msg.sender, address(this), _token.amount);
-    require(_transferred);
+    require(_transferred, "Couldn't transfer");
     _handleDeposit(msg.sender, _token);
   }
 
