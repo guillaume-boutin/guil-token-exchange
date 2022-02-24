@@ -1,5 +1,10 @@
-import { assert } from "chai";
+import _chai from "chai";
+import chaiAsPromised from "chai-as-promised";
 import { ETHER_ADDRESS, EVM_REVERT, toWei } from "../helpers";
+
+const chai = _chai.use(chaiAsPromised);
+const assert = chai.assert;
+chai.should();
 
 const Exchange = artifacts.require("./Exchange");
 
@@ -36,9 +41,8 @@ contract("Exchange", ([deployer, feeAccount, user]) => {
   });
 
   it("rejects amounts greater than the balance", async () => {
-    try {
-      await exchange.withdraw(toWei(10), { from: user });
-      assert.fail(EVM_REVERT);
-    } catch (e) {}
+    await exchange
+      .withdraw(toWei(10), { from: user })
+      .should.be.rejectedWith(EVM_REVERT);
   });
 });
