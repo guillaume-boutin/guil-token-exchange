@@ -1,0 +1,38 @@
+.content {
+  height: 100%;
+  background-color: #1d1d1d;
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+
+  grid-template-areas:
+    "balance order-book price-chart trades"
+    "new-order order-book my-transactions trades";
+
+  padding: 8px;
+  gap: 8px;
+}
+
+.balance {
+  grid-area: balance;
+}
+
+.orderBook {
+  grid-area: order-book;
+}
+
+.priceChart {
+  grid-area: price-chart;
+}
+
+.trades {
+  grid-area: trades;
+}
+
+.newOrder {
+  grid-area: new-order;
+}
+
+.myTransactions {
+  grid-area: my-transactions;
+}

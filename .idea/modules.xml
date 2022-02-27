@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/guil-token-exchange.iml" filepath="$PROJECT_DIR$/.idea/guil-token-exchange.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/next-guil-token-exchange.iml" filepath="$PROJECT_DIR$/.idea/next-guil-token-exchange.iml" />
     </modules>
   </component>
 </project>

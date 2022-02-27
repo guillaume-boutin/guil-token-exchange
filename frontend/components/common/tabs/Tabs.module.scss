@@ -1,0 +1,18 @@
+.tabList {
+  &[data-reach-tab-list] {
+    //border-bottom: 1px solid white;
+  }
+}
+
+.tab {
+  &[data-reach-tab] {
+    cursor: pointer;
+    color: white;
+    padding: 4px;
+    border-bottom: 1px solid white;
+
+    &[data-selected] {
+      border-bottom: 2px solid #007bff;
+    }
+  }
+}
