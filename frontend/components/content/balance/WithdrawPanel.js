@@ -1,7 +1,7 @@
 import styles from "./WithdrawPanel.module.scss";
-import { Table } from "../../common/table/Table";
-import { TextInput } from "../../common/form/TextInput";
-import { Button } from "../../common/button/Button";
+import { Table } from "../../common/table";
+import { TextInput } from "../../common/form";
+import { Button } from "../../common/button";
 
 export const WithdrawPanel = () => (
   <>
