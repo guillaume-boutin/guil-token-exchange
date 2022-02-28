@@ -1,22 +1,24 @@
+/**
+ * @property {string} address
+ * @property {string} amount
+ */
+import { ETHER_ADDRESS } from "../helpers";
+
 export class Token {
-  get address() {
-    return this._address;
-  }
-
-  set address(value) {
-    this._address = value;
-  }
-
-  get amount() {
-    return this._amount;
-  }
-
-  set amount(value) {
-    this._amount = value;
-  }
-
+  /**
+   * @param props;
+   * @param {string} props.address
+   * @param {string} props.amount
+   */
   constructor({ address, amount }) {
-    this._address = address;
-    this._amount = amount;
+    this.address = address;
+    this.amount = amount;
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  get isEth() {
+    return this.address === ETHER_ADDRESS;
   }
 }

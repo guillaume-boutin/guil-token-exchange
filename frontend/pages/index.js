@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { App } from "../components/app";
+import { ContextProvider } from "../context";
 
 export default function Home() {
   return (
@@ -10,7 +11,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <App />
+      <ContextProvider>
+        <App />
+      </ContextProvider>
     </>
   );
 }

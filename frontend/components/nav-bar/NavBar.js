@@ -1,10 +1,9 @@
 import styles from "./NavBar.module.scss";
 import { Component } from "../Component";
-import { Web3Context } from "../../context";
 
 export class NavBar extends Component {
   get accountEtherscanUrl() {
-    return `https://etherscan.io/address/${this.context.account}`;
+    return `https://etherscan.io/address/${this.props.account}`;
   }
 
   render() {
@@ -15,9 +14,9 @@ export class NavBar extends Component {
             GUIL Token Exchange
           </a>
 
-          {this.context.account && (
+          {this.props.account && (
             <a href={this.accountEtherscanUrl} className={styles.account}>
-              {this.context.account}
+              {this.props.account}
             </a>
           )}
         </div>
@@ -25,5 +24,3 @@ export class NavBar extends Component {
     );
   }
 }
-
-NavBar.contextType = Web3Context;

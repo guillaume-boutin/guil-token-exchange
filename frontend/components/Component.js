@@ -12,12 +12,20 @@ export class Component extends BaseComponent {
     return [];
   }
 
+  initialState(props) {
+    return {};
+  }
+
   /**
    * @private
    */
   _bindMethods() {
     this.boundMethods().forEach((method) => {
-      this[method.name] = this[method.name].bind(this);
+      if (!this[method.name]) {
+        console.error(`No method "${this[method.name]}" to be bound.`);
+      } else {
+        this[method.name] = this[method.name].bind(this);
+      }
     });
   }
 
@@ -25,8 +33,6 @@ export class Component extends BaseComponent {
    * @private
    */
   _computeInitialState(props) {
-    if (!this.initialState) return {};
-
     return this.initialState(props);
   }
 }

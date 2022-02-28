@@ -1,7 +1,6 @@
 import React, { createContext } from "react";
-import Web3 from "web3";
-import ExchangeJson from "../../backend/abis/Exchange.json";
 import { Component } from "../components";
+import { Order, HandledOrder } from "../entities";
 
 export const ExchangeContext = createContext({});
 
@@ -13,35 +12,113 @@ export class ExchangeProvider extends Component {
   }
 
   initialState(props) {
-    return { contract: null };
+    return {
+      orders: [],
+      filledOrders: [],
+      cancelledOrders: [],
+    };
   }
 
   boundMethods() {
-    return [this.loadContract];
+    return [this.setOrders, this.setFilledOrders, this.setCancelledOrders];
   }
 
   /**
-   * @param web3 {Web3}
+   * @returns {Order[]}
    */
-  async loadContract(web3) {
-    try {
-      const networkId = await web3.eth.net.getId();
+  get orders() {
+    return this.state.orders;
+  }
 
-      const contract = new web3.eth.Contract(
-        ExchangeJson.abi,
-        ExchangeJson.networks[networkId].address
+  /**
+   * @param {Order[]} orders
+   */
+  setOrders(orders) {
+    console.log(orders);
+    this.setState({ orders });
+  }
+
+  /**
+   * @returns {HandledOrder[]}
+   */
+  get filledOrders() {
+    return this.state.filledOrders;
+  }
+
+  /**
+   * @param {HandledOrder[]} filledOrders
+   */
+  setFilledOrders(filledOrders) {
+    console.log(filledOrders);
+    this.setState({ filledOrders });
+  }
+
+  /**
+   * @returns {HandledOrder[]}
+   */
+  get cancelledOrders() {
+    return this.state.cancelledOrders;
+  }
+
+  /**
+   * @param {HandledOrder[]} cancelledOrders
+   */
+  setCancelledOrders(cancelledOrders) {
+    console.log(cancelledOrders);
+    this.setState({ cancelledOrders });
+  }
+
+  /**
+   * @returns {Order[]}
+   */
+  get openOrders() {
+    return this.orders.filter((order) => {
+      let index = this.filledOrders.findIndex(
+        (filledOrder) => filledOrder.order.id === order.id
       );
 
-      this.setState({ contract });
-    } catch (e) {}
+      if (index > -1) return false;
+
+      index = this.cancelledOrders.findIndex(
+        (cancelledOrder) => cancelledOrder.order.id === order.id
+      );
+
+      return index === -1;
+    });
+  }
+
+  /**
+   * @param {HandledOrder} filledOrder
+   */
+  addFilledOrder(filledOrder) {
+    const index = this.filledOrders.find(
+      (fo) => fo.order.id === filledOrder.order.id
+    );
+    if (index > -1) return;
+
+    this.setFilledOrders([filledOrder, ...this.filledOrders]);
+  }
+
+  addCancelledOrder(cancelledOrder) {
+    const index = this.cancelledOrders.find(
+      (co) => co.order.id === cancelledOrder.order.id
+    );
+    if (index > -1) return;
+
+    this.setCancelledOrders([cancelledOrder, ...this.cancelledOrders]);
   }
 
   render() {
     return (
       <ExchangeContext.Provider
         value={{
-          contract: this.state.contract,
-          loadContract: this.loadContract,
+          orders: this.orders,
+          setOrders: this.setOrders,
+          filledOrders: this.filledOrders,
+          openOrders: this.openOrders,
+          setFilledOrders: this.setFilledOrders,
+          cancelledOrders: this.cancelledOrders,
+          setCancelledOrders: this.setCancelledOrders,
         }}
       >
         {this.props.children}

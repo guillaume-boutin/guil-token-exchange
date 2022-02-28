@@ -1,6 +1,5 @@
 import React, { createContext } from "react";
-import Web3 from "web3";
-import { Web3Service } from "../services/Web3Service";
+import { Web3Service } from "../services";
 import { Component } from "../components";
 
 export const Web3Context = createContext({});
@@ -8,31 +7,48 @@ export const Web3Context = createContext({});
 export const Web3Consumer = Web3Context.Consumer;
 
 export class Web3Provider extends Component {
+  /** @private {Web3Service} */ web3Service;
+
   constructor(props) {
     super(props);
 
-    this.web3Servive = new Web3Service();
+    this.web3Service = new Web3Service();
   }
 
   initialState(props) {
     return {
       web3: null,
       account: null,
+      exchangeContract: null,
     };
   }
 
   boundMethods() {
-    return [this.loadWeb3, this.loadAccount];
+    return [this.setWeb3, this.setAccount, this.setExchangeContract];
   }
 
-  async loadWeb3() {
-    const web3 = await this.web3Servive.get();
+  get web3() {
+    return this.state.web3;
+  }
+
+  setWeb3(web3) {
     this.setState({ web3 });
   }
 
-  async loadAccount() {
-    const [account] = await this.state.web3.eth.getAccounts();
+  get account() {
+    return this.state.account;
+  }
+
+  setAccount(account) {
     this.setState({ account });
+  }
+
+  get exchangeContract() {
+    return this.state.exchangeContract;
+  }
+
+  setExchangeContract(exchangeContract) {
+    this.setState({ exchangeContract });
   }
 
   render() {
@@ -40,9 +56,11 @@ export class Web3Provider extends Component {
       <Web3Context.Provider
         value={{
           web3: this.state.web3,
-          account: this.state.account,
-          loadWeb3: this.loadWeb3,
-          loadAccount: this.loadAccount,
+          setWeb3: this.setWeb3,
+          account: this.account,
+          setAccount: this.setAccount,
+          exchangeContract: this.exchangeContract,
+          setExchangeContract: this.setExchangeContract,
         }}
       >
         {this.props.children}
