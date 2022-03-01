@@ -122,7 +122,8 @@ contract Exchange {
     require(_demand.amount > 0);
     require(balances[msg.sender][_offer.contractAddress] >= _offer.amount);
 
-    uint _id = ordersCount.add(1);
+    ordersCount = ordersCount.add(1);
+    uint _id = ordersCount;
     uint _timestamp = block.timestamp;
 
     orders[_id] = _Order(_id, msg.sender, _offer, _demand, _timestamp);

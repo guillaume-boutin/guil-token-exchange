@@ -23,6 +23,8 @@ export class OrderRepository {
       toBlock: "latest",
     });
 
+    console.log(response);
+
     return response.map(({ returnValues }) =>
       new OrderFactory().fromEventValues(returnValues)
     );

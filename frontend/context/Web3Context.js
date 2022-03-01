@@ -4,7 +4,11 @@ import { Component } from "../components";
 
 export const Web3Context = createContext({});
 
-export const Web3Consumer = Web3Context.Consumer;
+export const Web3Consumer = ({ children }) => (
+  <Web3Context.Consumer>{children}</Web3Context.Consumer>
+);
+
+// export const Web3Consumer = Web3Context.Consumer;
 
 export class Web3Provider extends Component {
   /** @private {Web3Service} */ web3Service;

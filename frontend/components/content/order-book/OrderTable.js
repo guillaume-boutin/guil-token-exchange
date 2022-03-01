@@ -1,10 +1,7 @@
-import React, { Component } from "react";
-import { Table } from "../../common/table/Table";
+import { Table } from "../../common/table";
 import styles from "./styles.module.scss";
-
-/**
- * @typedef {{ tokenAmount: Number, ethAmount: Number, price: Number, type: "buy"|"sell" }} Order
- */
+import { Component } from "../../Component";
+import { Order } from "../../../entities";
 
 /**
  * @param props
@@ -12,11 +9,11 @@ import styles from "./styles.module.scss";
  */
 const Row = ({ order }) => (
   <tr>
-    <td>{order.tokenAmount}</td>
+    <td>{order.token.unitaryAmount}</td>
 
-    <td className={styles[order.type]}>{order.price}</td>
+    <td className={styles[order.transactionType]}>{order.price.toFixed(5)}</td>
 
-    <td>{order.ethAmount}</td>
+    <td>{order.ether.unitaryAmount}</td>
   </tr>
 );
 

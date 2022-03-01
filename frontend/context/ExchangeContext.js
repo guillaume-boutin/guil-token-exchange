@@ -4,6 +4,10 @@ import { Order, HandledOrder } from "../entities";
 
 export const ExchangeContext = createContext({});
 
+// export const ExchangeConsumer = ({ children }) => (
+//   <ExchangeContext.Consumer>{children}</ExchangeContext.Consumer>
+// );
+
 export const ExchangeConsumer = ExchangeContext.Consumer;
 
 export class ExchangeProvider extends Component {
@@ -34,7 +38,6 @@ export class ExchangeProvider extends Component {
    * @param {Order[]} orders
    */
   setOrders(orders) {
-    console.log(orders);
     this.setState({ orders });
   }
 
@@ -49,7 +52,7 @@ export class ExchangeProvider extends Component {
    * @param {HandledOrder[]} filledOrders
    */
   setFilledOrders(filledOrders) {
-    console.log(filledOrders);
+    console.log("set filled orders", filledOrders.length);
     this.setState({ filledOrders });
   }
 
@@ -64,7 +67,7 @@ export class ExchangeProvider extends Component {
    * @param {HandledOrder[]} cancelledOrders
    */
   setCancelledOrders(cancelledOrders) {
-    console.log(cancelledOrders);
+    console.log("set cancelled orders", cancelledOrders.length);
     this.setState({ cancelledOrders });
   }
 
@@ -79,11 +82,11 @@ export class ExchangeProvider extends Component {
 
       if (index > -1) return false;
 
-      index = this.cancelledOrders.findIndex(
-        (cancelledOrder) => cancelledOrder.order.id === order.id
+      return (
+        this.cancelledOrders.findIndex(
+          (cancelledOrder) => cancelledOrder.order.id === order.id
+        ) === -1
       );
-
-      return index === -1;
     });
   }
 

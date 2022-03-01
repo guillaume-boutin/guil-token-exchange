@@ -4,7 +4,7 @@
   color: white;
 
   & thead {
-    border-bottom: 2px solid grey;
+    border-bottom: 2px solid var(--table-border-color);
   }
 
   & th,
@@ -13,7 +13,7 @@
   }
 
   & tbody tr {
-    border-bottom: 1px solid grey;
+    border-bottom: 1px solid var(--table-border-color);
 
     &:last-child {
       border-bottom: revert;

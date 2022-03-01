@@ -1,9 +1,9 @@
+import { ETHER_ADDRESS } from "../helpers";
+
 /**
  * @property {string} address
  * @property {string} amount
  */
-import { ETHER_ADDRESS } from "../helpers";
-
 export class Token {
   /**
    * @param props;
@@ -20,5 +20,9 @@ export class Token {
    */
   get isEth() {
     return this.address === ETHER_ADDRESS;
+  }
+
+  get unitaryAmount() {
+    return parseFloat(this.amount) / 10 ** 18;
   }
 }

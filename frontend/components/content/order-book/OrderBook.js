@@ -1,23 +1,30 @@
 import React, { Component } from "react";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { OrderTable } from ".";
-import { Web3Consumer, ExchangeConsumer } from "../../../context";
+import { ExchangeConsumer } from "../../../context";
 
+/**
+ * @property {Order[]} props.openOrders
+ */
 class OrderBookComponent extends Component {
   constructor(props) {
     super(props);
   }
 
   get buyOrders() {
-    return [{ tokenAmount: 10, price: 0.00025, ethAmount: 0.01, type: "buy" }];
+    return this.props.openOrders.filter(
+      (openOrder) => openOrder.transactionType === "buy"
+    );
   }
 
   get sellOrders() {
-    return [{ tokenAmount: 10, price: 0.00025, ethAmount: 0.01, type: "sell" }];
+    return this.props.openOrders.filter(
+      (openOrder) => openOrder.transactionType === "sell"
+    );
   }
 
   render() {
-    console.log(this.props.openOrders);
+    // console.log(this.props.orders);
     return (
       <Card>
         <CardHeader>Order Book</CardHeader>

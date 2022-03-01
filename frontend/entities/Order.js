@@ -32,16 +32,16 @@ export class Order {
     return this.offer.isEth ? "buy" : "sell";
   }
 
-  get ethAmount() {
-    return this.offer.isEth ? this.offer.amount : this.demand.amount;
+  get ether() {
+    return this.offer.isEth ? this.offer : this.demand;
   }
 
-  get tokenAmount() {
-    return this.offer.isEth ? this.demand.amount : this.offer.address;
+  get token() {
+    return this.offer.isEth ? this.demand : this.offer;
   }
 
   get price() {
-    return this.tokenAmount / this.ethAmount;
+    return this.ether.amount / this.token.amount;
   }
 }
 
