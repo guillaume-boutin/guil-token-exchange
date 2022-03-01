@@ -7,12 +7,15 @@ import { TradeRow } from "./TradeRow";
 
 /**
  * @property {HandledOrder[]} props.trades
- * @property {string} props.account
  */
 class TradesComponent extends Component {
-  render() {
-    console.log(this.props.account);
+  get trades() {
+    return this.props.trades.sort((a, b) =>
+      b.timestamp.isBefore(a.timestamp) ? -1 : 1
+    );
+  }
 
+  render() {
     return (
       <Card>
         <CardHeader>Trades</CardHeader>
@@ -30,8 +33,8 @@ class TradesComponent extends Component {
             </thead>
 
             <tbody>
-              {this.props.trades.map((trade, i) => (
-                <TradeRow key={i} trade={trade} account={this.props.account} />
+              {this.trades.map((trade, i) => (
+                <TradeRow key={i} trade={trade} />
               ))}
             </tbody>
           </Table>
@@ -43,8 +46,6 @@ class TradesComponent extends Component {
 
 export const Trades = () => (
   <ContextConsumer>
-    {({ web3, exchange }) => (
-      <TradesComponent trades={exchange.filledOrders} account={web3.account} />
-    )}
+    {({ exchange }) => <TradesComponent trades={exchange.filledOrders} />}
   </ContextConsumer>
 );

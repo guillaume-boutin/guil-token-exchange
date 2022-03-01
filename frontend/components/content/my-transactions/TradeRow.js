@@ -1,8 +1,9 @@
-import { Component } from "../../Component";
 import { HandledOrder } from "../../../entities";
-import styles from "./Trade.module.scss";
+import { Component } from "../../Component";
+import styles from "./MyTransactions.module.scss";
 
 /**
+ * @property props
  * @property {HandledOrder} props.trade
  */
 export class TradeRow extends Component {
@@ -14,12 +15,12 @@ export class TradeRow extends Component {
     return this.props.trade.order.token.unitaryAmount;
   }
 
-  get tradeType() {
-    return this.props.trade.order.transactionType;
+  get price() {
+    return this.props.trade.order.price.toFixed(6);
   }
 
-  get price() {
-    return this.props.trade.order.price.toFixed(5);
+  get isBuy() {
+    return this.props.trade.order.transactionType === "buy";
   }
 
   render() {
@@ -27,7 +28,9 @@ export class TradeRow extends Component {
       <tr>
         <td>{this.time}</td>
 
-        <td className={styles[this.tradeType]}>{this.amount}</td>
+        <td className={styles[this.isBuy ? "buy" : "sell"]}>
+          {this.isBuy ? "+" : "-"} {this.amount}
+        </td>
 
         <td>{this.price}</td>
       </tr>
