@@ -54,7 +54,6 @@ export class ExchangeProvider extends Component {
    * @param {HandledOrder[]} filledOrders
    */
   setFilledOrders(filledOrders) {
-    console.log("set filled orders", filledOrders.length);
     this.setState({ filledOrders });
   }
 
@@ -69,7 +68,6 @@ export class ExchangeProvider extends Component {
    * @param {HandledOrder[]} cancelledOrders
    */
   setCancelledOrders(cancelledOrders) {
-    console.log("set cancelled orders", cancelledOrders.length);
     this.setState({ cancelledOrders });
   }
 
