@@ -1,5 +1,5 @@
 import { Table } from "../../common/table";
-import styles from "./styles.module.scss";
+import styles from "./OrderBook.module.scss";
 import { Component } from "../../Component";
 import { Order } from "../../../entities";
 

@@ -8,7 +8,9 @@ export const ExchangeContext = createContext({});
 //   <ExchangeContext.Consumer>{children}</ExchangeContext.Consumer>
 // );
 
-export const ExchangeConsumer = ExchangeContext.Consumer;
+export const ExchangeConsumer = (props) => (
+  <ExchangeContext.Consumer>{props.children}</ExchangeContext.Consumer>
+);
 
 export class ExchangeProvider extends Component {
   constructor(props) {

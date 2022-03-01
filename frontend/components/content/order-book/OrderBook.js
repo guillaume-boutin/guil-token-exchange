@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { OrderTable } from ".";
 import { ExchangeConsumer } from "../../../context";
+import styles from "./OrderBook.module.scss";
 
 /**
  * @property {Order[]} props.openOrders
@@ -41,8 +42,8 @@ class OrderBookComponent extends Component {
 
 export const OrderBook = () => (
   <ExchangeConsumer>
-    {({ orders, openOrders }) => {
-      return <OrderBookComponent orders={orders} openOrders={openOrders} />;
-    }}
+    {({ orders, openOrders }) => (
+      <OrderBookComponent orders={orders} openOrders={openOrders} />
+    )}
   </ExchangeConsumer>
 );

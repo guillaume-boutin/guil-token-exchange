@@ -114,12 +114,12 @@ const handle = async () => {
   // User 1 makes another order
   result = await exchange.placeOrder(
     {
-      contractAddress: ETHER_ADDRESS,
-      amount: toWei(0.01),
-    },
-    {
       contractAddress: guilToken.address,
       amount: toWei(50),
+    },
+    {
+      contractAddress: ETHER_ADDRESS,
+      amount: toWei(0.01),
     },
     { from: user1 }
   );

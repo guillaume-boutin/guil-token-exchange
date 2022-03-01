@@ -1,5 +1,7 @@
 import styles from "./CardBody.module.scss";
 
-export const CardBody = ({ children }) => (
-  <div className={styles.cardBody}>{children}</div>
-);
+export const CardBody = (props) => {
+  const className = `${styles.cardBody} ${props.className ?? ""}`.trim();
+
+  return <div className={className}>{props.children}</div>;
+};
