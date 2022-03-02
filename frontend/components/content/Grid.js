@@ -6,8 +6,8 @@ import { Trades } from "./trades";
 import { NewOrder } from "./new-order";
 import { MyTransactions } from "./my-transactions";
 import { ExchangeConsumer } from "../../context";
-import styles from "./Content.module.scss";
 import { OrderRepository } from "../../repositories/OrderRepository";
+import styles from "./Content.module.scss";
 
 class GridComponent extends Component {
   /** @private {OrderRepository} */ orderRepository;

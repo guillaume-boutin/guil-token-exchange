@@ -27,7 +27,7 @@ export class OrderTable extends Component {
 
   render() {
     return (
-      <Table>
+      <Table className={styles.table}>
         <thead>
           <tr>
             <th>GUIL</th>

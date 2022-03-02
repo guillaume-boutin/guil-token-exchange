@@ -27,13 +27,17 @@ class OrderBookComponent extends Component {
   render() {
     // console.log(this.props.orders);
     return (
-      <Card>
-        <CardHeader>Order Book</CardHeader>
+      <Card className={styles.card}>
+        <CardHeader className={styles.cardHeader}>Order Book</CardHeader>
 
-        <CardBody>
-          <OrderTable orders={this.buyOrders} />
+        <CardBody className={styles.cardBody}>
+          <div className={styles.tableContainer}>
+            <OrderTable orders={this.buyOrders} />
+          </div>
 
-          <OrderTable orders={this.sellOrders} />
+          <div className={styles.tableContainer}>
+            <OrderTable orders={this.sellOrders} />
+          </div>
         </CardBody>
       </Card>
     );

@@ -1,7 +1,7 @@
 import { NavBar } from "../nav-bar";
 import { Content } from "../content";
 import styles from "./App.module.scss";
-import { Web3Consumer, ExchangeConsumer } from "../../context";
+import { ContextConsumer } from "../../context";
 import { Component } from "../Component";
 import { Web3Service } from "../../services";
 import { HandledOrderFactory } from "../../entities";
@@ -74,19 +74,15 @@ class AppComponent extends Component {
 }
 
 export const App = () => (
-  <Web3Consumer>
-    {({ setWeb3, setAccount, setExchangeContract }) => (
-      <ExchangeConsumer>
-        {({ addToCancelledOrders, addToFilledOrders }) => (
-          <AppComponent
-            setWeb3={setWeb3}
-            setAccount={setAccount}
-            setExchangeContract={setExchangeContract}
-            addToCancelledOrders={addToCancelledOrders}
-            addToFilledOrders={addToFilledOrders}
-          />
-        )}
-      </ExchangeConsumer>
+  <ContextConsumer>
+    {({ web3, exchange }) => (
+      <AppComponent
+        setWeb3={web3.setWeb3}
+        setAccount={web3.setAccount}
+        setExchangeContract={web3.setExchangeContract}
+        addToCancelledOrders={exchange.addToCancelledOrders}
+        addToFilledOrders={exchange.addToFilledOrders}
+      />
     )}
-  </Web3Consumer>
+  </ContextConsumer>
 );

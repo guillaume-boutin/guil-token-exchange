@@ -6,6 +6,7 @@ import { ContextConsumer } from "../../../context";
 import { Order, HandledOrder } from "../../../entities";
 import { TradeRow } from "./TradeRow";
 import { OrderRow } from "./OrderRow";
+import styles from "./MyTransactions.module.scss";
 
 /**
  * @property {string} props.account
@@ -27,19 +28,19 @@ class MyTransactionsComponent extends Component {
 
   render() {
     return (
-      <Card>
+      <Card className={styles.card}>
         <CardHeader>My Transactions</CardHeader>
 
-        <CardBody>
-          <Tabs>
+        <CardBody className={styles.cardBody}>
+          <Tabs className={styles.tabs}>
             <TabList as="nav">
               <Tab as="a">Trades</Tab>
 
               <Tab as="a">Orders</Tab>
             </TabList>
 
-            <TabPanels as="div">
-              <TabPanel as="div">
+            <TabPanels as="div" className={styles.tabPanels}>
+              <TabPanel as="div" className={styles.tabPanel}>
                 <Table>
                   <thead>
                     <tr>
@@ -59,8 +60,8 @@ class MyTransactionsComponent extends Component {
                 </Table>
               </TabPanel>
 
-              <TabPanel as="div">
-                <Table>
+              <TabPanel as="div" className={styles.tabPanel}>
+                <Table className={styles.table}>
                   <thead>
                     <tr>
                       <th>Amount</th>
@@ -71,7 +72,7 @@ class MyTransactionsComponent extends Component {
                     </tr>
                   </thead>
 
-                  <tbody>
+                  <tbody className={styles.tbody}>
                     {this.orders.map((order, i) => (
                       <OrderRow key={i} order={order} />
                     ))}

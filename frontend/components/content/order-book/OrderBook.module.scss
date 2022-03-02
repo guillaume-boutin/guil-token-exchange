@@ -5,3 +5,24 @@
 .sell {
   color: var(--sell-color);
 }
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeader {
+}
+
+.cardBody {
+  flex-grow: 1;
+  overflow-y: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.tableContainer {
+  flex-grow: 1;
+  overflow: auto;
+}

@@ -1,5 +1,7 @@
 import styles from "./CardHeader.module.scss";
 
-export const CardHeader = ({ children }) => (
-  <div className={styles.cardHeader}>{children}</div>
-);
+export const CardHeader = (props) => {
+  const className = `${styles.cardHeader} ${props.className ?? ""}`.trim();
+
+  return <div className={className}>{props.children}</div>;
+};

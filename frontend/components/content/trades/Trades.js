@@ -4,6 +4,7 @@ import { Table } from "../../common/table";
 import { ContextConsumer, ExchangeConsumer } from "../../../context";
 import { HandledOrder } from "../../../entities";
 import { TradeRow } from "./TradeRow";
+import styles from "./Trade.module.scss";
 
 /**
  * @property {HandledOrder[]} props.trades
@@ -17,10 +18,10 @@ class TradesComponent extends Component {
 
   render() {
     return (
-      <Card>
+      <Card className={styles.card}>
         <CardHeader>Trades</CardHeader>
 
-        <CardBody>
+        <CardBody className={styles.cardBody}>
           <Table>
             <thead>
               <tr>

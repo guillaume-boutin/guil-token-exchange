@@ -7,20 +7,30 @@ import {
 } from "@reach/tabs";
 import styles from "./Tabs.module.scss";
 
-export const Tabs = ({ children }) => <BaseTabs>{children}</BaseTabs>;
+export const Tabs = (props) => {
+  const className = `${props.className ?? ""}`.trim();
 
-export const TabList = (props) => (
-  <BaseTabList {...props} className={styles.tabList}>
-    {props.children}
-  </BaseTabList>
-);
+  return <BaseTabs className={className}>{props.children}</BaseTabs>;
+};
 
-export const Tab = (props) => <BaseTab {...props} className={styles.tab} />;
+export const TabList = (props) => {
+  return (
+    <BaseTabList {...props} className={styles.tabList}>
+      {props.children}
+    </BaseTabList>
+  );
+};
 
-export const TabPanels = (props) => (
-  <BaseTabPanels {...props}>{props.children}</BaseTabPanels>
-);
+export const Tab = (props) => {
+  return <BaseTab {...props} className={styles.tab} />;
+};
 
-export const TabPanel = (props) => (
-  <BaseTabPanel {...props}>{props.children}</BaseTabPanel>
-);
+export const TabPanels = (props) => {
+  return <BaseTabPanels {...props}>{props.children}</BaseTabPanels>;
+};
+
+export const TabPanel = (props) => {
+  // const className = `${props.className ?? ''}`;
+
+  return <BaseTabPanel {...props}>{props.children}</BaseTabPanel>;
+};

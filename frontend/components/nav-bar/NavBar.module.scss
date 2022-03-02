@@ -1,6 +1,7 @@
 .navBar {
   background-color: #007bff;
   padding: 0.5rem 1rem;
+  height: var(--nav-bar-height);
 
   .row {
     display: flex;

@@ -1,5 +1,5 @@
 .content {
-  height: 100%;
+  height: calc(100vh - var(--nav-bar-height));
   background-color: #1d1d1d;
 
   .grid {
@@ -11,15 +11,16 @@
     grid-template-areas:
       "balance order-book price-chart trades"
       "new-order order-book my-transactions trades";
-
     padding: 8px;
     gap: 8px;
+
     .balance {
       grid-area: balance;
     }
 
     .orderBook {
       grid-area: order-book;
+      overflow-y: hidden;
     }
 
     .priceChart {
@@ -28,6 +29,7 @@
 
     .trades {
       grid-area: trades;
+      overflow: hidden;
     }
 
     .newOrder {
@@ -36,6 +38,7 @@
 
     .myTransactions {
       grid-area: my-transactions;
+      overflow: hidden;
     }
   }
 }
