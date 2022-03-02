@@ -5,7 +5,7 @@ import { PriceChart } from "./price-chart";
 import { Trades } from "./trades";
 import { NewOrder } from "./new-order";
 import { MyTransactions } from "./my-transactions";
-import { ExchangeConsumer } from "../../context";
+import { connect } from "../../context";
 import { OrderRepository } from "../../repositories/OrderRepository";
 import styles from "./Content.module.scss";
 
@@ -57,7 +57,7 @@ class GridComponent extends Component {
         </div>
 
         <div className={styles.trades}>
-          <Trades trades={[]} />
+          <Trades />
         </div>
 
         <div className={styles.newOrder}>
@@ -72,15 +72,12 @@ class GridComponent extends Component {
   }
 }
 
-export const Grid = ({ exchangeContract }) => (
-  <ExchangeConsumer>
-    {({ setOrders, setFilledOrders, setCancelledOrders }) => (
-      <GridComponent
-        exchangeContract={exchangeContract}
-        setOrders={setOrders}
-        setFilledOrders={setFilledOrders}
-        setCancelledOrders={setCancelledOrders}
-      />
-    )}
-  </ExchangeConsumer>
+export const Grid = connect(
+  ({ web3, exchange }) => ({
+    exchangeContract: web3.exchangeContract,
+    setOrders: exchange.setOrders,
+    setFilledOrders: exchange.setFilledOrders,
+    setCancelledOrders: exchange.setCancelledOrders,
+  }),
+  GridComponent
 );

@@ -18,11 +18,7 @@ export class Content extends Component {
   render() {
     return (
       <div className={styles.content}>
-        {this.canRenderGrid ? (
-          <Grid exchangeContract={this.props.exchangeContract} />
-        ) : (
-          <>Could not load web3</>
-        )}
+        {this.canRenderGrid ? <Grid /> : <>Could not load web3</>}
       </div>
     );
   }
