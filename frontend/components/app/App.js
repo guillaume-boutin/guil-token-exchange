@@ -1,7 +1,7 @@
 import { NavBar } from "../nav-bar";
 import { Content } from "../content";
 import styles from "./App.module.scss";
-import { ContextConsumer } from "../../context";
+import { connect, ContextConsumer } from "../../context";
 import { Component } from "../Component";
 import { Web3Service } from "../../services";
 import { HandledOrderFactory } from "../../entities";
@@ -73,16 +73,13 @@ class AppComponent extends Component {
   }
 }
 
-export const App = () => (
-  <ContextConsumer>
-    {({ web3, exchange }) => (
-      <AppComponent
-        setWeb3={web3.setWeb3}
-        setAccount={web3.setAccount}
-        setExchangeContract={web3.setExchangeContract}
-        addToCancelledOrders={exchange.addToCancelledOrders}
-        addToFilledOrders={exchange.addToFilledOrders}
-      />
-    )}
-  </ContextConsumer>
+export const App = connect(
+  ({ web3, exchange }) => ({
+    setWeb3: web3.setWeb3,
+    setAccount: web3.setAccount,
+    setExchangeContract: web3.setExchangeContract,
+    addToCancelledOrders: exchange.addToCancelledOrders,
+    addToFilledOrders: exchange.addToFilledOrders,
+  }),
+  AppComponent
 );

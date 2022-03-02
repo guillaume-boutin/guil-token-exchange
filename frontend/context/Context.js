@@ -1,8 +1,8 @@
 import {
-  Web3Provider,
+  ExchangeConsumer,
   ExchangeProvider,
   Web3Consumer,
-  ExchangeConsumer,
+  Web3Provider,
 } from ".";
 import { Component } from "../components";
 
@@ -25,3 +25,15 @@ export const ContextConsumer = ({ children }) => (
     )}
   </Web3Consumer>
 );
+
+export const connect = (mapContextToProps, Component) => {
+  return () => (
+    <ContextConsumer>
+      {(contextProps) => {
+        const props = mapContextToProps(contextProps);
+
+        return <Component {...props} />;
+      }}
+    </ContextConsumer>
+  );
+};

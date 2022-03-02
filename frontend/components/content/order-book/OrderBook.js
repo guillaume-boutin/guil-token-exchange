@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { OrderTable } from ".";
-import { ExchangeConsumer } from "../../../context";
+import { connect, ExchangeConsumer } from "../../../context";
 import styles from "./OrderBook.module.scss";
 
 /**
@@ -44,10 +44,10 @@ class OrderBookComponent extends Component {
   }
 }
 
-export const OrderBook = () => (
-  <ExchangeConsumer>
-    {({ orders, openOrders }) => (
-      <OrderBookComponent orders={orders} openOrders={openOrders} />
-    )}
-  </ExchangeConsumer>
+export const OrderBook = connect(
+  ({ exchange }) => ({
+    orders: exchange.orders,
+    openOrders: exchange.openOrders,
+  }),
+  OrderBookComponent
 );

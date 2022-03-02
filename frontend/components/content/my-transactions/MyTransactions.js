@@ -2,7 +2,7 @@ import { Card, CardHeader, CardBody } from "../../common/card";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "../../common/tabs";
 import { Table } from "../../common/table";
 import { Component } from "../../Component";
-import { ContextConsumer } from "../../../context";
+import { connect } from "../../../context";
 import { Order, HandledOrder } from "../../../entities";
 import { TradeRow } from "./TradeRow";
 import { OrderRow } from "./OrderRow";
@@ -87,14 +87,11 @@ class MyTransactionsComponent extends Component {
   }
 }
 
-export const MyTransactions = () => (
-  <ContextConsumer>
-    {({ web3, exchange }) => (
-      <MyTransactionsComponent
-        account={web3.account}
-        orders={exchange.orders}
-        trades={exchange.filledOrders}
-      />
-    )}
-  </ContextConsumer>
+export const MyTransactions = connect(
+  ({ web3, exchange }) => ({
+    account: web3.account,
+    orders: exchange.orders,
+    trades: exchange.filledOrders,
+  }),
+  MyTransactionsComponent
 );

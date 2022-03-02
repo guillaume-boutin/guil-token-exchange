@@ -1,7 +1,7 @@
 import { Component } from "../../Component";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { Table } from "../../common/table";
-import { ContextConsumer, ExchangeConsumer } from "../../../context";
+import { connect } from "../../../context";
 import { HandledOrder } from "../../../entities";
 import { TradeRow } from "./TradeRow";
 import styles from "./Trade.module.scss";
@@ -45,8 +45,9 @@ class TradesComponent extends Component {
   }
 }
 
-export const Trades = () => (
-  <ContextConsumer>
-    {({ exchange }) => <TradesComponent trades={exchange.filledOrders} />}
-  </ContextConsumer>
+export const Trades = connect(
+  ({ exchange }) => ({
+    trades: exchange.filledOrders,
+  }),
+  TradesComponent
 );
