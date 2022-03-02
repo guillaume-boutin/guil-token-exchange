@@ -25,6 +25,7 @@
 
     .priceChart {
       grid-area: price-chart;
+      overflow-y: hidden;
     }
 
     .trades {

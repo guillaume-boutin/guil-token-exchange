@@ -1,3 +1,25 @@
+.card {
+  display: flex;
+  flex-direction: column;
+
+  .cardBody {
+    flex-grow: 1;
+  }
+}
+
 .priceChart {
   height: 100%;
+  padding-bottom: 24px;
+}
+
+.priceTitle {
+  margin-left: 16px;
+}
+
+.buy {
+  color: var(--buy-color);
+}
+
+.sell {
+  color: var(--sell-color);
 }

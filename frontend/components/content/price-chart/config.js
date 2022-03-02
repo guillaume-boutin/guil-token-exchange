@@ -47,12 +47,11 @@ export const chartOptions = {
   yaxis: {
     labels: {
       show: true,
-      minWidth: 0,
-      maxWidth: 160,
+
       style: {
-        color: "#fff",
+        colors: "#fff",
         fontSize: "8px",
-        cssClass: "apexcharts-xaxis-label",
+        cssClass: "apexcharts-yaxis-label",
       },
       offsetX: 0,
       offsetY: 0,
