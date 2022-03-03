@@ -27,3 +27,10 @@
   flex-grow: 1;
   overflow: auto;
 }
+
+.tableRow {
+  &:hover {
+    background-color: var(--table-border-color);
+    cursor: pointer;
+  }
+}

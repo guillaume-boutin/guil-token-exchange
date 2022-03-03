@@ -1,49 +1,32 @@
 import { Table } from "../../common/table";
-import styles from "./OrderBook.module.scss";
-import { Component } from "../../Component";
 import { Order } from "../../../entities";
+import { OrderRow } from ".";
+import styles from "./OrderBook.module.scss";
 
 /**
  * @param props
- * @param {Order} props.order
+ * @param {Order[]} props.orders
  */
-const Row = ({ order }) => (
-  <tr>
-    <td>{order.token.unitaryAmount}</td>
+export const OrderTable = ({ orders }) => {
+  const onOrderRowClick = (order) => {};
 
-    <td className={styles[order.transactionType]}>{order.price.toFixed(5)}</td>
+  return (
+    <Table>
+      <thead>
+        <tr>
+          <th>GUIL</th>
 
-    <td>{order.ether.unitaryAmount}</td>
-  </tr>
-);
+          <th>GUIL/ETH</th>
 
-/**
- * @property {Order[]} props.orders
- */
-export class OrderTable extends Component {
-  constructor(props) {
-    super(props);
-  }
+          <th>ETH</th>
+        </tr>
+      </thead>
 
-  render() {
-    return (
-      <Table className={styles.table}>
-        <thead>
-          <tr>
-            <th>GUIL</th>
-
-            <th>GUIL/ETH</th>
-
-            <th>ETH</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {this.props.orders.map((order, i) => (
-            <Row key={i} order={order} />
-          ))}
-        </tbody>
-      </Table>
-    );
-  }
-}
+      <tbody>
+        {orders.map((order, i) => (
+          <OrderRow key={i} order={order} />
+        ))}
+      </tbody>
+    </Table>
+  );
+};

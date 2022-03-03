@@ -7,7 +7,7 @@ import styles from "./OrderBook.module.scss";
 /**
  * @property {Order[]} props.openOrders
  */
-class OrderBookComponent extends Component {
+class _OrderBook extends Component {
   constructor(props) {
     super(props);
   }
@@ -49,5 +49,5 @@ export const OrderBook = connect(
     orders: exchange.orders,
     openOrders: exchange.openOrders,
   }),
-  OrderBookComponent
+  _OrderBook
 );

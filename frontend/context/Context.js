@@ -27,9 +27,15 @@ const ContextConsumer = ({ children }) => (
 );
 
 export const connect = (mapContextToProps, Component) => {
-  return () => (
+  return (props) => (
     <ContextConsumer>
-      {(contextProps) => <Component {...mapContextToProps(contextProps)} />}
+      {(contextProps) => {
+        const mergedProps = {
+          ...mapContextToProps(contextProps),
+          ...props,
+        };
+        return <Component {...mergedProps} />;
+      }}
     </ContextConsumer>
   );
 };

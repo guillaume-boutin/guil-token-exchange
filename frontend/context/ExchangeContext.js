@@ -20,6 +20,7 @@ export class ExchangeProvider extends Component {
       filledOrders: [],
       cancelledOrders: [],
       orderCancelling: false,
+      orderFilling: false,
     };
   }
 
@@ -31,6 +32,8 @@ export class ExchangeProvider extends Component {
       this.setCancelledOrders,
       this.cancelOrder,
       this.setOrderCancelling,
+      this.fillOrder,
+      this.setOrderFilling,
     ];
   }
 
@@ -50,6 +53,7 @@ export class ExchangeProvider extends Component {
       this.addToFilledOrders(
         new HandledOrderFactory().fromEventValues(event.returnValues)
       );
+      this.setOrderFilling(false);
     });
 
     this.setState({ contract });
@@ -131,6 +135,20 @@ export class ExchangeProvider extends Component {
   }
 
   /**
+   * @return {boolean}
+   */
+  get orderFilling() {
+    return this.state.orderFilling;
+  }
+
+  /**
+   * @param {boolean} orderFilling
+   */
+  setOrderFilling(orderFilling) {
+    this.setState({ orderFilling });
+  }
+
+  /**
    * @param {HandledOrder} filledOrder
    */
   addToFilledOrders(filledOrder) {
@@ -151,12 +169,22 @@ export class ExchangeProvider extends Component {
     this.setCancelledOrders([cancelledOrder, ...this.cancelledOrders]);
   }
 
-  cancelOrder(order, fromAccount) {
+  cancelOrder(order, account) {
     this.contract.methods
       .cancelOrder(order.id)
-      .send({ from: fromAccount })
+      .send({ from: account })
       .on("transactionHash", (hash) => {
         this.setOrderCancelling(true);
+      })
+      .on("error", (error) => {});
+  }
+
+  fillOrder(order, account) {
+    this.contract.methods
+      .fillOrder(order.id)
+      .send({ from: account })
+      .on("transactionHash", (hash) => {
+        this.setOrderFilling(true);
       })
       .on("error", (error) => {});
   }
@@ -170,13 +198,16 @@ export class ExchangeProvider extends Component {
           orders: this.orders,
           setOrders: this.setOrders,
           filledOrders: this.filledOrders,
-          openOrders: this.openOrders,
           setFilledOrders: this.setFilledOrders,
           cancelledOrders: this.cancelledOrders,
           setCancelledOrders: this.setCancelledOrders,
+          openOrders: this.openOrders,
           cancelOrder: this.cancelOrder,
           orderCancelling: this.orderCancelling,
           setOrderCancelling: this.setOrderCancelling,
+          fillOrder: this.fillOrder,
+          orderFilling: this.orderFilling,
+          setOrderFilling: this.setOrderFilling,
         }}
       >
         {this.props.children}
