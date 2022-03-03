@@ -34,21 +34,8 @@ class AppComponent extends Component {
   }
 
   async loadExchangeContract(web3) {
-    const exchangeContract = await this.web3Service.getExchangeContract(web3);
-
-    exchangeContract.events.Cancel({}, (error, event) => {
-      this.props.addToCancelledOrders(
-        new HandledOrderFactory().fromEventValues(event.returnValues)
-      );
-    });
-
-    exchangeContract.events.Trade({}, (error, event) => {
-      this.props.addToFilledOrders(
-        new HandledOrderFactory().fromEventValues(event.returnValues)
-      );
-    });
-
-    this.props.setExchangeContract(exchangeContract);
+    const contract = await this.web3Service.getExchangeContract(web3);
+    this.props.setExchangeContract(contract);
   }
 
   render() {

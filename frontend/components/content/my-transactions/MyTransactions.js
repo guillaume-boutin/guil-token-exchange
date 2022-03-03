@@ -12,8 +12,13 @@ import styles from "./MyTransactions.module.scss";
  * @property {string} props.account
  * @property {Order[]} props.orders
  * @property {HandledOrder[]} props.trades
+ * @property {function(Order, string)} props.cancelOrder
  */
 class MyTransactionsComponent extends Component {
+  boundMethods() {
+    return [this.onCancelOrder];
+  }
+
   get orders() {
     return this.props.orders
       .filter((o) => o.user === this.props.account)
@@ -24,6 +29,13 @@ class MyTransactionsComponent extends Component {
     return this.props.trades
       .filter((t) => t.order.user === this.props.account)
       .sort((a, b) => (b.timestamp.isBefore(a.timestamp) ? -1 : 1));
+  }
+
+  /**
+   * @param {Order} order
+   */
+  onCancelOrder(order) {
+    this.props.cancelOrder(order, this.props.account);
   }
 
   render() {
@@ -74,7 +86,11 @@ class MyTransactionsComponent extends Component {
 
                   <tbody className={styles.tbody}>
                     {this.orders.map((order, i) => (
-                      <OrderRow key={i} order={order} />
+                      <OrderRow
+                        key={i}
+                        order={order}
+                        onCancel={this.onCancelOrder}
+                      />
                     ))}
                   </tbody>
                 </Table>
@@ -90,8 +106,9 @@ class MyTransactionsComponent extends Component {
 export const MyTransactions = connect(
   ({ web3, exchange }) => ({
     account: web3.account,
-    orders: exchange.orders,
+    orders: exchange.openOrders,
     trades: exchange.filledOrders,
+    cancelOrder: exchange.cancelOrder,
   }),
   MyTransactionsComponent
 );

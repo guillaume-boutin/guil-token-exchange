@@ -4,6 +4,7 @@ import styles from "./MyTransactions.module.scss";
 
 /**
  * @property {Order} props.order
+ * @property {function(Order)} props.onCancel
  */
 export class OrderRow extends Component {
   boundMethods() {
@@ -26,7 +27,9 @@ export class OrderRow extends Component {
     return this.props.order.transactionType === "buy";
   }
 
-  onCancelClick(e) {}
+  onCancelClick(e) {
+    this.props.onCancel(this.props.order);
+  }
 
   render() {
     return (

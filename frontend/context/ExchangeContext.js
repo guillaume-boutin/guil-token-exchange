@@ -1,6 +1,6 @@
 import React, { createContext } from "react";
 import { Component } from "../components";
-import { Order, HandledOrder } from "../entities";
+import { Order, HandledOrder, HandledOrderFactory } from "../entities";
 
 export const ExchangeContext = createContext({});
 
@@ -19,6 +19,7 @@ export class ExchangeProvider extends Component {
       orders: [],
       filledOrders: [],
       cancelledOrders: [],
+      orderCancelling: false,
     };
   }
 
@@ -28,6 +29,8 @@ export class ExchangeProvider extends Component {
       this.setOrders,
       this.setFilledOrders,
       this.setCancelledOrders,
+      this.cancelOrder,
+      this.setOrderCancelling,
     ];
   }
 
@@ -36,6 +39,19 @@ export class ExchangeProvider extends Component {
   }
 
   setContract(contract) {
+    contract.events.Cancel({}, (error, event) => {
+      this.addToCancelledOrders(
+        new HandledOrderFactory().fromEventValues(event.returnValues)
+      );
+      this.setOrderCancelling(false);
+    });
+
+    contract.events.Trade({}, (error, event) => {
+      this.addToFilledOrders(
+        new HandledOrderFactory().fromEventValues(event.returnValues)
+      );
+    });
+
     this.setState({ contract });
   }
 
@@ -101,9 +117,23 @@ export class ExchangeProvider extends Component {
   }
 
   /**
+   * @return {boolean}
+   */
+  get orderCancelling() {
+    return this.state.orderCancelling;
+  }
+
+  /**
+   * @param {boolean} orderCancelling
+   */
+  setOrderCancelling(orderCancelling) {
+    this.setState({ orderCancelling });
+  }
+
+  /**
    * @param {HandledOrder} filledOrder
    */
-  addFilledOrder(filledOrder) {
+  addToFilledOrders(filledOrder) {
     const index = this.filledOrders.find(
       (fo) => fo.order.id === filledOrder.order.id
     );
@@ -112,7 +142,7 @@ export class ExchangeProvider extends Component {
     this.setFilledOrders([filledOrder, ...this.filledOrders]);
   }
 
-  addCancelledOrder(cancelledOrder) {
+  addToCancelledOrders(cancelledOrder) {
     const index = this.cancelledOrders.find(
       (co) => co.order.id === cancelledOrder.order.id
     );
@@ -121,9 +151,15 @@ export class ExchangeProvider extends Component {
     this.setCancelledOrders([cancelledOrder, ...this.cancelledOrders]);
   }
 
-  // cancelOrder(order, fromAccount) {
-  //   this.
-  // }
+  cancelOrder(order, fromAccount) {
+    this.contract.methods
+      .cancelOrder(order.id)
+      .send({ from: fromAccount })
+      .on("transactionHash", (hash) => {
+        this.setOrderCancelling(true);
+      })
+      .on("error", (error) => {});
+  }
 
   render() {
     return (
@@ -138,6 +174,9 @@ export class ExchangeProvider extends Component {
           setFilledOrders: this.setFilledOrders,
           cancelledOrders: this.cancelledOrders,
           setCancelledOrders: this.setCancelledOrders,
+          cancelOrder: this.cancelOrder,
+          orderCancelling: this.orderCancelling,
+          setOrderCancelling: this.setOrderCancelling,
         }}
       >
         {this.props.children}
