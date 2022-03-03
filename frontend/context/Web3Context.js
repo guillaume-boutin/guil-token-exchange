@@ -22,13 +22,14 @@ export class Web3Provider extends Component {
   initialState(props) {
     return {
       web3: null,
+      web3Loaded: false,
       account: null,
       exchangeContract: null,
     };
   }
 
   boundMethods() {
-    return [this.setWeb3, this.setAccount, this.setExchangeContract];
+    return [this.setWeb3, this.setWeb3Loaded, this.setAccount];
   }
 
   get web3() {
@@ -39,6 +40,20 @@ export class Web3Provider extends Component {
     this.setState({ web3 });
   }
 
+  /**
+   * @return {boolean}
+   */
+  get web3Loaded() {
+    return this.state.web3Loaded;
+  }
+
+  /**
+   * @param {boolean} web3Loaded
+   */
+  setWeb3Loaded(web3Loaded) {
+    this.setState({ web3Loaded });
+  }
+
   get account() {
     return this.state.account;
   }
@@ -47,24 +62,16 @@ export class Web3Provider extends Component {
     this.setState({ account });
   }
 
-  get exchangeContract() {
-    return this.state.exchangeContract;
-  }
-
-  setExchangeContract(exchangeContract) {
-    this.setState({ exchangeContract });
-  }
-
   render() {
     return (
       <Web3Context.Provider
         value={{
           web3: this.state.web3,
           setWeb3: this.setWeb3,
+          web3Loaded: this.web3Loaded,
+          setWeb3Loaded: this.setWeb3Loaded,
           account: this.account,
           setAccount: this.setAccount,
-          exchangeContract: this.exchangeContract,
-          setExchangeContract: this.setExchangeContract,
         }}
       >
         {this.props.children}

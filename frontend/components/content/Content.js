@@ -1,8 +1,9 @@
 import { Component } from "../Component";
 import styles from "./Content.module.scss";
 import { Grid } from ".";
+import { connect } from "../../context";
 
-export class Content extends Component {
+class ContentComponent extends Component {
   constructor(props) {
     super(props);
   }
@@ -23,3 +24,12 @@ export class Content extends Component {
     );
   }
 }
+
+export const Content = connect(
+  ({ web3, exchange }) => ({
+    web3: web3.web3,
+    web3Loaded: web3.web3Loaded,
+    exchangeContract: exchange.contract,
+  }),
+  ContentComponent
+);

@@ -4,10 +4,6 @@ import { Order, HandledOrder } from "../entities";
 
 export const ExchangeContext = createContext({});
 
-// export const ExchangeConsumer = ({ children }) => (
-//   <ExchangeContext.Consumer>{children}</ExchangeContext.Consumer>
-// );
-
 export const ExchangeConsumer = (props) => (
   <ExchangeContext.Consumer>{props.children}</ExchangeContext.Consumer>
 );
@@ -19,6 +15,7 @@ export class ExchangeProvider extends Component {
 
   initialState(props) {
     return {
+      contract: null,
       orders: [],
       filledOrders: [],
       cancelledOrders: [],
@@ -26,7 +23,20 @@ export class ExchangeProvider extends Component {
   }
 
   boundMethods() {
-    return [this.setOrders, this.setFilledOrders, this.setCancelledOrders];
+    return [
+      this.setContract,
+      this.setOrders,
+      this.setFilledOrders,
+      this.setCancelledOrders,
+    ];
+  }
+
+  get contract() {
+    return this.state.contract;
+  }
+
+  setContract(contract) {
+    this.setState({ contract });
   }
 
   /**
@@ -111,10 +121,16 @@ export class ExchangeProvider extends Component {
     this.setCancelledOrders([cancelledOrder, ...this.cancelledOrders]);
   }
 
+  // cancelOrder(order, fromAccount) {
+  //   this.
+  // }
+
   render() {
     return (
       <ExchangeContext.Provider
         value={{
+          contract: this.contract,
+          setContract: this.setContract,
           orders: this.orders,
           setOrders: this.setOrders,
           filledOrders: this.filledOrders,

@@ -61,7 +61,6 @@ class PriceChartComponent extends Component {
   }
 
   render() {
-    console.log(this.lastTwoTrades);
     const latestPriceChange = this.latestPriceChange.toFixed(6);
 
     const caret =

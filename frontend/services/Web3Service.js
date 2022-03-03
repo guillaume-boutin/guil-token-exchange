@@ -2,13 +2,10 @@ import Web3 from "web3";
 import ExchangeJson from "../../backend/abis/Exchange.json";
 
 export class Web3Service {
-  /** @private {Web3} */ web3 = null;
-
   /**
    * @returns {Promise<Web3|null>}
    */
-  async loadWeb3() {
-    if (this.web3) return this.web3;
+  async getWeb3() {
     let web3;
 
     if (window.ethereum) {
@@ -16,8 +13,7 @@ export class Web3Service {
       try {
         // Request account access if needed
         await window.ethereum.enable();
-        this.web3 = web3;
-        return this.web3;
+        return web3;
       } catch (error) {
         console.log(error);
         // User denied account access...
@@ -26,8 +22,7 @@ export class Web3Service {
     }
     // Legacy dapp browsers...
     else if (window.web3) {
-      this.web3 = new Web3(window.web3.currentProvider);
-      return this.web3;
+      return new Web3(window.web3.currentProvider);
     }
     // Non-dapp browsers...
     else {
@@ -41,16 +36,19 @@ export class Web3Service {
   /**
    * @return {Promise<string|null>}
    */
-  async loadAccount() {
-    const [account] = await this.web3.eth.getAccounts();
+  async getAccount(web3) {
+    const [account] = await web3.eth.getAccounts();
     return account;
   }
 
-  async loadExchangeContract() {
+  /**
+   * @param {Web3} web3
+   */
+  async getExchangeContract(web3) {
     try {
-      const networkId = await this.web3.eth.net.getId();
+      const networkId = await web3.eth.net.getId();
 
-      return new this.web3.eth.Contract(
+      return new web3.eth.Contract(
         ExchangeJson.abi,
         ExchangeJson.networks[networkId].address
       );

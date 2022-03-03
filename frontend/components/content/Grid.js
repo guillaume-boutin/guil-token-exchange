@@ -73,8 +73,8 @@ class GridComponent extends Component {
 }
 
 export const Grid = connect(
-  ({ web3, exchange }) => ({
-    exchangeContract: web3.exchangeContract,
+  ({ exchange }) => ({
+    exchangeContract: exchange.contract,
     setOrders: exchange.setOrders,
     setFilledOrders: exchange.setFilledOrders,
     setCancelledOrders: exchange.setCancelledOrders,

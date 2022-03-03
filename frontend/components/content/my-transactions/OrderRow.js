@@ -6,6 +6,10 @@ import styles from "./MyTransactions.module.scss";
  * @property {Order} props.order
  */
 export class OrderRow extends Component {
+  boundMethods() {
+    return [this.onCancelClick];
+  }
+
   get time() {
     return this.props.order.timestamp.format("h:mm:ss a M/D");
   }
@@ -22,6 +26,8 @@ export class OrderRow extends Component {
     return this.props.order.transactionType === "buy";
   }
 
+  onCancelClick(e) {}
+
   render() {
     return (
       <tr>
@@ -31,7 +37,11 @@ export class OrderRow extends Component {
           {this.isBuy ? "+" : "-"} {this.amount}
         </td>
 
-        <td>{this.price}</td>
+        <td>
+          <span className={styles.cancelBtn} onClick={this.onCancelClick}>
+            &times;
+          </span>
+        </td>
       </tr>
     );
   }

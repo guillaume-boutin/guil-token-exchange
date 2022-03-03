@@ -16,7 +16,7 @@ export class ContextProvider extends Component {
   }
 }
 
-export const ContextConsumer = ({ children }) => (
+const ContextConsumer = ({ children }) => (
   <Web3Consumer>
     {(web3) => (
       <ExchangeConsumer>
@@ -29,11 +29,7 @@ export const ContextConsumer = ({ children }) => (
 export const connect = (mapContextToProps, Component) => {
   return () => (
     <ContextConsumer>
-      {(contextProps) => {
-        const props = mapContextToProps(contextProps);
-
-        return <Component {...props} />;
-      }}
+      {(contextProps) => <Component {...mapContextToProps(contextProps)} />}
     </ContextConsumer>
   );
 };

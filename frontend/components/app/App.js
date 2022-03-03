@@ -15,32 +15,26 @@ class AppComponent extends Component {
     this.web3Service = new Web3Service();
   }
 
-  initialState(props) {
-    return {
-      web3: null,
-      web3Loaded: false,
-      exchangeContract: null,
-    };
-  }
-
   async componentDidMount() {
-    const web3 = await this.web3Service.loadWeb3();
+    const web3 = await this.web3Service.getWeb3();
     if (!web3) return;
 
     this.props.setWeb3(web3);
-    this.setState({ web3, web3Loaded: true });
+    this.props.setWeb3Loaded(true);
 
-    await Promise.all([this.loadAccount(), this.loadExchangeContract()]);
+    await Promise.all([
+      this.loadAccount(web3),
+      this.loadExchangeContract(web3),
+    ]);
   }
 
-  async loadAccount() {
-    const account = await this.web3Service.loadAccount();
+  async loadAccount(web3) {
+    const account = await this.web3Service.getAccount(web3);
     this.props.setAccount(account);
-    this.setState({ account });
   }
 
-  async loadExchangeContract() {
-    const exchangeContract = await this.web3Service.loadExchangeContract();
+  async loadExchangeContract(web3) {
+    const exchangeContract = await this.web3Service.getExchangeContract(web3);
 
     exchangeContract.events.Cancel({}, (error, event) => {
       this.props.addToCancelledOrders(
@@ -55,19 +49,14 @@ class AppComponent extends Component {
     });
 
     this.props.setExchangeContract(exchangeContract);
-    this.setState({ exchangeContract });
   }
 
   render() {
     return (
       <div className={styles.app}>
-        <NavBar account={this.state.account} />
+        <NavBar />
 
-        <Content
-          web3={this.state.web3}
-          web3Loaded={this.state.web3Loaded}
-          exchangeContract={this.state.exchangeContract}
-        />
+        <Content />
       </div>
     );
   }
@@ -76,8 +65,9 @@ class AppComponent extends Component {
 export const App = connect(
   ({ web3, exchange }) => ({
     setWeb3: web3.setWeb3,
+    setWeb3Loaded: web3.setWeb3Loaded,
     setAccount: web3.setAccount,
-    setExchangeContract: web3.setExchangeContract,
+    setExchangeContract: exchange.setContract,
     addToCancelledOrders: exchange.addToCancelledOrders,
     addToFilledOrders: exchange.addToFilledOrders,
   }),
