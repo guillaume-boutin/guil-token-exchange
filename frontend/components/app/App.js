@@ -25,6 +25,7 @@ class AppComponent extends Component {
     await Promise.all([
       this.loadAccount(web3),
       this.loadExchangeContract(web3),
+      this.loadGuilTokenContract(web3),
     ]);
   }
 
@@ -36,6 +37,11 @@ class AppComponent extends Component {
   async loadExchangeContract(web3) {
     const contract = await this.web3Service.getExchangeContract(web3);
     this.props.setExchangeContract(contract);
+  }
+
+  async loadGuilTokenContract(web3) {
+    const contract = await this.web3Service.getGuilTokenContract(web3);
+    this.props.setGuilTokenContract(contract);
   }
 
   render() {
@@ -50,13 +56,14 @@ class AppComponent extends Component {
 }
 
 export const App = connect(
-  ({ web3, exchange }) => ({
+  ({ web3, exchange, guilToken }) => ({
     setWeb3: web3.setWeb3,
     setWeb3Loaded: web3.setWeb3Loaded,
     setAccount: web3.setAccount,
     setExchangeContract: exchange.setContract,
     addToCancelledOrders: exchange.addToCancelledOrders,
     addToFilledOrders: exchange.addToFilledOrders,
+    setGuilTokenContract: guilToken.setContract,
   }),
   AppComponent
 );

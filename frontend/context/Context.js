@@ -1,6 +1,8 @@
 import {
   ExchangeConsumer,
   ExchangeProvider,
+  GuilTokenConsumer,
+  GuilTokenProvider,
   Web3Consumer,
   Web3Provider,
 } from ".";
@@ -10,7 +12,9 @@ export class ContextProvider extends Component {
   render() {
     return (
       <Web3Provider>
-        <ExchangeProvider>{this.props.children}</ExchangeProvider>
+        <ExchangeProvider>
+          <GuilTokenProvider>{this.props.children}</GuilTokenProvider>
+        </ExchangeProvider>
       </Web3Provider>
     );
   }
@@ -20,7 +24,13 @@ const ContextConsumer = ({ children }) => (
   <Web3Consumer>
     {(web3) => (
       <ExchangeConsumer>
-        {(exchange) => children({ web3, exchange })}
+        {(exchange) => (
+          <GuilTokenConsumer>
+            {(guilToken) => {
+              return children({ web3, exchange, guilToken });
+            }}
+          </GuilTokenConsumer>
+        )}
       </ExchangeConsumer>
     )}
   </Web3Consumer>

@@ -12,7 +12,8 @@ class ContentComponent extends Component {
     return (
       this.props.web3 !== null &&
       this.props.web3Loaded &&
-      this.props.exchangeContract !== null
+      this.props.exchangeContract !== null &&
+      this.props.guiltTokenContract !== null
     );
   }
 
@@ -26,10 +27,11 @@ class ContentComponent extends Component {
 }
 
 export const Content = connect(
-  ({ web3, exchange }) => ({
+  ({ web3, exchange, guilToken }) => ({
     web3: web3.web3,
     web3Loaded: web3.web3Loaded,
     exchangeContract: exchange.contract,
+    guiltTokenContract: guilToken.contract,
   }),
   ContentComponent
 );

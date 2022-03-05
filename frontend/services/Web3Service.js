@@ -1,5 +1,6 @@
 import Web3 from "web3";
 import ExchangeJson from "../../backend/abis/Exchange.json";
+import GuilTokenJson from "../../backend/abis/GuilToken.json";
 
 export class Web3Service {
   /**
@@ -51,6 +52,20 @@ export class Web3Service {
       return new web3.eth.Contract(
         ExchangeJson.abi,
         ExchangeJson.networks[networkId].address
+      );
+    } catch (e) {}
+  }
+
+  /**
+   * @param {Web3} web3
+   */
+  async getGuilTokenContract(web3) {
+    try {
+      const networkId = await web3.eth.net.getId();
+
+      return new web3.eth.Contract(
+        GuilTokenJson.abi,
+        GuilTokenJson.networks[networkId].address
       );
     } catch (e) {}
   }

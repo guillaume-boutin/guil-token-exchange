@@ -21,6 +21,8 @@ export class ExchangeProvider extends Component {
       cancelledOrders: [],
       orderCancelling: false,
       orderFilling: false,
+      ethBalance: null,
+      guilBalance: null,
     };
   }
 
@@ -34,6 +36,8 @@ export class ExchangeProvider extends Component {
       this.setOrderCancelling,
       this.fillOrder,
       this.setOrderFilling,
+      this.setEthBalance,
+      this.setGuilBalance,
     ];
   }
 
@@ -148,6 +152,22 @@ export class ExchangeProvider extends Component {
     this.setState({ orderFilling });
   }
 
+  get ethBalance() {
+    return this.state.ethBalance;
+  }
+
+  setEthBalance({ ethBalance }) {
+    this.setState({ ethBalance });
+  }
+
+  get guilBalance() {
+    return this.state.guilBalance;
+  }
+
+  setGuilBalance(guilBalance) {
+    this.setState({ guilBalance });
+  }
+
   /**
    * @param {HandledOrder} filledOrder
    */
@@ -201,6 +221,10 @@ export class ExchangeProvider extends Component {
           setFilledOrders: this.setFilledOrders,
           cancelledOrders: this.cancelledOrders,
           setCancelledOrders: this.setCancelledOrders,
+          ethBalance: this.ethBalance,
+          setEthBalance: this.setEthBalance,
+          guilBalance: this.guilBalance,
+          setGuilBalance: this.setGuilBalance,
           openOrders: this.openOrders,
           cancelOrder: this.cancelOrder,
           orderCancelling: this.orderCancelling,

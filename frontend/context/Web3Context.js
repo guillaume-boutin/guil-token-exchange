@@ -8,8 +8,6 @@ export const Web3Consumer = ({ children }) => (
   <Web3Context.Consumer>{children}</Web3Context.Consumer>
 );
 
-// export const Web3Consumer = Web3Context.Consumer;
-
 export class Web3Provider extends Component {
   /** @private {Web3Service} */ web3Service;
 
@@ -25,11 +23,17 @@ export class Web3Provider extends Component {
       web3Loaded: false,
       account: null,
       exchangeContract: null,
+      ethBalance: null,
     };
   }
 
   boundMethods() {
-    return [this.setWeb3, this.setWeb3Loaded, this.setAccount];
+    return [
+      this.setWeb3,
+      this.setWeb3Loaded,
+      this.setAccount,
+      this.setEthBalance,
+    ];
   }
 
   get web3() {
@@ -62,6 +66,14 @@ export class Web3Provider extends Component {
     this.setState({ account });
   }
 
+  get ethBalance() {
+    this.state.ethBalance;
+  }
+
+  setEthBalance(ethBalance) {
+    this.setState({ ethBalance });
+  }
+
   render() {
     return (
       <Web3Context.Provider
@@ -72,6 +84,8 @@ export class Web3Provider extends Component {
           setWeb3Loaded: this.setWeb3Loaded,
           account: this.account,
           setAccount: this.setAccount,
+          ethBalance: this.ethBalance,
+          setEthBalance: this.setEthBalance,
         }}
       >
         {this.props.children}
