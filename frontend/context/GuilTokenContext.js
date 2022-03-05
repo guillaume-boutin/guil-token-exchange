@@ -15,12 +15,14 @@ export class GuilTokenProvider extends Component {
   initialState(props) {
     return {
       contract: null,
+      contractAddress: null,
       balance: null,
+      balanceLoading: false,
     };
   }
 
   boundMethods() {
-    return [this.setContract, this.setBalance];
+    return [this.setContract, this.setBalance, this.setBalanceLoading];
   }
 
   get contract() {
@@ -31,6 +33,10 @@ export class GuilTokenProvider extends Component {
     this.setState({ contract });
   }
 
+  get contractAddress() {
+    return this.contract?.options.address ?? null;
+  }
+
   get balance() {
     return this.state.balance;
   }
@@ -39,14 +45,25 @@ export class GuilTokenProvider extends Component {
     this.setState({ balance });
   }
 
+  get balanceLoading() {
+    return this.state.balanceLoading;
+  }
+
+  setBalanceLoading(balanceLoading) {
+    return this.setState({ balanceLoading });
+  }
+
   render() {
     return (
       <GuilTokenContext.Provider
         value={{
           contract: this.contract,
           setContract: this.setContract,
+          contractAddress: this.contractAddress,
           balance: this.balance,
           setBalance: this.setBalance,
+          balanceLoading: this.balanceLoading,
+          setBalanceLoading: this.setBalanceLoading,
         }}
       >
         {this.props.children}

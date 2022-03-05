@@ -24,6 +24,7 @@ export class Web3Provider extends Component {
       account: null,
       exchangeContract: null,
       ethBalance: null,
+      ethBalanceLoading: false,
     };
   }
 
@@ -33,6 +34,7 @@ export class Web3Provider extends Component {
       this.setWeb3Loaded,
       this.setAccount,
       this.setEthBalance,
+      this.setEthBalanceLoading,
     ];
   }
 
@@ -67,11 +69,19 @@ export class Web3Provider extends Component {
   }
 
   get ethBalance() {
-    this.state.ethBalance;
+    return this.state.ethBalance;
   }
 
   setEthBalance(ethBalance) {
     this.setState({ ethBalance });
+  }
+
+  get ethBalanceLoading() {
+    return this.state.ethBalanceLoading;
+  }
+
+  setEthBalanceLoading(ethBalanceLoading) {
+    this.setState({ ethBalanceLoading });
   }
 
   render() {
@@ -86,6 +96,8 @@ export class Web3Provider extends Component {
           setAccount: this.setAccount,
           ethBalance: this.ethBalance,
           setEthBalance: this.setEthBalance,
+          ethBalanceLoading: this.ethBalanceLoading,
+          setEthBalanceLoading: this.setEthBalanceLoading,
         }}
       >
         {this.props.children}

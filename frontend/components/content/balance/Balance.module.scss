@@ -1,0 +1,25 @@
+.card {
+  display: flex;
+  flex-direction: column;
+
+  .cardHeader {
+    flex-grow: 0;
+  }
+
+  .cardBody {
+    flex-grow: 1;
+
+    .inputRow {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+    }
+
+    .spinnerContainer {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

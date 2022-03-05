@@ -1,58 +1,93 @@
-import styles from "./DepositPanel.module.scss";
-import { Table } from "../../common/table/Table";
-import { TextInput } from "../../common/form/TextInput";
-import { Button } from "../../common/button/Button";
+import { Table } from "../../common/table";
+import { Token } from "../../../entities";
+import { OperationInput } from "./OperationInput";
+import { connect } from "../../../context";
+import web3 from "web3";
 
-export const DepositPanel = () => (
-  <>
-    <Table>
-      <thead>
-        <tr>
-          <th>Token</th>
+/**
+ * @param props
+ * @param {string} props.account
+ * @param props.exchangeContract
+ * @param props.guilTokenContract
+ * @param props.setExchangeEthBalanceLoading
+ * @param props.setWalletGuilBalanceLoading
+ * @param {Token} props.walletEthBalance
+ * @param {Token} props.exchangeEthBalance
+ * @param {Token} props.walletGuilBalance
+ * @param {Token} props.exchangeGuilBalance
+ */
+export const DepositPanel = ({
+  account,
+  exchangeContract,
+  guilTokenContract,
+  setExchangeEthBalanceLoading,
+  setWalletGuilBalanceLoading,
+  walletEthBalance,
+  exchangeEthBalance,
+  walletGuilBalance,
+  exchangeGuilBalance,
+}) => {
+  const onDepositEth = async (amount) => {
+    await exchangeContract.methods
+      .depositEther()
+      .send({
+        from: account,
+        value: web3.utils.toWei(amount, "ether"),
+      })
+      .on("transactionHash", (hash) => {
+        setExchangeEthBalanceLoading(true);
+      });
+  };
 
-          <th>Wallet</th>
+  const onDepositGuil = (amount) => {
+    setWalletGuilBalanceLoading(true);
 
-          <th>Exchange</th>
-        </tr>
-      </thead>
+    // await guilTokenContract.methods.
+  };
 
-      <tbody>
-        <tr>
-          <td>ETH</td>
+  return (
+    <>
+      <Table>
+        <thead>
+          <tr>
+            <th>Token</th>
 
-          <td>0</td>
+            <th>Wallet</th>
 
-          <td>0</td>
-        </tr>
+            <th>Exchange</th>
+          </tr>
+        </thead>
 
-        <tr>
-          <td colSpan="3">
-            <div className={styles.inputRow}>
-              <TextInput type="text" />
+        <tbody>
+          <tr>
+            <td>ETH</td>
 
-              <Button>Deposit</Button>
-            </div>
-          </td>
-        </tr>
+            <td>{walletEthBalance.unitaryAmount.toFixed(3)}</td>
 
-        <tr>
-          <td>GUIL</td>
+            <td>{exchangeEthBalance.unitaryAmount.toFixed(3)}</td>
+          </tr>
 
-          <td>0</td>
+          <tr>
+            <td colSpan="3">
+              <OperationInput label="Deposit" onSubmit={onDepositEth} />
+            </td>
+          </tr>
 
-          <td>0</td>
-        </tr>
+          <tr>
+            <td>GUIL</td>
 
-        <tr>
-          <td colSpan="3">
-            <div className={styles.inputRow}>
-              <TextInput type="text" />
+            <td>{walletGuilBalance.unitaryAmount.toFixed(3)}</td>
 
-              <Button>Deposit</Button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </Table>
-  </>
-);
+            <td>{exchangeGuilBalance.unitaryAmount.toFixed(3)}</td>
+          </tr>
+
+          <tr>
+            <td colSpan="3">
+              <OperationInput label="Deposit" onSubmit={onDepositGuil} />
+            </td>
+          </tr>
+        </tbody>
+      </Table>
+    </>
+  );
+};

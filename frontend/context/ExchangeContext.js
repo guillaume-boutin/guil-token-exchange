@@ -22,7 +22,9 @@ export class ExchangeProvider extends Component {
       orderCancelling: false,
       orderFilling: false,
       ethBalance: null,
+      ethBalanceLoading: false,
       guilBalance: null,
+      guilBalanceLoading: false,
     };
   }
 
@@ -37,7 +39,9 @@ export class ExchangeProvider extends Component {
       this.fillOrder,
       this.setOrderFilling,
       this.setEthBalance,
+      this.setEthBalanceLoading,
       this.setGuilBalance,
+      this.setGuilBalanceLoading,
     ];
   }
 
@@ -156,8 +160,16 @@ export class ExchangeProvider extends Component {
     return this.state.ethBalance;
   }
 
-  setEthBalance({ ethBalance }) {
+  setEthBalance(ethBalance) {
     this.setState({ ethBalance });
+  }
+
+  get ethBalanceLoading() {
+    return this.state.ethBalanceLoading;
+  }
+
+  setEthBalanceLoading(ethBalanceLoading) {
+    this.setState({ ethBalanceLoading });
   }
 
   get guilBalance() {
@@ -166,6 +178,14 @@ export class ExchangeProvider extends Component {
 
   setGuilBalance(guilBalance) {
     this.setState({ guilBalance });
+  }
+
+  get guilBalanceLoading() {
+    return this.state.guilBalanceLoading;
+  }
+
+  setGuilBalanceLoading(guilBalanceLoading) {
+    this.setState({ guilBalanceLoading });
   }
 
   /**
@@ -223,8 +243,12 @@ export class ExchangeProvider extends Component {
           setCancelledOrders: this.setCancelledOrders,
           ethBalance: this.ethBalance,
           setEthBalance: this.setEthBalance,
+          ethBalanceLoading: this.ethBalanceLoading,
+          setEthBalanceLoading: this.setEthBalanceLoading,
           guilBalance: this.guilBalance,
           setGuilBalance: this.setGuilBalance,
+          guilBalanceLoading: this.guilBalanceLoading,
+          setGuilBalanceLoading: this.setGuilBalanceLoading,
           openOrders: this.openOrders,
           cancelOrder: this.cancelOrder,
           orderCancelling: this.orderCancelling,
