@@ -2,18 +2,19 @@ import { Component } from "../../Component";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { Table } from "../../common/table";
 import { connect } from "../../../context";
-import { HandledOrder } from "../../../entities";
 import { TradeRow } from "./TradeRow";
 import styles from "./Trade.module.scss";
+import { Spinner } from "../../common/spinner";
 
-/**
- * @property {HandledOrder[]} props.trades
- */
 class TradesComponent extends Component {
   get trades() {
-    return this.props.trades.sort((a, b) =>
+    return this.props.exchange.filledOrders.sort((a, b) =>
       b.timestamp.isBefore(a.timestamp) ? -1 : 1
     );
+  }
+
+  get isLoading() {
+    return this.props.exchange.filledOrdersLoading;
   }
 
   render() {
@@ -24,23 +25,27 @@ class TradesComponent extends Component {
         </CardHeader>
 
         <CardBody className={styles.cardBody}>
-          <Table>
-            <thead>
-              <tr>
-                <th>Time</th>
+          {this.isLoading && <Spinner />}
 
-                <th>GUIL</th>
+          {!this.isLoading && (
+            <Table>
+              <thead>
+                <tr>
+                  <th>Time</th>
 
-                <th>GUIL/ETH</th>
-              </tr>
-            </thead>
+                  <th>GUIL</th>
 
-            <tbody>
-              {this.trades.map((trade, i) => (
-                <TradeRow key={i} trade={trade} />
-              ))}
-            </tbody>
-          </Table>
+                  <th>GUIL/ETH</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {this.trades.map((trade, i) => (
+                  <TradeRow key={i} trade={trade} />
+                ))}
+              </tbody>
+            </Table>
+          )}
         </CardBody>
       </Card>
     );
@@ -48,8 +53,6 @@ class TradesComponent extends Component {
 }
 
 export const Trades = connect(
-  ({ exchange }) => ({
-    trades: exchange.filledOrders,
-  }),
+  ({ exchange }) => ({ exchange }),
   TradesComponent
 );
