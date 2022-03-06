@@ -13,15 +13,15 @@ class _OrderBook extends Component {
   }
 
   get buyOrders() {
-    return this.props.exchange.openOrders.filter(
-      (openOrder) => openOrder.transactionType === "buy"
-    );
+    return this.props.exchange.openOrders
+      .filter((openOrder) => openOrder.transactionType === "buy")
+      .sort((a, b) => a.price - b.price);
   }
 
   get sellOrders() {
-    return this.props.exchange.openOrders.filter(
-      (openOrder) => openOrder.transactionType === "sell"
-    );
+    return this.props.exchange.openOrders
+      .filter((openOrder) => openOrder.transactionType === "sell")
+      .sort((a, b) => b.price - a.price);
   }
 
   render() {

@@ -20,11 +20,9 @@ export const OrderTable = ({ orders }) => {
       </thead>
 
       <tbody>
-        {orders
-          .sort((a, b) => a.price - b.price)
-          .map((order, i) => (
-            <OrderRow key={i} order={order} />
-          ))}
+        {orders.map((order, i) => (
+          <OrderRow key={i} order={order} />
+        ))}
       </tbody>
     </Table>
   );
