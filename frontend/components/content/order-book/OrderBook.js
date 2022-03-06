@@ -13,7 +13,11 @@ class _OrderBook extends Component {
   }
 
   get buyOrders() {
-    return this.props.exchange.openOrders
+    return [
+      ...this.props.exchange.openOrders,
+      ...this.props.exchange.openOrders,
+      ...this.props.exchange.openOrders,
+    ]
       .filter((openOrder) => openOrder.transactionType === "buy")
       .sort((a, b) => a.price - b.price);
   }

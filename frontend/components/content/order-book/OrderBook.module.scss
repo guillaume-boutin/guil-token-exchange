@@ -9,44 +9,45 @@
 .card {
   display: flex;
   flex-direction: column;
-}
 
-.cardHeader {
-}
-
-.cardBody {
-  flex-grow: 1;
-  overflow-y: hidden;
-
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.tableContainer {
-  flex-grow: 1;
-  overflow: auto;
-}
-
-.tableRow {
-  &.selfOwned {
-    color: var(--zinc-500);
-
-    .buy {
-      color: var(--green-800);
-    }
-    .sell {
-      color: var(--red-800);
-    }
+  .cardHeader {
   }
 
-  &:hover {
-    background-color: var(--zinc-600);
-    cursor: pointer;
+  .cardBody {
+    flex-grow: 1;
+    overflow-y: hidden;
 
-    &.selfOwned {
-      background-color: revert;
-      cursor: revert;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .tableContainer {
+      overflow: auto;
+      flex-grow: 1;
+      max-height: 50%;
+
+      .tableRow {
+        &.selfOwned {
+          color: var(--zinc-500);
+
+          .buy {
+            color: var(--green-800);
+          }
+          .sell {
+            color: var(--red-800);
+          }
+        }
+
+        &:hover {
+          background-color: var(--zinc-600);
+          cursor: pointer;
+
+          &.selfOwned {
+            background-color: revert;
+            cursor: revert;
+          }
+        }
+      }
     }
   }
 }

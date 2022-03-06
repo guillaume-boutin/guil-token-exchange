@@ -1,7 +1,7 @@
 import styles from "./Table.module.scss";
 
-export const Table = (props) => {
-  const className = `${styles.table} ${props.className}`;
+export const Table = ({ children, className }) => {
+  const classes = `${styles.table} ${className ?? ""}`.trim();
 
-  return <table className={className}>{props.children}</table>;
+  return <table className={classes}>{children}</table>;
 };
