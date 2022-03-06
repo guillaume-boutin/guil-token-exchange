@@ -38,6 +38,8 @@ export const ExchangeProvider = ({ children }) => {
     _setContract(contract);
   };
 
+  const contractAddress = contract?.options.address ?? null;
+
   const openOrders = orders.filter((order) => {
     let index = filledOrders.findIndex(
       (filledOrder) => filledOrder.order.id === order.id
@@ -113,6 +115,7 @@ export const ExchangeProvider = ({ children }) => {
       value={{
         contract,
         setContract,
+        contractAddress,
         orders,
         setOrders,
         filledOrders,

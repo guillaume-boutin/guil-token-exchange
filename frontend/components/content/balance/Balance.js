@@ -47,14 +47,14 @@ class _Balance extends Component {
 
   get walletGuilBalance() {
     return new Token({
-      address: this.props.guiltTokenAddress,
+      address: this.props.guilToken.contractAddress,
       amount: this.props.guilToken.balance,
     });
   }
 
   get exchangeGuilBalance() {
     return new Token({
-      address: this.props.guiltTokenAddress,
+      address: this.props.guilToken.contractAddress,
       amount: this.props.exchange.guilBalance,
     });
   }

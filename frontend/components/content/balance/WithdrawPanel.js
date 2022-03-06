@@ -23,9 +23,11 @@ const _WithdrawPanel = ({
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
-  const onWithdrawEth = async (amount) => {
+  const onWithdrawEth = async (value) => {
+    const amount = web3.web3.utils.toWei(value, "ether");
+
     await exchange.contract.methods
-      .withdrawEther(web3.web3.utils.toWei(amount, "ether"))
+      .withdrawEther(amount)
       .send({
         from: web3.account,
       })
@@ -36,6 +38,21 @@ const _WithdrawPanel = ({
       .on("error", (error) => {
         console.error(error);
       });
+  };
+
+  const onWithdrawGuil = async (value) => {
+    const amount = web3.web3.utils.toWei(value, "ether");
+
+    exchange.contract.methods
+      .withdraw({
+        contractAddress: guilToken.contractAddress,
+        amount,
+      })
+      .send({ from: web3.account })
+      .on("transactionHash", (hash) => {
+        exchange.setGuilBalanceLoading(true);
+      })
+      .on("error", (error) => {});
   };
 
   return (
@@ -75,11 +92,7 @@ const _WithdrawPanel = ({
 
         <tr>
           <td colSpan="3">
-            <div className={styles.inputRow}>
-              <TextInput type="text" />
-
-              <Button>Withdraw</Button>
-            </div>
+            <OperationInput label="Withdraw" onSubmit={onWithdrawGuil} />
           </td>
         </tr>
       </tbody>

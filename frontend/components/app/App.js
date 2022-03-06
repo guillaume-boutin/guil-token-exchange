@@ -37,10 +37,13 @@ class AppComponent extends Component {
     const contract = await this.web3Service.getExchangeContract(web3);
 
     contract.events.Deposit({}, (error, event) => {
+      console.log(event);
+      this.props.exchange.setGuilBalanceLoading(false);
       this.props.exchange.setEthBalanceLoading(false);
     });
 
     contract.events.Withdraw({}, (error, event) => {
+      this.props.exchange.setGuilBalanceLoading(false);
       this.props.exchange.setEthBalanceLoading(false);
     });
 

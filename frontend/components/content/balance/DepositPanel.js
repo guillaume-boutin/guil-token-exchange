@@ -19,22 +19,42 @@ const _DepositPanel = ({
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
-  const onDepositEth = async (amount) => {
+  const onDepositEth = async (value) => {
+    const amount = web3.web3.utils.toWei(value, "ether");
+
     await exchange.contract.methods
       .depositEther()
       .send({
         from: web3.account,
-        value: web3.utils.toWei(amount, "ether"),
+        value: amount,
       })
       .on("transactionHash", (hash) => {
         exchange.setEthBalanceLoading(true);
       });
   };
 
-  const onDepositGuil = (amount) => {
-    guilToken.setBalanceLoading(true);
+  const onDepositGuil = async (value) => {
+    const amount = web3.web3.utils.toWei(value, "ether");
 
-    // await guilTokenContract.methods.
+    guilToken.contract.methods
+      .approve(exchange.contractAddress, amount)
+      .send({ from: web3.account })
+      .on("transactionHash", (hash) => {
+        exchange.setGuilBalanceLoading(true);
+
+        const contractAddress = guilToken.contractAddress;
+
+        exchange.contract.methods
+          .deposit({ contractAddress, amount })
+          .send({ from: web3.account })
+          .on("transactionHash", (hash) => {})
+          .on("error", (error) => {
+            console.error(error);
+          });
+      })
+      .on("error", (error) => {
+        console.error(error);
+      });
   };
 
   return (
