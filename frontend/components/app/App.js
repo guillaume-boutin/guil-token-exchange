@@ -4,6 +4,7 @@ import styles from "./App.module.scss";
 import { connect } from "../../context";
 import { Component } from "../Component";
 import { Web3Service } from "../../services";
+import { Order, OrderFactory } from "../../entities";
 
 class AppComponent extends Component {
   /** @private {Web3Service} */ web3Service;
@@ -45,6 +46,16 @@ class AppComponent extends Component {
     contract.events.Withdraw({}, (error, event) => {
       this.props.exchange.setGuilBalanceLoading(false);
       this.props.exchange.setEthBalanceLoading(false);
+    });
+
+    contract.events.Order({}, (error, event) => {
+      console.log(event);
+      // console.log(event.returnValues);
+      // console.log(new OrderFactory().fromEventValues(event.returnValues));
+
+      this.props.exchange.addToOrders(
+        new OrderFactory().fromEventValues(event.returnValues)
+      );
     });
 
     this.props.exchange.setContract(contract);

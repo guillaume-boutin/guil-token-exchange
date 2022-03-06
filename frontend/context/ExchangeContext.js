@@ -54,6 +54,11 @@ export const ExchangeProvider = ({ children }) => {
     );
   });
 
+  const addToOrders = (order) => {
+    console.log("addToOrders");
+    setOrders([...orders, order]);
+  };
+
   const addToFilledOrders = (filledOrder) => {
     const index = filledOrders.find(
       (fo) => fo.order.id === filledOrder.order.id
@@ -139,6 +144,7 @@ export const ExchangeProvider = ({ children }) => {
         fillOrder,
         orderFilling,
         setOrderFilling,
+        addToOrders,
         addToFilledOrders,
         addToCancelledOrders,
       }}
