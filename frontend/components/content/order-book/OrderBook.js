@@ -3,6 +3,7 @@ import { Card, CardHeader, CardBody } from "../../common/card";
 import { OrderTable } from ".";
 import { connect } from "../../../context";
 import styles from "./OrderBook.module.scss";
+import { Spinner } from "../../common/spinner";
 
 /**
  * @property {Order[]} props.openOrders
@@ -12,12 +13,12 @@ class _OrderBook extends Component {
     super(props);
   }
 
+  get isLoading() {
+    return this.props.exchange.anyOrdersLoading;
+  }
+
   get buyOrders() {
-    return [
-      ...this.props.exchange.openOrders,
-      ...this.props.exchange.openOrders,
-      ...this.props.exchange.openOrders,
-    ]
+    return this.props.exchange.openOrders
       .filter((openOrder) => openOrder.transactionType === "buy")
       .sort((a, b) => a.price - b.price);
   }
@@ -37,13 +38,19 @@ class _OrderBook extends Component {
         </CardHeader>
 
         <CardBody className={styles.cardBody}>
-          <div className={styles.tableContainer}>
-            <OrderTable orders={this.buyOrders} />
-          </div>
+          {this.isLoading && <Spinner />}
 
-          <div className={styles.tableContainer}>
-            <OrderTable orders={this.sellOrders} />
-          </div>
+          {!this.isLoading && (
+            <>
+              <div className={styles.tableContainer}>
+                <OrderTable orders={this.buyOrders} />
+              </div>
+
+              <div className={styles.tableContainer}>
+                <OrderTable orders={this.sellOrders} />
+              </div>
+            </>
+          )}
         </CardBody>
       </Card>
     );

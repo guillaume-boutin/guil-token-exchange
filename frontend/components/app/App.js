@@ -39,20 +39,14 @@ class AppComponent extends Component {
 
     contract.events.Deposit({}, (error, event) => {
       console.log(event);
-      this.props.exchange.setGuilBalanceLoading(false);
-      this.props.exchange.setEthBalanceLoading(false);
+      this.props.exchange.setBalancesLoading(false);
     });
 
     contract.events.Withdraw({}, (error, event) => {
-      this.props.exchange.setGuilBalanceLoading(false);
-      this.props.exchange.setEthBalanceLoading(false);
+      this.props.exchange.setBalancesLoading(false);
     });
 
     contract.events.Order({}, (error, event) => {
-      console.log(event);
-      // console.log(event.returnValues);
-      // console.log(new OrderFactory().fromEventValues(event.returnValues));
-
       this.props.exchange.addToOrders(
         new OrderFactory().fromEventValues(event.returnValues)
       );

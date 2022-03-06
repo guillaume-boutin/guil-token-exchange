@@ -1,14 +1,14 @@
 import style from "./Spinner.module.scss";
 
-export const Spinner = ({ className }) => {
-  const classes = `${style.spinner} ${className ?? ""}`.trim();
-
+export const Spinner = () => {
   return (
-    <div className={classes}>
-      <div />
-      <div />
-      <div />
-      <div />
+    <div className={style.container}>
+      <div className={style.spinner}>
+        <div />
+        <div />
+        <div />
+        <div />
+      </div>
     </div>
   );
 };

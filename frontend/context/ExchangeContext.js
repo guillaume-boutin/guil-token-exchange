@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react";
 import { HandledOrderFactory } from "../entities";
 import { ETHER_ADDRESS } from "../helpers";
+import { value } from "lodash/seq";
 
 export const ExchangeContext = createContext({});
 
@@ -11,9 +12,12 @@ export const ExchangeConsumer = (props) => (
 export const ExchangeProvider = ({ children }) => {
   const [contract, _setContract] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
   const [filledOrders, setFilledOrders] = useState([]);
+  const [filledOrdersLoading, setFilledOrdersLoading] = useState(false);
   const [orderFilling, setOrderFilling] = useState(false);
   const [cancelledOrders, setCancelledOrders] = useState([]);
+  const [cancelledOrdersLoading, setCancelledOrdersLoading] = useState(false);
   const [orderCancelling, setOrderCancelling] = useState(false);
   const [ethBalance, setEthBalance] = useState(null);
   const [ethBalanceLoading, setEthBalanceLoading] = useState(false);
@@ -115,6 +119,16 @@ export const ExchangeProvider = ({ children }) => {
     setGuilBalanceLoading(false);
   };
 
+  const balancesLoading = ethBalanceLoading || guilBalanceLoading;
+
+  const setBalancesLoading = (value) => {
+    setEthBalanceLoading(value);
+    setGuilBalanceLoading(value);
+  };
+
+  const anyOrdersLoading =
+    ordersLoading || filledOrdersLoading || cancelledOrdersLoading;
+
   return (
     <ExchangeContext.Provider
       value={{
@@ -123,10 +137,16 @@ export const ExchangeProvider = ({ children }) => {
         contractAddress,
         orders,
         setOrders,
+        ordersLoading,
+        setOrdersLoading,
         filledOrders,
         setFilledOrders,
+        filledOrdersLoading,
+        setFilledOrdersLoading,
         cancelledOrders,
         setCancelledOrders,
+        cancelledOrdersLoading,
+        setCancelledOrdersLoading,
         ethBalance,
         setEthBalance,
         loadEthBalance,
@@ -147,6 +167,9 @@ export const ExchangeProvider = ({ children }) => {
         addToOrders,
         addToFilledOrders,
         addToCancelledOrders,
+        balancesLoading,
+        setBalancesLoading,
+        anyOrdersLoading,
       }}
     >
       {children}

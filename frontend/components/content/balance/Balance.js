@@ -26,8 +26,7 @@ class _Balance extends Component {
     return (
       this.props.web3.ethBalanceLoading ||
       this.props.guilToken.balanceLoading ||
-      this.props.exchange.ethBalanceLoading ||
-      this.props.exchange.guilBalanceLoading
+      this.props.exchange.balancesLoading
     );
   }
 
@@ -67,11 +66,7 @@ class _Balance extends Component {
         </CardHeader>
 
         <CardBody className={style.cardBody}>
-          {this.isLoading && (
-            <div className={style.spinnerContainer}>
-              <Spinner />
-            </div>
-          )}
+          {this.isLoading && <Spinner />}
 
           {!this.isLoading && (
             <Tabs>

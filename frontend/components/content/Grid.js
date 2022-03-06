@@ -9,13 +9,13 @@ import { connect } from "../../context";
 import { OrderRepository } from "../../repositories/OrderRepository";
 import styles from "./Content.module.scss";
 
-class GridComponent extends Component {
+class _Grid extends Component {
   /** @private {OrderRepository} */ orderRepository;
 
   constructor(props) {
     super(props);
 
-    this.orderRepository = new OrderRepository(props.exchangeContract);
+    this.orderRepository = new OrderRepository(props.exchange.contract);
   }
 
   async componentDidMount() {
@@ -27,18 +27,24 @@ class GridComponent extends Component {
   }
 
   async loadOrders() {
+    this.props.exchange.setOrdersLoading(true);
     const orders = await this.orderRepository.getOrders();
-    this.props.setOrders(orders);
+    this.props.exchange.setOrders(orders);
+    this.props.exchange.setOrdersLoading(false);
   }
 
   async loadFilledOrders() {
+    this.props.exchange.setFilledOrdersLoading(true);
     const filledOrders = await this.orderRepository.getFilledOrders();
-    this.props.setFilledOrders(filledOrders);
+    this.props.exchange.setFilledOrders(filledOrders);
+    this.props.exchange.setFilledOrdersLoading(false);
   }
 
   async loadCancelledOrders() {
+    this.props.exchange.setCancelledOrdersLoading(true);
     const cancelledOrders = await this.orderRepository.getCancelledOrders();
-    this.props.setCancelledOrders(cancelledOrders);
+    this.props.exchange.setCancelledOrders(cancelledOrders);
+    this.props.exchange.setCancelledOrdersLoading(false);
   }
 
   render() {
@@ -72,12 +78,4 @@ class GridComponent extends Component {
   }
 }
 
-export const Grid = connect(
-  ({ exchange }) => ({
-    exchangeContract: exchange.contract,
-    setOrders: exchange.setOrders,
-    setFilledOrders: exchange.setFilledOrders,
-    setCancelledOrders: exchange.setCancelledOrders,
-  }),
-  GridComponent
-);
+export const Grid = connect(({ exchange }) => ({ exchange }), _Grid);
