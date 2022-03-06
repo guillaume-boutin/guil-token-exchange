@@ -1,5 +1,4 @@
-import React, { createContext } from "react";
-import { Component } from "../components";
+import React, { createContext, useState } from "react";
 
 export const GuilTokenContext = createContext({});
 
@@ -7,67 +6,34 @@ export const GuilTokenConsumer = ({ children }) => (
   <GuilTokenContext.Consumer>{children}</GuilTokenContext.Consumer>
 );
 
-export class GuilTokenProvider extends Component {
-  constructor(props) {
-    super(props);
-  }
+export const GuilTokenProvider = ({ children }) => {
+  const [contract, setContract] = useState(null);
+  const [balance, setBalance] = useState(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
 
-  initialState(props) {
-    return {
-      contract: null,
-      contractAddress: null,
-      balance: null,
-      balanceLoading: false,
-    };
-  }
+  const contractAddress = contract?.options.address;
 
-  boundMethods() {
-    return [this.setContract, this.setBalance, this.setBalanceLoading];
-  }
+  const loadBalance = async (account) => {
+    setBalanceLoading(true);
+    const balance = await contract.methods.balanceOf(account).call();
+    setBalance(balance);
+    setBalanceLoading(false);
+  };
 
-  get contract() {
-    return this.state.contract;
-  }
-
-  setContract(contract) {
-    this.setState({ contract });
-  }
-
-  get contractAddress() {
-    return this.contract?.options.address ?? null;
-  }
-
-  get balance() {
-    return this.state.balance;
-  }
-
-  setBalance(balance) {
-    this.setState({ balance });
-  }
-
-  get balanceLoading() {
-    return this.state.balanceLoading;
-  }
-
-  setBalanceLoading(balanceLoading) {
-    return this.setState({ balanceLoading });
-  }
-
-  render() {
-    return (
-      <GuilTokenContext.Provider
-        value={{
-          contract: this.contract,
-          setContract: this.setContract,
-          contractAddress: this.contractAddress,
-          balance: this.balance,
-          setBalance: this.setBalance,
-          balanceLoading: this.balanceLoading,
-          setBalanceLoading: this.setBalanceLoading,
-        }}
-      >
-        {this.props.children}
-      </GuilTokenContext.Provider>
-    );
-  }
-}
+  return (
+    <GuilTokenContext.Provider
+      value={{
+        contract,
+        setContract,
+        contractAddress,
+        balance,
+        setBalance,
+        loadBalance,
+        balanceLoading,
+        setBalanceLoading,
+      }}
+    >
+      {children}
+    </GuilTokenContext.Provider>
+  );
+};

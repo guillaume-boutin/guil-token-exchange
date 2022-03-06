@@ -5,35 +5,33 @@ import web3 from "web3";
 
 import styles from "./Balance.module.scss";
 import { OperationInput } from "./OperationInput";
+import { connect } from "../../../context";
 
 /**
  * @param props
- * @param {string} props.account
- * @param props.exchangeContract
- * @param props.setExchangeEthBalanceLoading
  * @param {Token} props.walletEthBalance
  * @param {Token} props.exchangeEthBalance
  * @param {Token} props.walletGuilBalance
  * @param {Token} props.exchangeGuilBalance
  */
-export const WithdrawPanel = ({
-  account,
-  exchangeContract,
-  setExchangeEthBalanceLoading,
+const _WithdrawPanel = ({
+  web3,
+  exchange,
+  guilToken,
   walletEthBalance,
   exchangeEthBalance,
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
   const onWithdrawEth = async (amount) => {
-    await exchangeContract.methods
-      .withdrawEther(web3.utils.toWei(amount, "ether"))
+    await exchange.contract.methods
+      .withdrawEther(web3.web3.utils.toWei(amount, "ether"))
       .send({
-        from: account,
+        from: web3.account,
       })
       .on("transactionHash", (hash) => {
         console.log(hash);
-        setExchangeEthBalanceLoading(true);
+        exchange.setEthBalanceLoading(true);
       })
       .on("error", (error) => {
         console.error(error);
@@ -88,3 +86,8 @@ export const WithdrawPanel = ({
     </Table>
   );
 };
+
+export const WithdrawPanel = connect(
+  ({ web3, exchange, guilToken }) => ({ web3, exchange, guilToken }),
+  _WithdrawPanel
+);

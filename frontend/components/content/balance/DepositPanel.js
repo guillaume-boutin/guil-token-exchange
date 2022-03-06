@@ -2,45 +2,37 @@ import { Table } from "../../common/table";
 import { Token } from "../../../entities";
 import { OperationInput } from "./OperationInput";
 import { connect } from "../../../context";
-import web3 from "web3";
 
 /**
  * @param props
- * @param {string} props.account
- * @param props.exchangeContract
- * @param props.guilTokenContract
- * @param props.setExchangeEthBalanceLoading
- * @param props.setWalletGuilBalanceLoading
  * @param {Token} props.walletEthBalance
  * @param {Token} props.exchangeEthBalance
  * @param {Token} props.walletGuilBalance
  * @param {Token} props.exchangeGuilBalance
  */
-export const DepositPanel = ({
-  account,
-  exchangeContract,
-  guilTokenContract,
-  setExchangeEthBalanceLoading,
-  setWalletGuilBalanceLoading,
+const _DepositPanel = ({
+  web3,
+  exchange,
+  guilToken,
   walletEthBalance,
   exchangeEthBalance,
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
   const onDepositEth = async (amount) => {
-    await exchangeContract.methods
+    await exchange.contract.methods
       .depositEther()
       .send({
-        from: account,
+        from: web3.account,
         value: web3.utils.toWei(amount, "ether"),
       })
       .on("transactionHash", (hash) => {
-        setExchangeEthBalanceLoading(true);
+        exchange.setEthBalanceLoading(true);
       });
   };
 
   const onDepositGuil = (amount) => {
-    setWalletGuilBalanceLoading(true);
+    guilToken.setBalanceLoading(true);
 
     // await guilTokenContract.methods.
   };
@@ -91,3 +83,8 @@ export const DepositPanel = ({
     </>
   );
 };
+
+export const DepositPanel = connect(
+  ({ web3, exchange, guilToken }) => ({ web3, exchange, guilToken }),
+  _DepositPanel
+);

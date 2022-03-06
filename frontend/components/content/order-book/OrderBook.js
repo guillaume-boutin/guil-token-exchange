@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { OrderTable } from ".";
-import { connect, ExchangeConsumer } from "../../../context";
+import { connect } from "../../../context";
 import styles from "./OrderBook.module.scss";
 
 /**
@@ -13,13 +13,13 @@ class _OrderBook extends Component {
   }
 
   get buyOrders() {
-    return this.props.openOrders.filter(
+    return this.props.exchange.openOrders.filter(
       (openOrder) => openOrder.transactionType === "buy"
     );
   }
 
   get sellOrders() {
-    return this.props.openOrders.filter(
+    return this.props.exchange.openOrders.filter(
       (openOrder) => openOrder.transactionType === "sell"
     );
   }
@@ -46,8 +46,7 @@ class _OrderBook extends Component {
 
 export const OrderBook = connect(
   ({ exchange }) => ({
-    orders: exchange.orders,
-    openOrders: exchange.openOrders,
+    exchange,
   }),
   _OrderBook
 );

@@ -1,10 +1,9 @@
 import { NavBar } from "../nav-bar";
 import { Content } from "../content";
 import styles from "./App.module.scss";
-import { connect, ContextConsumer } from "../../context";
+import { connect } from "../../context";
 import { Component } from "../Component";
 import { Web3Service } from "../../services";
-import { HandledOrderFactory } from "../../entities";
 
 class AppComponent extends Component {
   /** @private {Web3Service} */ web3Service;
