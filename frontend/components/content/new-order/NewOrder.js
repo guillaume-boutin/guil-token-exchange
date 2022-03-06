@@ -150,7 +150,7 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                   onClick={onBuyClick}
                   disabled={buyDisabled}
                 >
-                  Buy Order
+                  Place Buy Order
                 </Button>
               </div>
             </TabPanel>
@@ -194,7 +194,7 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                   onClick={onSellClick}
                   disabled={sellDisabled}
                 >
-                  Sell Order
+                  Place Sell Order
                 </Button>
               </div>
             </TabPanel>

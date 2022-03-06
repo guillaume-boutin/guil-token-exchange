@@ -7,11 +7,13 @@ import { Component } from "../../Component";
 import { HandledOrder } from "../../../entities";
 import _groupBy from "lodash/groupBy";
 import moment from "moment";
+import { Spinner } from "../../common/spinner";
 
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 /**
  * @property {HandledOrder[]} props.trades
+ * @property {boolean} props.filledOrdersLoading
  */
 class PriceChartComponent extends Component {
   get groupedTrades() {
@@ -60,6 +62,10 @@ class PriceChartComponent extends Component {
     return lastTrade.order.price - secondLastTrade.order.price;
   }
 
+  get isLoading() {
+    return this.props.filledOrdersLoading;
+  }
+
   render() {
     const latestPriceChange = this.latestPriceChange.toFixed(6);
 
@@ -77,18 +83,24 @@ class PriceChartComponent extends Component {
         </CardHeader>
 
         <CardBody className={styles.cardBody}>
-          <h4 className={styles.priceTitle}>
-            GUIL/ETH {caret} {latestPriceChange}
-          </h4>
+          {this.isLoading && <Spinner />}
 
-          <div className={styles.priceChart}>
-            <Chart
-              options={chartOptions}
-              series={[{ data: this.serie }]}
-              type="candlestick"
-              height="100%"
-            />
-          </div>
+          {!this.isLoading && (
+            <>
+              <h4 className={styles.priceTitle}>
+                GUIL/ETH {caret} {latestPriceChange}
+              </h4>
+
+              <div className={styles.priceChart}>
+                <Chart
+                  options={chartOptions}
+                  series={[{ data: this.serie }]}
+                  type="candlestick"
+                  height="100%"
+                />
+              </div>
+            </>
+          )}
         </CardBody>
       </Card>
     );
@@ -98,6 +110,7 @@ class PriceChartComponent extends Component {
 export const PriceChart = connect(
   ({ exchange }) => ({
     trades: exchange.filledOrders,
+    filledOrdersLoading: exchange.filledOrdersLoading,
   }),
   PriceChartComponent
 );
