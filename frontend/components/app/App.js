@@ -19,8 +19,8 @@ class AppComponent extends Component {
     const web3 = await this.web3Service.getWeb3();
     if (!web3) return;
 
-    this.props.setWeb3(web3);
-    this.props.setWeb3Loaded(true);
+    this.props.web3.setWeb3(web3);
+    this.props.web3.setWeb3Loaded(true);
 
     await Promise.all([
       this.loadAccount(web3),
@@ -31,26 +31,26 @@ class AppComponent extends Component {
 
   async loadAccount(web3) {
     const account = await this.web3Service.getAccount(web3);
-    this.props.setAccount(account);
+    this.props.web3.setAccount(account);
   }
 
   async loadExchangeContract(web3) {
     const contract = await this.web3Service.getExchangeContract(web3);
 
     contract.events.Deposit({}, (error, event) => {
-      this.props.setExchangeEthBalanceLoading(false);
+      this.props.exchange.setEthBalanceLoading(false);
     });
 
     contract.events.Withdraw({}, (error, event) => {
-      this.props.setExchangeEthBalanceLoading(false);
+      this.props.exchange.setEthBalanceLoading(false);
     });
 
-    this.props.setExchangeContract(contract);
+    this.props.exchange.setContract(contract);
   }
 
   async loadGuilTokenContract(web3) {
     const contract = await this.web3Service.getGuilTokenContract(web3);
-    this.props.setGuilTokenContract(contract);
+    this.props.guilToken.setContract(contract);
   }
 
   render() {
@@ -66,15 +66,9 @@ class AppComponent extends Component {
 
 export const App = connect(
   ({ web3, exchange, guilToken }) => ({
-    setWeb3: web3.setWeb3,
-    setWeb3Loaded: web3.setWeb3Loaded,
-    setAccount: web3.setAccount,
-    setWalletEthBalanceLoading: web3.setEthBalanceLoading,
-    setExchangeContract: exchange.setContract,
-    addToCancelledOrders: exchange.addToCancelledOrders,
-    addToFilledOrders: exchange.addToFilledOrders,
-    setExchangeEthBalanceLoading: exchange.setEthBalanceLoading,
-    setGuilTokenContract: guilToken.setContract,
+    web3,
+    exchange,
+    guilToken,
   }),
   AppComponent
 );

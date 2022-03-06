@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useState } from "react";
 import { Component } from "../components";
 import { Order, HandledOrder, HandledOrderFactory } from "../entities";
 
@@ -8,7 +8,124 @@ export const ExchangeConsumer = (props) => (
   <ExchangeContext.Consumer>{props.children}</ExchangeContext.Consumer>
 );
 
-export class ExchangeProvider extends Component {
+export const ExchangeProvider = ({ children }) => {
+  const [contract, _setContract] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [filledOrders, setFilledOrders] = useState([]);
+  const [orderFilling, setOrderFilling] = useState(false);
+  const [cancelledOrders, setCancelledOrders] = useState([]);
+  const [orderCancelling, setOrderCancelling] = useState(false);
+  const [ethBalance, setEthBalance] = useState(null);
+  const [ethBalanceLoading, setEthBalanceLoading] = useState(false);
+  const [guilBalance, setGuilBalance] = useState(null);
+  const [guilBalanceLoading, setGuilBalanceLoading] = useState(false);
+
+  const setContract = (contract) => {
+    contract.events.Cancel({}, (error, event) => {
+      addToCancelledOrders(
+        new HandledOrderFactory().fromEventValues(event.returnValues)
+      );
+      setOrderCancelling(false);
+    });
+
+    contract.events.Trade({}, (error, event) => {
+      addToFilledOrders(
+        new HandledOrderFactory().fromEventValues(event.returnValues)
+      );
+      setOrderFilling(false);
+    });
+
+    _setContract(contract);
+  };
+
+  const openOrders = orders.filter((order) => {
+    let index = filledOrders.findIndex(
+      (filledOrder) => filledOrder.order.id === order.id
+    );
+
+    if (index > -1) return false;
+
+    return (
+      cancelledOrders.findIndex(
+        (cancelledOrder) => cancelledOrder.order.id === order.id
+      ) === -1
+    );
+  });
+
+  const addToFilledOrders = (filledOrder) => {
+    const index = filledOrders.find(
+      (fo) => fo.order.id === filledOrder.order.id
+    );
+    if (index > -1) return;
+
+    setFilledOrders([filledOrder, ...filledOrders]);
+  };
+
+  const addToCancelledOrders = (cancelledOrder) => {
+    const index = cancelledOrders.find(
+      (co) => co.order.id === cancelledOrder.order.id
+    );
+    if (index > -1) return;
+
+    setCancelledOrders([cancelledOrder, ...cancelledOrders]);
+  };
+
+  const cancelOrder = (order, account) => {
+    contract.methods
+      .cancelOrder(order.id)
+      .send({ from: account })
+      .on("transactionHash", (hash) => {
+        setOrderCancelling(true);
+      })
+      .on("error", (error) => {});
+  };
+
+  const fillOrder = (order, account) => {
+    contract.methods
+      .fillOrder(order.id)
+      .send({ from: account })
+      .on("transactionHash", (hash) => {
+        setOrderFilling(true);
+      })
+      .on("error", (error) => {});
+  };
+
+  return (
+    <ExchangeContext.Provider
+      value={{
+        contract,
+        setContract,
+        orders,
+        setOrders,
+        filledOrders,
+        setFilledOrders,
+        cancelledOrders,
+        setCancelledOrders,
+        ethBalance,
+        setEthBalance,
+        ethBalanceLoading,
+        setEthBalanceLoading,
+        guilBalance,
+        setGuilBalance,
+        guilBalanceLoading,
+        setGuilBalanceLoading,
+        openOrders,
+        cancelOrder,
+        orderCancelling,
+        setOrderCancelling,
+        fillOrder,
+        orderFilling,
+        setOrderFilling,
+        addToFilledOrders,
+        addToCancelledOrders,
+      }}
+    >
+      {children}
+    </ExchangeContext.Provider>
+  );
+};
+
+class _ExchangeProvider extends Component {
   constructor(props) {
     super(props);
   }
