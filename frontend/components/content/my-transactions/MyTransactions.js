@@ -7,12 +7,14 @@ import { Order, HandledOrder } from "../../../entities";
 import { TradeRow } from "./TradeRow";
 import { OrderRow } from "./OrderRow";
 import style from "./MyTransactions.module.scss";
+import { Spinner } from "../../common/spinner";
 
 /**
  * @property {string} props.account
  * @property {Order[]} props.orders
  * @property {HandledOrder[]} props.trades
  * @property {function(Order, string)} props.cancelOrder
+ * @property {boolean} props.anyOrdersLoading
  */
 class MyTransactionsComponent extends Component {
   boundMethods() {
@@ -38,6 +40,10 @@ class MyTransactionsComponent extends Component {
     this.props.cancelOrder(order, this.props.account);
   }
 
+  get isLoading() {
+    return this.props.anyOrdersLoading;
+  }
+
   render() {
     return (
       <Card className={style.card}>
@@ -46,59 +52,63 @@ class MyTransactionsComponent extends Component {
         </CardHeader>
 
         <CardBody className={style.cardBody}>
-          <Tabs className={style.tabs}>
-            <TabList as="nav">
-              <Tab as="a">Trades</Tab>
+          {this.isLoading && <Spinner />}
 
-              <Tab as="a">Orders</Tab>
-            </TabList>
+          {!this.isLoading && (
+            <Tabs className={style.tabs}>
+              <TabList as="nav">
+                <Tab as="a">Trades</Tab>
 
-            <TabPanels as="div" className={style.tabPanels}>
-              <TabPanel as="div" className={style.tabPanel}>
-                <Table>
-                  <thead>
-                    <tr>
-                      <th>Time</th>
+                <Tab as="a">Orders</Tab>
+              </TabList>
 
-                      <th>GUIL</th>
+              <TabPanels as="div" className={style.tabPanels}>
+                <TabPanel as="div" className={style.tabPanel}>
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>Time</th>
 
-                      <th>GUIL/ETH</th>
-                    </tr>
-                  </thead>
+                        <th>GUIL</th>
 
-                  <tbody>
-                    {this.trades.map((trade, i) => (
-                      <TradeRow key={i} trade={trade} />
-                    ))}
-                  </tbody>
-                </Table>
-              </TabPanel>
+                        <th>GUIL/ETH</th>
+                      </tr>
+                    </thead>
 
-              <TabPanel as="div" className={style.tabPanel}>
-                <Table>
-                  <thead>
-                    <tr>
-                      <th>Amount</th>
+                    <tbody>
+                      {this.trades.map((trade, i) => (
+                        <TradeRow key={i} trade={trade} />
+                      ))}
+                    </tbody>
+                  </Table>
+                </TabPanel>
 
-                      <th>GUIL/ETH</th>
+                <TabPanel as="div" className={style.tabPanel}>
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>Amount</th>
 
-                      <th>Cancel</th>
-                    </tr>
-                  </thead>
+                        <th>GUIL/ETH</th>
 
-                  <tbody>
-                    {this.orders.map((order, i) => (
-                      <OrderRow
-                        key={i}
-                        order={order}
-                        onCancel={this.onCancelOrder}
-                      />
-                    ))}
-                  </tbody>
-                </Table>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+                        <th>Cancel</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {this.orders.map((order, i) => (
+                        <OrderRow
+                          key={i}
+                          order={order}
+                          onCancel={this.onCancelOrder}
+                        />
+                      ))}
+                    </tbody>
+                  </Table>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          )}
         </CardBody>
       </Card>
     );
@@ -111,6 +121,7 @@ export const MyTransactions = connect(
     orders: exchange.openOrders,
     trades: exchange.filledOrders,
     cancelOrder: exchange.cancelOrder,
+    anyOrdersLoading: exchange.anyOrdersLoading,
   }),
   MyTransactionsComponent
 );
