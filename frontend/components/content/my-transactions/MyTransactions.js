@@ -6,7 +6,7 @@ import { connect } from "../../../context";
 import { Order, HandledOrder } from "../../../entities";
 import { TradeRow } from "./TradeRow";
 import { OrderRow } from "./OrderRow";
-import styles from "./MyTransactions.module.scss";
+import style from "./MyTransactions.module.scss";
 
 /**
  * @property {string} props.account
@@ -40,19 +40,21 @@ class MyTransactionsComponent extends Component {
 
   render() {
     return (
-      <Card className={styles.card}>
-        <CardHeader>My Transactions</CardHeader>
+      <Card className={style.card}>
+        <CardHeader>
+          <h3>My Transactions</h3>
+        </CardHeader>
 
-        <CardBody className={styles.cardBody}>
-          <Tabs className={styles.tabs}>
+        <CardBody className={style.cardBody}>
+          <Tabs className={style.tabs}>
             <TabList as="nav">
               <Tab as="a">Trades</Tab>
 
               <Tab as="a">Orders</Tab>
             </TabList>
 
-            <TabPanels as="div" className={styles.tabPanels}>
-              <TabPanel as="div" className={styles.tabPanel}>
+            <TabPanels as="div" className={style.tabPanels}>
+              <TabPanel as="div" className={style.tabPanel}>
                 <Table>
                   <thead>
                     <tr>
@@ -72,8 +74,8 @@ class MyTransactionsComponent extends Component {
                 </Table>
               </TabPanel>
 
-              <TabPanel as="div" className={styles.tabPanel}>
-                <Table className={styles.table}>
+              <TabPanel as="div" className={style.tabPanel}>
+                <Table>
                   <thead>
                     <tr>
                       <th>Amount</th>
@@ -84,7 +86,7 @@ class MyTransactionsComponent extends Component {
                     </tr>
                   </thead>
 
-                  <tbody className={styles.tbody}>
+                  <tbody>
                     {this.orders.map((order, i) => (
                       <OrderRow
                         key={i}

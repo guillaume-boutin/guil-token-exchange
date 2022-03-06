@@ -2,10 +2,9 @@ import { Card, CardHeader, CardBody } from "../../common/card";
 import { Tabs, Tab, TabList, TabPanel, TabPanels } from "../../common/tabs";
 import { TextInput } from "../../common/form";
 import { Button } from "../../common/button";
-import styles from "./NewOrder.module.scss";
+import style from "./NewOrder.module.scss";
 import { useState } from "react";
 import { connect } from "../../../context";
-import { Token } from "../../../entities";
 import { ETHER_ADDRESS } from "../../../helpers";
 
 const _NewOrder = ({ web3, exchange, guilToken }) => {
@@ -99,9 +98,11 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
 
   return (
     <Card>
-      <CardHeader>New Order</CardHeader>
+      <CardHeader>
+        <h3>New Order</h3>
+      </CardHeader>
 
-      <CardBody>
+      <CardBody className={style.carbBody}>
         <Tabs>
           <TabList as="nav">
             <Tab as="a">Buy</Tab>
@@ -111,13 +112,13 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
 
           <TabPanels as="div">
             <TabPanel as="div">
-              <div>
+              <div className={style.row}>
                 <label htmlFor="buy-token-amount-input">
                   Buy Amount (GUIL)
                 </label>
               </div>
 
-              <div>
+              <div className={style.row}>
                 <TextInput
                   type="number"
                   value={buyGuilAmount}
@@ -128,11 +129,11 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                 />
               </div>
 
-              <div>
+              <div className={style.row}>
                 <label htmlFor="buy-token-price-input">Buy Price</label>
               </div>
 
-              <div>
+              <div className={style.row}>
                 <TextInput
                   type="number"
                   value={buyGuilPrice}
@@ -143,23 +144,25 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                 />
               </div>
 
-              <Button
-                className={styles.blockButton}
-                onClick={onBuyClick}
-                disabled={buyDisabled}
-              >
-                Buy Order
-              </Button>
+              <div className={style.row}>
+                <Button
+                  className={style.blockButton}
+                  onClick={onBuyClick}
+                  disabled={buyDisabled}
+                >
+                  Buy Order
+                </Button>
+              </div>
             </TabPanel>
 
             <TabPanel as="div">
-              <div>
+              <div className={style.row}>
                 <label htmlFor="sell-token-amount-input">
                   Sell Amount (GUIL)
                 </label>
               </div>
 
-              <div>
+              <div className={style.row}>
                 <TextInput
                   type="number"
                   value={sellGuilAmount}
@@ -170,11 +173,11 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                 />
               </div>
 
-              <div>
+              <div className={style.row}>
                 <label htmlFor="sell-token-price-input">Sell Price</label>
               </div>
 
-              <div>
+              <div className={style.row}>
                 <TextInput
                   type="number"
                   value={sellGuilPrice}
@@ -185,13 +188,15 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                 />
               </div>
 
-              <Button
-                className={styles.blockButton}
-                onClick={onSellClick}
-                disabled={sellDisabled}
-              >
-                Sell Order
-              </Button>
+              <div className={style.row}>
+                <Button
+                  className={style.blockButton}
+                  onClick={onSellClick}
+                  disabled={sellDisabled}
+                >
+                  Sell Order
+                </Button>
+              </div>
             </TabPanel>
           </TabPanels>
         </Tabs>

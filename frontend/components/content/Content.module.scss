@@ -1,6 +1,7 @@
 .content {
   height: calc(100vh - var(--nav-bar-height));
-  background-color: #1d1d1d;
+  //background-color: #1d1d1d;
+  background-color: var(--zinc-800);
 
   .grid {
     height: 100%;

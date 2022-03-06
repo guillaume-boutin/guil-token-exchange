@@ -29,8 +29,24 @@
 }
 
 .tableRow {
+  &.selfOwned {
+    color: var(--zinc-500);
+
+    .buy {
+      color: var(--green-800);
+    }
+    .sell {
+      color: var(--red-800);
+    }
+  }
+
   &:hover {
-    background-color: var(--table-border-color);
+    background-color: var(--zinc-600);
     cursor: pointer;
+
+    &.selfOwned {
+      background-color: revert;
+      cursor: revert;
+    }
   }
 }

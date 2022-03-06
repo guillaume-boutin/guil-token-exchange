@@ -1,7 +1,8 @@
 .textInput {
   width: 100%;
-  color: white;
-  background-color: #343a40;
+  color: var(--text-color);
+  //background-color: #343a40;
+  background-color: var(--zinc-700);
   padding: 0.25rem 0.75rem;
   border: 1px solid #ced4da;
   border-radius: 0.2rem;

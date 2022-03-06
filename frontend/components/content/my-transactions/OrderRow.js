@@ -1,6 +1,6 @@
 import { Component } from "../../Component";
 import { Order } from "../../../entities";
-import styles from "./MyTransactions.module.scss";
+import style from "./MyTransactions.module.scss";
 
 /**
  * @property {Order} props.order
@@ -34,14 +34,14 @@ export class OrderRow extends Component {
   render() {
     return (
       <tr>
-        <td>{this.time}</td>
+        <td className={style.textMuted}>{this.time}</td>
 
-        <td className={styles[this.isBuy ? "buy" : "sell"]}>
+        <td className={style[this.isBuy ? "buy" : "sell"]}>
           {this.isBuy ? "+" : "-"} {this.amount}
         </td>
 
         <td>
-          <span className={styles.cancelBtn} onClick={this.onCancelClick}>
+          <span className={style.cancelBtn} onClick={this.onCancelClick}>
             &times;
           </span>
         </td>

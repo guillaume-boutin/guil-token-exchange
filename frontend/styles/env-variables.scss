@@ -1,5 +1,12 @@
 :root {
+  //--text-color: white;
+  --text-color: var(--zinc-100);
+
   --nav-bar-height: 48px;
   --table-border-color: #95999c;
-  --text-muted-color: #95999c;
+  //--text-muted-color: #95999c;
+  --text-muted-color: var(--zinc-500);
+
+  --buy-color: var(--green-600);
+  --sell-color: var(--red-600);
 }

@@ -1,6 +1,6 @@
 import { HandledOrder } from "../../../entities";
 import { Component } from "../../Component";
-import styles from "./MyTransactions.module.scss";
+import style from "./MyTransactions.module.scss";
 
 /**
  * @property props
@@ -26,9 +26,9 @@ export class TradeRow extends Component {
   render() {
     return (
       <tr>
-        <td>{this.time}</td>
+        <td className={style.textMuted}>{this.time}</td>
 
-        <td className={styles[this.isBuy ? "buy" : "sell"]}>
+        <td className={style[this.isBuy ? "buy" : "sell"]}>
           {this.isBuy ? "+" : "-"} {this.amount}
         </td>
 

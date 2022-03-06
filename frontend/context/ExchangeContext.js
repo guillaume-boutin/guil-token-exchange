@@ -1,5 +1,5 @@
 import React, { createContext, useState } from "react";
-import { Order, HandledOrder, HandledOrderFactory } from "../entities";
+import { HandledOrderFactory } from "../entities";
 import { ETHER_ADDRESS } from "../helpers";
 
 export const ExchangeContext = createContext({});

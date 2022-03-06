@@ -1,7 +1,6 @@
 import { Order } from "../../../entities";
-import styles from "./OrderBook.module.scss";
+import style from "./OrderBook.module.scss";
 import { connect } from "../../../context";
-import { Component } from "../../Component";
 
 /**
  * @param props
@@ -9,20 +8,26 @@ import { Component } from "../../Component";
  * @param {function(Order, string)} props.fillOrder
  * @param {Order} props.order
  */
-const _OrderRow = (props) => {
+const _OrderRow = ({ account, fillOrder, order }) => {
+  const isSelfOwned = order.user === account;
+
   const onClick = () => {
-    props.fillOrder(props.order, props.account);
+    if (isSelfOwned) return;
+
+    fillOrder(order, account);
   };
 
+  const trClasses = `${style.tableRow} ${
+    isSelfOwned ? style.selfOwned : ""
+  }`.trim();
+
   return (
-    <tr className={styles.tableRow} onClick={onClick}>
-      <td>{props.order.token.unitaryAmount}</td>
+    <tr className={trClasses} onClick={onClick}>
+      <td>{order.token.unitaryAmount}</td>
 
-      <td className={styles[props.order.transactionType]}>
-        {props.order.price.toFixed(5)}
-      </td>
+      <td className={style[order.transactionType]}>{order.price.toFixed(5)}</td>
 
-      <td>{props.order.ether.unitaryAmount}</td>
+      <td>{order.ether.unitaryAmount}</td>
     </tr>
   );
 };

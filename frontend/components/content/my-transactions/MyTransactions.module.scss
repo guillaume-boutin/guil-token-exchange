@@ -40,6 +40,10 @@
           flex-grow: 1;
           overflow-y: auto;
 
+          .textMuted {
+            color: var(--text-muted-color);
+          }
+
           .cancelBtn {
             color: var(--text-muted-color);
             cursor: pointer;

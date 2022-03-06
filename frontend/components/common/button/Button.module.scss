@@ -1,6 +1,7 @@
 .button {
-  color: white;
-  background-color: #007bff;
+  color: var(--blue-100);
+  //background-color: #007bff;
+  background-color: var(--blue-600);
   padding: 0.25rem 0.75rem;
   font-size: 0.875rem;
   cursor: pointer;
@@ -9,6 +10,13 @@
   outline: 0;
 
   &:hover {
-    background-color: #0069d9;
+    //background-color: #0069d9;
+    background-color: var(--blue-700);
+  }
+
+  &:disabled {
+    cursor: revert;
+    color: var(--zinc-300);
+    background-color: var(--blue-400);
   }
 }

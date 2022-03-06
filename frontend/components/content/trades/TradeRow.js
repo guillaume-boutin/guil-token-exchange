@@ -1,6 +1,6 @@
 import { Component } from "../../Component";
 import { HandledOrder } from "../../../entities";
-import styles from "./Trade.module.scss";
+import style from "./Trade.module.scss";
 
 /**
  * @property {HandledOrder} props.trade
@@ -25,9 +25,9 @@ export class TradeRow extends Component {
   render() {
     return (
       <tr>
-        <td>{this.time}</td>
+        <td className={style.textMuted}>{this.time}</td>
 
-        <td className={styles[this.tradeType]}>{this.amount}</td>
+        <td className={style[this.tradeType]}>{this.amount}</td>
 
         <td>{this.price}</td>
       </tr>

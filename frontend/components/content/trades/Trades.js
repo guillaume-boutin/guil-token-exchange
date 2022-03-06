@@ -19,7 +19,9 @@ class TradesComponent extends Component {
   render() {
     return (
       <Card className={styles.card}>
-        <CardHeader>Trades</CardHeader>
+        <CardHeader>
+          <h3>Trades</h3>
+        </CardHeader>
 
         <CardBody className={styles.cardBody}>
           <Table>

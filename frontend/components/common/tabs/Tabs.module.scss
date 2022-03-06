@@ -7,12 +7,16 @@
 .tab {
   &[data-reach-tab] {
     cursor: pointer;
-    color: white;
-    padding: 4px;
+    color: var(--text-color);
+    padding: 8px;
     border-bottom: 1px solid white;
+    border-bottom: 1px solid var(--text-color);
+    display: inline-block;
+    font-size: 0.85rem;
 
     &[data-selected] {
-      border-bottom: 2px solid #007bff;
+      //border-bottom: 2px solid #007bff;
+      border-bottom: 2px solid var(--blue-600);
     }
   }
 }

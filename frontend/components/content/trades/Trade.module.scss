@@ -13,5 +13,9 @@
   .cardBody {
     flex-grow: 1;
     overflow-y: auto;
+
+    .textMuted {
+      color: var(--text-muted-color);
+    }
   }
 }

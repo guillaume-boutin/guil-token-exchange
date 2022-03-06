@@ -28,7 +28,9 @@ class _OrderBook extends Component {
     // console.log(this.props.orders);
     return (
       <Card className={styles.card}>
-        <CardHeader className={styles.cardHeader}>Order Book</CardHeader>
+        <CardHeader className={styles.cardHeader}>
+          <h3>Order Book</h3>
+        </CardHeader>
 
         <CardBody className={styles.cardBody}>
           <div className={styles.tableContainer}>

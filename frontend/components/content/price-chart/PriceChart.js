@@ -72,7 +72,9 @@ class PriceChartComponent extends Component {
 
     return (
       <Card className={styles.card}>
-        <CardHeader>Price Chart</CardHeader>
+        <CardHeader>
+          <h3>Price Chart</h3>
+        </CardHeader>
 
         <CardBody className={styles.cardBody}>
           <h4 className={styles.priceTitle}>

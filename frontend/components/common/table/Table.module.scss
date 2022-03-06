@@ -1,10 +1,17 @@
 .table {
   border-collapse: collapse;
   width: 100%;
-  color: white;
+  //color: white;
+  color: var(--text-color);
+  font-size: 0.8rem;
 
   & thead {
-    border-bottom: 2px solid var(--table-border-color);
+    //border-bottom: 2px solid var(--table-border-color);
+    border-bottom: 2px solid var(--zinc-600);
+  }
+
+  & th {
+    text-align: left;
   }
 
   & th,
@@ -13,7 +20,8 @@
   }
 
   & tbody tr {
-    border-bottom: 1px solid var(--table-border-color);
+    //border-bottom: 1px solid var(--table-border-color);
+    border-bottom: 1px solid var(--zinc-600);
 
     &:last-child {
       border-bottom: revert;

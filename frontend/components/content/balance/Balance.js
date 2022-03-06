@@ -62,7 +62,9 @@ class _Balance extends Component {
   render() {
     return (
       <Card className={style.card}>
-        <CardHeader className={style.cardHeader}>Balance</CardHeader>
+        <CardHeader className={style.cardHeader}>
+          <h3>Balance</h3>
+        </CardHeader>
 
         <CardBody className={style.cardBody}>
           {this.isLoading && (
