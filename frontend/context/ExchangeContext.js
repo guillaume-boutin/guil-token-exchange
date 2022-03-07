@@ -25,20 +25,6 @@ export const ExchangeProvider = ({ children }) => {
   const [guilBalanceLoading, setGuilBalanceLoading] = useState(false);
 
   const setContract = (contract) => {
-    contract.events.Cancel({}, (error, event) => {
-      addToCancelledOrders(
-        new HandledOrderFactory().fromEventValues(event.returnValues)
-      );
-      setOrderCancelling(false);
-    });
-
-    contract.events.Trade({}, (error, event) => {
-      addToFilledOrders(
-        new HandledOrderFactory().fromEventValues(event.returnValues)
-      );
-      setOrderFilling(false);
-    });
-
     _setContract(contract);
   };
 

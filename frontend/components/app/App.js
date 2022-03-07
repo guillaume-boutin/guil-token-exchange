@@ -4,7 +4,7 @@ import styles from "./App.module.scss";
 import { connect } from "../../context";
 import { Component } from "../Component";
 import { Web3Service } from "../../services";
-import { Order, OrderFactory } from "../../entities";
+import { HandledOrderFactory, Order, OrderFactory } from "../../entities";
 import { ETHER_ADDRESS } from "../../helpers";
 
 class AppComponent extends Component {
@@ -88,6 +88,40 @@ class AppComponent extends Component {
       }
 
       this.props.exchange.addToOrders(order);
+    });
+
+    contract.events.Cancel({}, (error, event) => {
+      const cancelledOrder = new HandledOrderFactory().fromEventValues(
+        event.returnValues
+      );
+
+      if (cancelledOrder.order.offer.isEth) {
+        this.props.exchange.addToEthBalance(cancelledOrder.order.offer.amount);
+      } else {
+        this.props.exchange.addToGuilBalance(cancelledOrder.order.offer.amount);
+      }
+
+      this.props.exchange.addToCancelledOrders(cancelledOrder);
+      this.props.exchange.setOrderCancelling(false);
+    });
+
+    contract.events.Trade({}, (error, event) => {
+      const filledOrder = new HandledOrderFactory().fromEventValues(
+        event.returnValues
+      );
+
+      if (filledOrder.order.offer.isEth) {
+        this.props.exchange.addToEthBalance(
+          `-${filledOrder.order.offer.amount}`
+        );
+      } else {
+        this.props.exchange.addToGuilBalance(
+          `-${filledOrder.order.offer.amount}`
+        );
+      }
+
+      this.props.exchange.addToFilledOrders(filledOrder);
+      this.props.exchange.setOrderFilling(false);
     });
 
     this.props.exchange.setContract(contract);
