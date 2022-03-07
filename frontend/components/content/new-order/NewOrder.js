@@ -43,17 +43,17 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
   };
 
   const placeBuyOrder = (amount, price) => {
-    const demand = {
-      contractAddress: guilToken.contractAddress,
-      amount: web3.web3.utils.toWei(amount, "ether"),
-    };
-
     const offer = {
       contractAddress: ETHER_ADDRESS,
       amount: web3.web3.utils.toWei(
         safeMultiply(amount, price).toString(),
         "ether"
       ),
+    };
+
+    const demand = {
+      contractAddress: guilToken.contractAddress,
+      amount: web3.web3.utils.toWei(amount, "ether"),
     };
 
     exchange.contract.methods

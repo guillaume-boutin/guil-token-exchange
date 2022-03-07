@@ -34,11 +34,11 @@ export class OrderRow extends Component {
   render() {
     return (
       <tr>
-        <td className={style.textMuted}>{this.time}</td>
-
         <td className={style[this.isBuy ? "buy" : "sell"]}>
           {this.isBuy ? "+" : "-"} {this.amount}
         </td>
+
+        <td>{this.price}</td>
 
         <td>
           <span className={style.cancelBtn} onClick={this.onCancelClick}>

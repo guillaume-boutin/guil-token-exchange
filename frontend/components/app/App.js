@@ -39,6 +39,8 @@ class AppComponent extends Component {
     const contract = await this.web3Service.getExchangeContract(web3);
 
     contract.events.Deposit({}, async (error, event) => {
+      console.log(event);
+
       const tokenAddress = event.returnValues.token.contractAddress;
 
       if (tokenAddress === ETHER_ADDRESS) {
@@ -76,11 +78,12 @@ class AppComponent extends Component {
       const order = new OrderFactory().fromEventValues(event.returnValues);
 
       if (order.offer.isEth) {
-        this.props.exchange.loadEthBalance(this.props.web3.account);
+        this.props.exchange.addToEthBalance(
+          `-${event.returnValues.offer.amount}`
+        );
       } else {
-        this.props.exchange.loadGuilBalance(
-          this.props.web3.account,
-          this.props.guilToken.contractAddress
+        this.props.exchange.addToGuilBalance(
+          `-${event.returnValues.offer.amount}`
         );
       }
 

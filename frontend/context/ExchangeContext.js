@@ -59,7 +59,6 @@ export const ExchangeProvider = ({ children }) => {
   });
 
   const addToOrders = (order) => {
-    console.log("addToOrders");
     setOrders([...orders, order]);
   };
 
