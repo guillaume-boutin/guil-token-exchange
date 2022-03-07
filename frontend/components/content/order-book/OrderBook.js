@@ -30,7 +30,6 @@ class _OrderBook extends Component {
   }
 
   render() {
-    // console.log(this.props.orders);
     return (
       <Card className={styles.card}>
         <CardHeader className={styles.cardHeader}>

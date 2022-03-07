@@ -31,10 +31,10 @@
           color: var(--zinc-500);
 
           .buy {
-            color: var(--green-800);
+            color: var(--green-700);
           }
           .sell {
-            color: var(--red-800);
+            color: var(--red-700);
           }
         }
 
@@ -44,7 +44,7 @@
 
           &.selfOwned {
             background-color: revert;
-            cursor: revert;
+            cursor: default;
           }
         }
       }

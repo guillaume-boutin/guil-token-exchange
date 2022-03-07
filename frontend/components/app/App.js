@@ -39,8 +39,6 @@ class AppComponent extends Component {
     const contract = await this.web3Service.getExchangeContract(web3);
 
     contract.events.Deposit({}, async (error, event) => {
-      console.log(event);
-
       const tokenAddress = event.returnValues.token.contractAddress;
 
       if (tokenAddress === ETHER_ADDRESS) {

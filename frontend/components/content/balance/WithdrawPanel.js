@@ -32,7 +32,6 @@ const _WithdrawPanel = ({
         from: web3.account,
       })
       .on("transactionHash", (hash) => {
-        console.log(hash);
         exchange.setEthBalanceLoading(true);
       })
       .on("error", (error) => {
