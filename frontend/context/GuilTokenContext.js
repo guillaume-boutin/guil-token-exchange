@@ -20,6 +20,10 @@ export const GuilTokenProvider = ({ children }) => {
     setBalanceLoading(false);
   };
 
+  const addToBalance = (value) => {
+    setBalance((parseInt(value, 10) + parseInt(balance, 10)).toString());
+  };
+
   return (
     <GuilTokenContext.Provider
       value={{
@@ -31,6 +35,7 @@ export const GuilTokenProvider = ({ children }) => {
         loadBalance,
         balanceLoading,
         setBalanceLoading,
+        addToBalance,
       }}
     >
       {children}

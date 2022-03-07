@@ -5,6 +5,7 @@ import { connect } from "../../context";
 import { Component } from "../Component";
 import { Web3Service } from "../../services";
 import { Order, OrderFactory } from "../../entities";
+import { ETHER_ADDRESS } from "../../helpers";
 
 class AppComponent extends Component {
   /** @private {Web3Service} */ web3Service;
@@ -37,19 +38,53 @@ class AppComponent extends Component {
   async loadExchangeContract(web3) {
     const contract = await this.web3Service.getExchangeContract(web3);
 
-    contract.events.Deposit({}, (error, event) => {
-      console.log(event);
+    contract.events.Deposit({}, async (error, event) => {
+      const tokenAddress = event.returnValues.token.contractAddress;
+
+      if (tokenAddress === ETHER_ADDRESS) {
+        this.props.exchange.addToEthBalance(event.returnValues.token.amount);
+        await this.props.web3.loadEthBalance();
+      } else {
+        this.props.guilToken.addToBalance(
+          `-${event.returnValues.token.amount}`
+        );
+        this.props.exchange.addToGuilBalance(event.returnValues.token.amount);
+      }
+
       this.props.exchange.setBalancesLoading(false);
     });
 
-    contract.events.Withdraw({}, (error, event) => {
+    contract.events.Withdraw({}, async (error, event) => {
+      const tokenAddress = event.returnValues.token.contractAddress;
+
+      if (tokenAddress === ETHER_ADDRESS) {
+        this.props.exchange.addToEthBalance(
+          `-${event.returnValues.token.amount}`
+        );
+        await this.props.web3.loadEthBalance();
+      } else {
+        this.props.exchange.addToGuilBalance(
+          `-${event.returnValues.token.amount}`
+        );
+        this.props.guilToken.addToBalance(event.returnValues.token.amount);
+      }
+
       this.props.exchange.setBalancesLoading(false);
     });
 
     contract.events.Order({}, (error, event) => {
-      this.props.exchange.addToOrders(
-        new OrderFactory().fromEventValues(event.returnValues)
-      );
+      const order = new OrderFactory().fromEventValues(event.returnValues);
+
+      if (order.offer.isEth) {
+        this.props.exchange.loadEthBalance(this.props.web3.account);
+      } else {
+        this.props.exchange.loadGuilBalance(
+          this.props.web3.account,
+          this.props.guilToken.contractAddress
+        );
+      }
+
+      this.props.exchange.addToOrders(order);
     });
 
     this.props.exchange.setContract(contract);

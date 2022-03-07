@@ -129,6 +129,16 @@ export const ExchangeProvider = ({ children }) => {
   const anyOrdersLoading =
     ordersLoading || filledOrdersLoading || cancelledOrdersLoading;
 
+  const addToEthBalance = (value) => {
+    setEthBalance((parseInt(value, 10) + parseInt(ethBalance, 10)).toString());
+  };
+
+  const addToGuilBalance = (value) => {
+    setGuilBalance(
+      (parseInt(value, 10) + parseInt(guilBalance, 10)).toString()
+    );
+  };
+
   return (
     <ExchangeContext.Provider
       value={{
@@ -170,6 +180,8 @@ export const ExchangeProvider = ({ children }) => {
         balancesLoading,
         setBalancesLoading,
         anyOrdersLoading,
+        addToEthBalance,
+        addToGuilBalance,
       }}
     >
       {children}

@@ -6,6 +6,7 @@ import style from "./NewOrder.module.scss";
 import { useState } from "react";
 import { connect } from "../../../context";
 import { ETHER_ADDRESS } from "../../../helpers";
+import { Table } from "../../common/table";
 
 const _NewOrder = ({ web3, exchange, guilToken }) => {
   const [buyGuilAmount, setBuyGuilAmount] = useState(0);
@@ -112,91 +113,123 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
 
           <TabPanels as="div">
             <TabPanel as="div">
-              <div className={style.row}>
-                <label htmlFor="buy-token-amount-input">
-                  Buy Amount (GUIL)
-                </label>
-              </div>
+              <Table>
+                <tbody>
+                  <tr>
+                    <td>
+                      <label htmlFor="buy-token-amount-input">
+                        Amount (GUIL)
+                      </label>
+                    </td>
+                  </tr>
 
-              <div className={style.row}>
-                <TextInput
-                  type="number"
-                  value={buyGuilAmount}
-                  min="0"
-                  id="buy-token-amount-input"
-                  placeholder="Buy Amount"
-                  onChange={onBuyGuilAmountChange}
-                />
-              </div>
+                  <tr>
+                    <td>
+                      <TextInput
+                        type="number"
+                        value={buyGuilAmount}
+                        min="0"
+                        id="buy-token-amount-input"
+                        placeholder="Buy Amount"
+                        onChange={onBuyGuilAmountChange}
+                      />
+                    </td>
+                  </tr>
 
-              <div className={style.row}>
-                <label htmlFor="buy-token-price-input">Buy Price</label>
-              </div>
+                  <tr>
+                    <td>
+                      <label htmlFor="buy-token-price-input">
+                        Price (GUIL/ETH)
+                      </label>
+                    </td>
+                  </tr>
 
-              <div className={style.row}>
-                <TextInput
-                  type="number"
-                  value={buyGuilPrice}
-                  min="0"
-                  id="buy-token-price-input"
-                  placeholder="Buy Price"
-                  onChange={onBuyGuilPriceChange}
-                />
-              </div>
+                  <tr>
+                    <td>
+                      <TextInput
+                        type="number"
+                        value={buyGuilPrice}
+                        min="0"
+                        id="buy-token-price-input"
+                        placeholder="Buy Price"
+                        onChange={onBuyGuilPriceChange}
+                      />
+                    </td>
+                  </tr>
 
-              <div className={style.row}>
-                <Button
-                  className={style.blockButton}
-                  onClick={onBuyClick}
-                  disabled={buyDisabled}
-                >
-                  Place Buy Order
-                </Button>
-              </div>
+                  <tr>
+                    <td>
+                      <Button
+                        className={style.blockButton}
+                        onClick={onBuyClick}
+                        disabled={buyDisabled}
+                      >
+                        Place Buy Order
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
             </TabPanel>
 
             <TabPanel as="div">
-              <div className={style.row}>
-                <label htmlFor="sell-token-amount-input">
-                  Sell Amount (GUIL)
-                </label>
-              </div>
+              <Table>
+                <tbody>
+                  <tr>
+                    <td>
+                      <label htmlFor="sell-token-amount-input">
+                        Amount (GUIL)
+                      </label>
+                    </td>
+                  </tr>
 
-              <div className={style.row}>
-                <TextInput
-                  type="number"
-                  value={sellGuilAmount}
-                  min="0"
-                  id="sell-token-amount-input"
-                  placeholder="Sell Amount"
-                  onChange={onSellGuilAmountChange}
-                />
-              </div>
+                  <tr>
+                    <td>
+                      <TextInput
+                        type="number"
+                        value={sellGuilAmount}
+                        min="0"
+                        id="sell-token-amount-input"
+                        placeholder="Sell Amount"
+                        onChange={onSellGuilAmountChange}
+                      />
+                    </td>
+                  </tr>
 
-              <div className={style.row}>
-                <label htmlFor="sell-token-price-input">Sell Price</label>
-              </div>
+                  <tr>
+                    <td>
+                      <label htmlFor="sell-token-price-input">
+                        Price (GUIL/ETH)
+                      </label>
+                    </td>
+                  </tr>
 
-              <div className={style.row}>
-                <TextInput
-                  type="number"
-                  value={sellGuilPrice}
-                  min="0"
-                  id="sell-token-price-input"
-                  placeholder="Sell Price"
-                  onChange={onSellGuilPriceChange}
-                />
-              </div>
+                  <tr>
+                    <td>
+                      <TextInput
+                        type="number"
+                        value={sellGuilPrice}
+                        min="0"
+                        id="sell-token-price-input"
+                        placeholder="Sell Price"
+                        onChange={onSellGuilPriceChange}
+                      />
+                    </td>
+                  </tr>
 
-              <div className={style.row}>
-                <Button
-                  className={style.blockButton}
-                  onClick={onSellClick}
-                  disabled={sellDisabled}
-                >
-                  Place Sell Order
-                </Button>
-              </div>
+                  <tr>
+                    <td>
+                      <Button
+                        className={style.blockButton}
+                        onClick={onSellClick}
+                        disabled={sellDisabled}
+                      >
+                        Place Sell Order
+                      </Button>
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
             </TabPanel>
           </TabPanels>
         </Tabs>
