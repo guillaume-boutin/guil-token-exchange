@@ -21,13 +21,23 @@ const _OrderRow = ({ account, fillOrder, order }) => {
     isSelfOwned ? style.selfOwned : ""
   }`.trim();
 
+  const isBuy = order.transactionType === "buy";
+
+  const isSell = order.transactionType === "sell";
+
   return (
     <tr className={trClasses} onClick={onClick}>
-      <td>{order.token.unitaryAmount}</td>
+      <td className={style[isBuy ? "buy" : "sell"]}>
+        {isSell ? "-" : ""}
+        {order.token.unitaryAmount}
+      </td>
 
-      <td className={style[order.transactionType]}>{order.price.toFixed(5)}</td>
+      <td>{order.price.toFixed(5)}</td>
 
-      <td>{order.ether.unitaryAmount}</td>
+      <td className={style[isBuy ? "sell" : "buy"]}>
+        {isBuy ? "-" : ""}
+        {order.ether.unitaryAmount}
+      </td>
     </tr>
   );
 };
