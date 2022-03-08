@@ -1,18 +1,14 @@
 import { Table } from "../../common/table";
-import { TextInput } from "../../common/form";
-import { Button } from "../../common/button";
-import web3 from "web3";
-
-import styles from "./Balance.module.scss";
 import { OperationInput } from "./OperationInput";
 import { connect } from "../../../context";
+import BigNumber from "bignumber.js";
 
 /**
  * @param props
- * @param {Token} props.walletEthBalance
- * @param {Token} props.exchangeEthBalance
- * @param {Token} props.walletGuilBalance
- * @param {Token} props.exchangeGuilBalance
+ * @param {BigNumber} props.walletEthBalance
+ * @param {BigNumber} props.exchangeEthBalance
+ * @param {BigNumber} props.walletGuilBalance
+ * @param {BigNumber} props.exchangeGuilBalance
  */
 const _WithdrawPanel = ({
   web3,
@@ -70,9 +66,9 @@ const _WithdrawPanel = ({
         <tr>
           <td>ETH</td>
 
-          <td>{walletEthBalance.unitaryAmount.toFixed(3)}</td>
+          <td>{walletEthBalance.toFixed(3)}</td>
 
-          <td>{exchangeEthBalance.unitaryAmount.toFixed(3)}</td>
+          <td>{exchangeEthBalance.toFixed(3)}</td>
         </tr>
 
         <tr>
@@ -84,9 +80,9 @@ const _WithdrawPanel = ({
         <tr>
           <td>GUIL</td>
 
-          <td>{walletGuilBalance.unitaryAmount.toFixed(3)}</td>
+          <td>{walletGuilBalance.toFixed(3)}</td>
 
-          <td>{exchangeGuilBalance.unitaryAmount.toFixed(3)}</td>
+          <td>{exchangeGuilBalance.toFixed(3)}</td>
         </tr>
 
         <tr>

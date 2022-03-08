@@ -12,7 +12,7 @@ export class TradeRow extends Component {
   }
 
   get amount() {
-    return this.props.trade.order.token.unitaryAmount;
+    return this.props.trade.order.token.unitaryAmount.toString();
   }
 
   get price() {

@@ -24,6 +24,13 @@ class _Balance extends Component {
 
   get isLoading() {
     return (
+      this.props.web3.ethBalance === null ||
+      this.props.guilToken.balance === null ||
+      this.props.exchange.ethBalance === null ||
+      this.props.exchange.guilBalance === null
+    );
+
+    return (
       this.props.web3.ethBalanceLoading ||
       this.props.guilToken.balanceLoading ||
       this.props.exchange.balancesLoading
@@ -31,31 +38,19 @@ class _Balance extends Component {
   }
 
   get walletEthBalance() {
-    return new Token({
-      address: ETHER_ADDRESS,
-      amount: this.props.web3.ethBalance,
-    });
+    return this.props.web3.ethBalance.shiftedBy(-18);
   }
 
   get exchangeEthBalance() {
-    return new Token({
-      address: ETHER_ADDRESS,
-      amount: this.props.exchange.ethBalance,
-    });
+    return this.props.exchange.ethBalance.shiftedBy(-18);
   }
 
   get walletGuilBalance() {
-    return new Token({
-      address: this.props.guilToken.contractAddress,
-      amount: this.props.guilToken.balance,
-    });
+    return this.props.guilToken.balance.shiftedBy(-18);
   }
 
   get exchangeGuilBalance() {
-    return new Token({
-      address: this.props.guilToken.contractAddress,
-      amount: this.props.exchange.guilBalance,
-    });
+    return this.props.exchange.guilBalance.shiftedBy(-18);
   }
 
   render() {

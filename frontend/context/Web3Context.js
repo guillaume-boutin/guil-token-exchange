@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import BigNumber from "bignumber.js";
 
 export const Web3Context = createContext({});
 
@@ -11,7 +12,7 @@ export const Web3Provider = ({ children }) => {
   const [web3Loaded, setWeb3Loaded] = useState(false);
   const [account, setAccount] = useState(null);
   const [exchangeContract, setExchangeContract] = useState(null);
-  const [ethBalance, setEthBalance] = useState(null);
+  const [ethBalance, _setEthBalance] = useState(null);
   const [ethBalanceLoading, setEthBalanceLoading] = useState(false);
 
   const loadEthBalance = async () => {
@@ -19,6 +20,10 @@ export const Web3Provider = ({ children }) => {
     const balance = await web3.eth.getBalance(account);
     setEthBalance(balance);
     setEthBalanceLoading(false);
+  };
+
+  const setEthBalance = (value) => {
+    _setEthBalance(new BigNumber(value));
   };
 
   return (

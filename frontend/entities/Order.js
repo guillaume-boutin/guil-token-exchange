@@ -1,5 +1,6 @@
 import { Token } from "./Token";
 import moment from "moment";
+import BigNumber from "bignumber.js";
 
 /**
  * @property {string} id;
@@ -32,16 +33,25 @@ export class Order {
     return this.offer.isEth ? "buy" : "sell";
   }
 
+  /**
+   * @return {Token}
+   */
   get ether() {
     return this.offer.isEth ? this.offer : this.demand;
   }
 
+  /**
+   * @return {Token}
+   */
   get token() {
     return this.offer.isEth ? this.demand : this.offer;
   }
 
+  /**
+   * @return {BigNumber}
+   */
   get price() {
-    return this.ether.amount / this.token.amount;
+    return this.ether.amount.dividedBy(this.token.amount);
   }
 }
 
@@ -55,11 +65,11 @@ export class OrderFactory {
       user,
       offer: new Token({
         address: offer.contractAddress,
-        amount: offer.amount,
+        amount: new BigNumber(offer.amount),
       }),
       demand: new Token({
         address: demand.contractAddress,
-        amount: demand.amount,
+        amount: new BigNumber(demand.amount),
       }),
       timestamp: moment.unix(timestamp),
     });

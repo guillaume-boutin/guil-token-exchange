@@ -2,6 +2,7 @@ import React, { createContext, useState } from "react";
 import { HandledOrderFactory } from "../entities";
 import { ETHER_ADDRESS } from "../helpers";
 import { value } from "lodash/seq";
+import BigNumber from "bignumber.js";
 
 export const ExchangeContext = createContext({});
 
@@ -19,9 +20,9 @@ export const ExchangeProvider = ({ children }) => {
   const [cancelledOrders, setCancelledOrders] = useState([]);
   const [cancelledOrdersLoading, setCancelledOrdersLoading] = useState(false);
   const [orderCancelling, setOrderCancelling] = useState(false);
-  const [ethBalance, setEthBalance] = useState(null);
+  const [ethBalance, _setEthBalance] = useState(null);
   const [ethBalanceLoading, setEthBalanceLoading] = useState(false);
-  const [guilBalance, setGuilBalance] = useState(null);
+  const [guilBalance, _setGuilBalance] = useState(null);
   const [guilBalanceLoading, setGuilBalanceLoading] = useState(false);
 
   const setContract = (contract) => {
@@ -86,6 +87,10 @@ export const ExchangeProvider = ({ children }) => {
       .on("error", (error) => {});
   };
 
+  const setEthBalance = (value) => {
+    _setEthBalance(new BigNumber(value));
+  };
+
   const loadEthBalance = async (account) => {
     setEthBalanceLoading(true);
     const balance = await contract.methods
@@ -93,6 +98,10 @@ export const ExchangeProvider = ({ children }) => {
       .call();
     setEthBalance(balance);
     setEthBalanceLoading(false);
+  };
+
+  const setGuilBalance = (value) => {
+    _setGuilBalance(new BigNumber(value));
   };
 
   const loadGuilBalance = async (account, guilTokenAddress) => {

@@ -29,14 +29,14 @@ const _OrderRow = ({ account, fillOrder, order }) => {
     <tr className={trClasses} onClick={onClick}>
       <td className={style[isBuy ? "buy" : "sell"]}>
         {isSell ? "-" : ""}
-        {order.token.unitaryAmount}
+        {order.token.unitaryAmount.toString()}
       </td>
 
       <td>{order.price.toFixed(5)}</td>
 
       <td className={style[isBuy ? "sell" : "buy"]}>
         {isBuy ? "-" : ""}
-        {order.ether.unitaryAmount}
+        {order.ether.unitaryAmount.toString()}
       </td>
     </tr>
   );

@@ -16,7 +16,7 @@ export class OrderRow extends Component {
   }
 
   get amount() {
-    return this.props.order.token.unitaryAmount;
+    return this.props.order.token.unitaryAmount.toString();
   }
 
   get price() {

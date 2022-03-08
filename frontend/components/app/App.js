@@ -4,7 +4,7 @@ import styles from "./App.module.scss";
 import { connect } from "../../context";
 import { Component } from "../Component";
 import { Web3Service } from "../../services";
-import { HandledOrderFactory, Order, OrderFactory } from "../../entities";
+import { HandledOrderFactory, OrderFactory } from "../../entities";
 import { ETHER_ADDRESS } from "../../helpers";
 
 class AppComponent extends Component {

@@ -1,14 +1,15 @@
 import { ETHER_ADDRESS } from "../helpers";
+import BigNumber from "bignumber.js";
 
 /**
  * @property {string} address
- * @property {string} amount
+ * @property {BigNumber} amount
  */
 export class Token {
   /**
    * @param props;
    * @param {string} props.address
-   * @param {string} props.amount
+   * @param {BigNumber} props.amount
    */
   constructor({ address, amount }) {
     this.address = address;
@@ -23,6 +24,10 @@ export class Token {
   }
 
   get unitaryAmount() {
-    return parseFloat(this.amount) / 10 ** 18;
+    // if (!this.amount) {
+    //   return new BigNumber(666);
+    // }
+
+    return this.amount.shiftedBy(-18);
   }
 }

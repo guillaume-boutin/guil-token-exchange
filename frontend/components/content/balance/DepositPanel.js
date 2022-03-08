@@ -2,13 +2,14 @@ import { Table } from "../../common/table";
 import { Token } from "../../../entities";
 import { OperationInput } from "./OperationInput";
 import { connect } from "../../../context";
+import BigNumber from "bignumber.js";
 
 /**
  * @param props
- * @param {Token} props.walletEthBalance
- * @param {Token} props.exchangeEthBalance
- * @param {Token} props.walletGuilBalance
- * @param {Token} props.exchangeGuilBalance
+ * @param {BigNumber} props.walletEthBalance
+ * @param {BigNumber} props.exchangeEthBalance
+ * @param {BigNumber} props.walletGuilBalance
+ * @param {BigNumber} props.exchangeGuilBalance
  */
 const _DepositPanel = ({
   web3,
@@ -74,9 +75,9 @@ const _DepositPanel = ({
           <tr>
             <td>ETH</td>
 
-            <td>{walletEthBalance.unitaryAmount.toFixed(3)}</td>
+            <td>{walletEthBalance.toFixed(3)}</td>
 
-            <td>{exchangeEthBalance.unitaryAmount.toFixed(3)}</td>
+            <td>{exchangeEthBalance.toFixed(3)}</td>
           </tr>
 
           <tr>
@@ -88,9 +89,9 @@ const _DepositPanel = ({
           <tr>
             <td>GUIL</td>
 
-            <td>{walletGuilBalance.unitaryAmount.toFixed(3)}</td>
+            <td>{walletGuilBalance.toFixed(3)}</td>
 
-            <td>{exchangeGuilBalance.unitaryAmount.toFixed(3)}</td>
+            <td>{exchangeGuilBalance.toFixed(3)}</td>
           </tr>
 
           <tr>

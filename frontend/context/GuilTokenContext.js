@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import BigNumber from "bignumber.js";
 
 export const GuilTokenContext = createContext({});
 
@@ -8,10 +9,14 @@ export const GuilTokenConsumer = ({ children }) => (
 
 export const GuilTokenProvider = ({ children }) => {
   const [contract, setContract] = useState(null);
-  const [balance, setBalance] = useState(null);
+  const [balance, _setBalance] = useState(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
 
   const contractAddress = contract?.options.address;
+
+  const setBalance = (value) => {
+    _setBalance(new BigNumber(value));
+  };
 
   const loadBalance = async (account) => {
     setBalanceLoading(true);
