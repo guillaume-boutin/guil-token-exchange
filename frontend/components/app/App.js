@@ -6,7 +6,7 @@ import { Component } from "../Component";
 import { Web3Service } from "../../services";
 import { HandledOrderFactory, OrderFactory } from "../../entities";
 import { ETHER_ADDRESS } from "../../helpers";
-import { FilledOrderFactory } from "../../entities/FilledOrder";
+import { FilledOrder, FilledOrderFactory } from "../../entities/FilledOrder";
 import BigNumber from "bignumber.js";
 
 class AppComponent extends Component {
@@ -16,6 +16,14 @@ class AppComponent extends Component {
     super(props);
 
     this.web3Service = new Web3Service();
+  }
+
+  boundMethods() {
+    return [
+      this.onTradeEvent,
+      this.refreshTradeTakerBalances,
+      this.refreshTradePlacerBalances,
+    ];
   }
 
   async componentDidMount() {
@@ -78,8 +86,10 @@ class AppComponent extends Component {
 
     contract.events.Order({}, (error, event) => {
       const order = new OrderFactory().fromEventValues(event.returnValues);
-      const account = this.props.web3.account;
 
+      this.props.exchange.addToOrders(order);
+
+      const account = this.props.web3.account;
       if (account !== order.user) return;
 
       if (order.offer.isEth) {
@@ -87,14 +97,13 @@ class AppComponent extends Component {
       } else {
         this.props.exchange.addToGuilBalance(order.offer.amount.negated());
       }
-
-      this.props.exchange.addToOrders(order);
     });
 
     contract.events.Cancel({}, (error, event) => {
       const cancelledOrder = new HandledOrderFactory().fromEventValues(
         event.returnValues
       );
+      this.props.exchange.addToCancelledOrders(cancelledOrder);
 
       const account = this.props.web3.account;
 
@@ -106,43 +115,10 @@ class AppComponent extends Component {
         this.props.exchange.addToGuilBalance(cancelledOrder.order.offer.amount);
       }
 
-      this.props.exchange.addToCancelledOrders(cancelledOrder);
       this.props.exchange.setOrderCancelling(false);
     });
 
-    contract.events.Trade({}, (error, event) => {
-      const filledOrder = new FilledOrderFactory().fromEventValues(
-        event.returnValues
-      );
-      this.props.exchange.addToFilledOrders(filledOrder);
-
-      const account = this.props.web3.account;
-      const placer = filledOrder.order.user;
-      const taker = filledOrder.user;
-
-      if (account !== placer && account !== taker) return;
-      const isPlacer = account === placer;
-
-      let guilAmount = filledOrder.isBuy
-        ? filledOrder.offer.amount
-        : filledOrder.demand.amount.negated();
-
-      let ethAmount = filledOrder.isBuy
-        ? filledOrder.demand.amount.negated()
-        : filledOrder.offer.amount;
-
-      if (isPlacer) {
-        guilAmount = guilAmount.negated();
-        ethAmount = ethAmount.negated();
-      }
-
-      this.props.exchange.addToGuilBalance(guilAmount);
-      this.props.exchange.addToEthBalance(ethAmount);
-
-      if (account !== taker) return;
-
-      this.props.exchange.setOrderFilling(false);
-    });
+    contract.events.Trade({}, this.onTradeEvent);
 
     this.props.exchange.setContract(contract);
   }
@@ -150,6 +126,63 @@ class AppComponent extends Component {
   async loadGuilTokenContract(web3) {
     const contract = await this.web3Service.getGuilTokenContract(web3);
     this.props.guilToken.setContract(contract);
+  }
+
+  onTradeEvent(error, event) {
+    const trade = new FilledOrderFactory().fromEventValues(event.returnValues);
+    this.props.exchange.addToFilledOrders(trade);
+
+    const account = this.props.web3.account;
+    const placer = trade.order.user;
+    const taker = trade.user;
+
+    if (account !== placer && account !== taker) return;
+
+    this.refreshTradeTakerBalances(trade);
+    this.refreshTradePlacerBalances(trade);
+
+    if (account !== taker) return;
+
+    this.props.exchange.setOrderFilling(false);
+  }
+
+  /**
+   * @param {FilledOrder} trade
+   */
+  refreshTradePlacerBalances(trade) {
+    let guilAmount, ethAmount;
+
+    if (trade.isBuy) {
+      guilAmount = trade.offer.amount.negated();
+      ethAmount = trade.demand.amount;
+    } else {
+      guilAmount = trade.demand.amount;
+      ethAmount = trade.offer.amount.negated();
+    }
+
+    this.props.exchange.addToGuilBalance(guilAmount);
+    this.props.exchange.addToEthBalance(ethAmount);
+  }
+
+  /**
+   * @param {FilledOrder} trade
+   */
+  refreshTradeTakerBalances(trade) {
+    let guilAmount, ethAmount;
+    const feeAmount = trade.demand.amount.multipliedBy(
+      this.props.exchange.feeRate
+    );
+
+    if (trade.isBuy) {
+      guilAmount = trade.offer.amount;
+      ethAmount = trade.demand.amount.plus(feeAmount).negated();
+    } else {
+      guilAmount = trade.demand.amount.plus(feeAmount).negated();
+      ethAmount = trade.offer.amount;
+    }
+
+    this.props.exchange.addToGuilBalance(guilAmount);
+    this.props.exchange.addToEthBalance(ethAmount);
   }
 
   render() {

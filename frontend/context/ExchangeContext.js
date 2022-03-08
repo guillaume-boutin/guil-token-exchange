@@ -10,6 +10,7 @@ export const ExchangeConsumer = (props) => (
 
 export const ExchangeProvider = ({ children }) => {
   const [contract, _setContract] = useState(null);
+  const [feePercent, _setFeePercent] = useState(null);
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [filledOrders, setFilledOrders] = useState([]);
@@ -23,11 +24,21 @@ export const ExchangeProvider = ({ children }) => {
   const [guilBalance, _setGuilBalance] = useState(null);
   const [guilBalanceLoading, setGuilBalanceLoading] = useState(false);
 
-  const setContract = (contract) => {
+  const setContract = async (contract) => {
     _setContract(contract);
+
+    const feePercent = await contract.methods.feePercent().call();
+
+    console.log(feePercent);
+
+    console.log(new BigNumber(feePercent).shiftedBy(-4).toString());
+
+    _setFeePercent(feePercent);
   };
 
   const contractAddress = contract?.options.address ?? null;
+
+  const feeRate = feePercent ? new BigNumber(feePercent).shiftedBy(-4) : null;
 
   const openOrders = orders.filter((order) => {
     let index = filledOrders.findIndex(
@@ -135,6 +146,7 @@ export const ExchangeProvider = ({ children }) => {
         contract,
         setContract,
         contractAddress,
+        feeRate,
         orders,
         setOrders,
         ordersLoading,
