@@ -8,6 +8,7 @@ import { Token } from "../../../entities";
 import { Spinner } from "../../common/spinner";
 
 import style from "./Balance.module.scss";
+import BigNumber from "bignumber.js";
 
 class _Balance extends Component {
   async componentDidMount() {
@@ -38,19 +39,25 @@ class _Balance extends Component {
   }
 
   get walletEthBalance() {
-    return this.props.web3.ethBalance.shiftedBy(-18);
+    return this.formatAmount(this.props.web3.ethBalance.shiftedBy(-18));
   }
 
   get exchangeEthBalance() {
-    return this.props.exchange.ethBalance.shiftedBy(-18);
+    return this.formatAmount(this.props.exchange.ethBalance.shiftedBy(-18));
   }
 
   get walletGuilBalance() {
-    return this.props.guilToken.balance.shiftedBy(-18);
+    return this.formatAmount(this.props.guilToken.balance.shiftedBy(-18));
   }
 
   get exchangeGuilBalance() {
-    return this.props.exchange.guilBalance.shiftedBy(-18);
+    return this.formatAmount(this.props.exchange.guilBalance.shiftedBy(-18));
+  }
+
+  formatAmount(amount) {
+    if (amount >= 10000) return amount.toFixed(0);
+
+    return amount.precision(4).toString();
   }
 
   render() {

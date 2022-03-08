@@ -25,18 +25,35 @@ const _OrderRow = ({ account, fillOrder, order }) => {
 
   const isSell = order.transactionType === "sell";
 
+  const formattedGuilAmount = (amount) => {
+    amount = amount.shiftedBy(-18);
+    if (isSell) amount = amount.negated();
+
+    return amount.toString();
+  };
+
+  const formattedEthAmount = (amount) => {
+    amount = amount.shiftedBy(-18);
+    if (isBuy) amount = amount.negated();
+
+    return amount.toString();
+  };
+
+  const formattedPrice =
+    order.price > 10000
+      ? order.price.toFixed(0)
+      : order.price.toPrecision(4).toString();
+
   return (
     <tr className={trClasses} onClick={onClick}>
       <td className={style[isBuy ? "buy" : "sell"]}>
-        {isSell ? "-" : ""}
-        {order.token.unitaryAmount.toString()}
+        {formattedGuilAmount(order.token.amount)}
       </td>
 
-      <td>{order.price.toFixed(5)}</td>
+      <td>{formattedPrice}</td>
 
       <td className={style[isBuy ? "sell" : "buy"]}>
-        {isBuy ? "-" : ""}
-        {order.ether.unitaryAmount.toString()}
+        {formattedEthAmount(order.ether.amount)}
       </td>
     </tr>
   );

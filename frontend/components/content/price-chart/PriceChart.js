@@ -67,7 +67,7 @@ class PriceChartComponent extends Component {
   }
 
   render() {
-    const latestPriceChange = this.latestPriceChange.toFixed(6);
+    const latestPriceChange = this.latestPriceChange;
 
     const caret =
       latestPriceChange < 0 ? (
@@ -88,7 +88,7 @@ class PriceChartComponent extends Component {
           {!this.isLoading && (
             <>
               <h4 className={styles.priceTitle}>
-                GUIL/ETH {caret} {latestPriceChange}
+                GUIL/ETH {caret} {latestPriceChange.toPrecision(4)}
               </h4>
 
               <div className={styles.priceChart}>

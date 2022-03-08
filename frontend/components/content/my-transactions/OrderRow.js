@@ -16,11 +16,16 @@ export class OrderRow extends Component {
   }
 
   get amount() {
-    return this.props.order.token.unitaryAmount.toString();
+    const amount = this.props.order.token.amount.shiftedBy(-18);
+    return `${this.isBuy ? "+" : "-"}${amount}`;
   }
 
   get price() {
-    return this.props.order.price.toFixed(6);
+    const price = this.props.order.price;
+
+    if (price > 10000) return price.toFixed(0);
+
+    return price.toPrecision(4);
   }
 
   get isBuy() {
@@ -34,9 +39,7 @@ export class OrderRow extends Component {
   render() {
     return (
       <tr>
-        <td className={style[this.isBuy ? "buy" : "sell"]}>
-          {this.isBuy ? "+" : "-"} {this.amount}
-        </td>
+        <td className={style[this.isBuy ? "buy" : "sell"]}>{this.amount}</td>
 
         <td>{this.price}</td>
 

@@ -12,11 +12,16 @@ export class TradeRow extends Component {
   }
 
   get amount() {
-    return this.props.trade.order.token.unitaryAmount.toString();
+    const amount = this.props.trade.order.token.amount.shiftedBy(-18);
+    return `${this.isBuy ? "+" : "-"}${amount}`;
   }
 
   get price() {
-    return this.props.trade.order.price.toFixed(6);
+    const price = this.props.trade.order.price;
+
+    if (price > 10000) return price.toFixed(0);
+
+    return price.toPrecision(4);
   }
 
   get isBuy() {
@@ -28,9 +33,7 @@ export class TradeRow extends Component {
       <tr>
         <td className={style.textMuted}>{this.time}</td>
 
-        <td className={style[this.isBuy ? "buy" : "sell"]}>
-          {this.isBuy ? "+" : "-"} {this.amount}
-        </td>
+        <td className={style[this.isBuy ? "buy" : "sell"]}>{this.amount}</td>
 
         <td>{this.price}</td>
       </tr>

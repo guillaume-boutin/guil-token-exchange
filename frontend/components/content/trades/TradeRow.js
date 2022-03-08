@@ -11,7 +11,7 @@ export class TradeRow extends Component {
   }
 
   get amount() {
-    return this.props.trade.order.token.unitaryAmount.toString();
+    return this.props.trade.order.token.amount.shiftedBy(-18).toString();
   }
 
   get tradeType() {
@@ -19,7 +19,9 @@ export class TradeRow extends Component {
   }
 
   get price() {
-    return this.props.trade.order.price.toFixed(5);
+    const price = this.props.trade.order.price;
+
+    return price > 10000 ? price.toFixed(0) : price.toPrecision(4);
   }
 
   render() {

@@ -5,10 +5,10 @@ import BigNumber from "bignumber.js";
 
 /**
  * @param props
- * @param {BigNumber} props.walletEthBalance
- * @param {BigNumber} props.exchangeEthBalance
- * @param {BigNumber} props.walletGuilBalance
- * @param {BigNumber} props.exchangeGuilBalance
+ * @param {string} props.walletEthBalance
+ * @param {string} props.exchangeEthBalance
+ * @param {string} props.walletGuilBalance
+ * @param {string} props.exchangeGuilBalance
  */
 const _WithdrawPanel = ({
   web3,
@@ -66,9 +66,9 @@ const _WithdrawPanel = ({
         <tr>
           <td>ETH</td>
 
-          <td>{walletEthBalance.toFixed(3)}</td>
+          <td>{walletEthBalance}</td>
 
-          <td>{exchangeEthBalance.toFixed(3)}</td>
+          <td>{exchangeEthBalance}</td>
         </tr>
 
         <tr>
@@ -80,9 +80,9 @@ const _WithdrawPanel = ({
         <tr>
           <td>GUIL</td>
 
-          <td>{walletGuilBalance.toFixed(3)}</td>
+          <td>{walletGuilBalance}</td>
 
-          <td>{exchangeGuilBalance.toFixed(3)}</td>
+          <td>{exchangeGuilBalance}</td>
         </tr>
 
         <tr>
