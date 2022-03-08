@@ -30,7 +30,21 @@ export class Order {
    * @return {"buy"|"sell"}
    */
   get transactionType() {
-    return this.offer.isEth ? "buy" : "sell";
+    return this.offer.isEth ? "sell" : "buy";
+  }
+
+  /**
+   * @return {boolean}
+   */
+  get isBuy() {
+    return !this.offer.isEth;
+  }
+
+  /**
+   * @return {boolean}
+   */
+  get isSell() {
+    return this.offer.isEth;
   }
 
   /**

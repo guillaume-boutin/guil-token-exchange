@@ -46,7 +46,7 @@ contract Exchange {
 
   event Order(uint id, address user, _Token offer, _Token demand, uint timestamp);
 
-  event Trade(_Order order, uint timestamp);
+  event Trade(_Order order, address user, uint timestamp);
 
   event Cancel(_Order order, uint timestamp);
 
@@ -156,10 +156,10 @@ contract Exchange {
     require(_order.id == _id);
     require(_order.user != msg.sender);
 
-    uint _buyerBalance = balanceOf(msg.sender, _order.demand.contractAddress);
+    uint _takerBalance = balanceOf(msg.sender, _order.demand.contractAddress);
     uint _feeAmount = _order.demand.amount.mul(feePercent).div(10000);
 
-    require(_buyerBalance >= _order.demand.amount.add(_feeAmount));
+    require(_takerBalance >= _order.demand.amount.add(_feeAmount));
 
     uint _sellerBalance = offerBalances[_order.user][_order.offer.contractAddress];
     require(_sellerBalance >= _order.offer.amount);
@@ -177,7 +177,7 @@ contract Exchange {
     filledOrders[_id] = _order;
     delete openOrders[_id];
 
-    emit Trade(_order, block.timestamp);
+    emit Trade(_order, msg.sender, block.timestamp);
   }
 
   function _handleDeposit(address _user, _Token memory _token) internal {

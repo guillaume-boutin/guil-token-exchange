@@ -1,5 +1,6 @@
 import { Order, OrderFactory } from "./Order";
 import moment from "moment";
+import { Token } from "./Token";
 
 /**
  * @property {Order} order;
@@ -14,6 +15,34 @@ export class HandledOrder {
   constructor({ order, timestamp }) {
     this.order = order;
     this.timestamp = timestamp;
+  }
+
+  /**
+   * @return {boolean}
+   */
+  get isBuy() {
+    return this.order.isBuy;
+  }
+
+  /**
+   * @return {boolean}
+   */
+  get isSell() {
+    return this.order.isSell;
+  }
+
+  /**
+   * @return {Token}
+   */
+  get offer() {
+    return this.order.offer;
+  }
+
+  /**
+   * @return {Token}
+   */
+  get demand() {
+    return this.order.demand;
   }
 }
 

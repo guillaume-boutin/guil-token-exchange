@@ -1,7 +1,5 @@
 import React, { createContext, useState } from "react";
-import { HandledOrderFactory } from "../entities";
 import { ETHER_ADDRESS } from "../helpers";
-import { value } from "lodash/seq";
 import BigNumber from "bignumber.js";
 
 export const ExchangeContext = createContext({});
@@ -124,13 +122,11 @@ export const ExchangeProvider = ({ children }) => {
     ordersLoading || filledOrdersLoading || cancelledOrdersLoading;
 
   const addToEthBalance = (value) => {
-    setEthBalance((parseInt(value, 10) + parseInt(ethBalance, 10)).toString());
+    setEthBalance(ethBalance.plus(value));
   };
 
   const addToGuilBalance = (value) => {
-    setGuilBalance(
-      (parseInt(value, 10) + parseInt(guilBalance, 10)).toString()
-    );
+    setGuilBalance(guilBalance.plus(value));
   };
 
   return (

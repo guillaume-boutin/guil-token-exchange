@@ -3,12 +3,8 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from "../../common/tabs";
 import { DepositPanel, WithdrawPanel } from ".";
 import { connect } from "../../../context";
 import { Component } from "../../Component";
-import { ETHER_ADDRESS } from "../../../helpers";
-import { Token } from "../../../entities";
 import { Spinner } from "../../common/spinner";
-
 import style from "./Balance.module.scss";
-import BigNumber from "bignumber.js";
 
 class _Balance extends Component {
   async componentDidMount() {

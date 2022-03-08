@@ -26,7 +26,7 @@ export const GuilTokenProvider = ({ children }) => {
   };
 
   const addToBalance = (value) => {
-    setBalance((parseInt(value, 10) + parseInt(balance, 10)).toString());
+    setBalance(balance.plus(value));
   };
 
   return (
