@@ -5,6 +5,7 @@ import style from "./MyTransactions.module.scss";
 /**
  * @property props
  * @property {HandledOrder} props.trade
+ * @property {string} props.account
  */
 export class TradeRow extends Component {
   get time() {
@@ -25,7 +26,9 @@ export class TradeRow extends Component {
   }
 
   get isBuy() {
-    return this.props.trade.order.transactionType === "buy";
+    return this.props.trade.user === this.props.account
+      ? this.props.trade.order.transactionType === "sell"
+      : this.props.trade.order.transactionType === "buy";
   }
 
   render() {

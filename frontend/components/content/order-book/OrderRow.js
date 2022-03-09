@@ -7,9 +7,8 @@ import { connect } from "../../../context";
  * @param {string} props.account
  * @param {function(Order, string)} props.fillOrder
  * @param {Order} props.order
- * @param {BigNumber} props.feeRate;
  */
-const _OrderRow = ({ account, fillOrder, order, feeRate }) => {
+const _OrderRow = ({ account, fillOrder, order }) => {
   const isSelfOwned = order.user === account;
 
   const onClick = () => {
@@ -28,21 +27,16 @@ const _OrderRow = ({ account, fillOrder, order, feeRate }) => {
 
   const formattedGuilAmount = (amount) => {
     amount = amount.shiftedBy(-18);
+    if (isSell) amount = amount.negated();
 
-    if (isBuy) return amount.toString();
-
-    const feeAmount = amount.multipliedBy(feeRate);
-
-    return amount.plus(feeAmount).negated().toString();
+    return amount.toString();
   };
 
   const formattedEthAmount = (amount) => {
     amount = amount.shiftedBy(-18);
-    if (isSell) return amount.toString();
+    if (isBuy) amount = amount.negated();
 
-    const feeAmount = amount.multipliedBy(feeRate);
-
-    return amount.plus(feeAmount).negated().toString();
+    return amount.toString();
   };
 
   const formattedPrice =
@@ -69,7 +63,6 @@ export const OrderRow = connect(
   ({ web3, exchange }) => ({
     account: web3.account,
     fillOrder: exchange.fillOrder,
-    feeRate: exchange.feeRate,
   }),
   _OrderRow
 );

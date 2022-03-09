@@ -169,16 +169,16 @@ class AppComponent extends Component {
    */
   refreshTradeTakerBalances(trade) {
     let guilAmount, ethAmount;
-    const feeAmount = trade.demand.amount.multipliedBy(
+    const feeAmount = trade.offer.amount.multipliedBy(
       this.props.exchange.feeRate
     );
 
     if (trade.isBuy) {
-      guilAmount = trade.offer.amount;
-      ethAmount = trade.demand.amount.plus(feeAmount).negated();
+      guilAmount = trade.offer.amount.minus(feeAmount);
+      ethAmount = trade.demand.amount.negated();
     } else {
-      guilAmount = trade.demand.amount.plus(feeAmount).negated();
-      ethAmount = trade.offer.amount;
+      guilAmount = trade.demand.amount.negated();
+      ethAmount = trade.offer.amount.minus(feeAmount);
     }
 
     this.props.exchange.addToGuilBalance(guilAmount);

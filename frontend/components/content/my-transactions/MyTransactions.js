@@ -12,7 +12,7 @@ import { Spinner } from "../../common/spinner";
 /**
  * @property {string} props.account
  * @property {Order[]} props.orders
- * @property {HandledOrder[]} props.trades
+ * @property {FilledOrder[]} props.trades
  * @property {function(Order, string)} props.cancelOrder
  * @property {boolean} props.anyOrdersLoading
  */
@@ -29,7 +29,10 @@ class MyTransactionsComponent extends Component {
 
   get trades() {
     return this.props.trades
-      .filter((t) => t.order.user === this.props.account)
+      .filter(
+        (t) =>
+          t.order.user === this.props.account || t.user === this.props.account
+      )
       .sort((a, b) => (b.timestamp.isBefore(a.timestamp) ? -1 : 1));
   }
 
@@ -77,7 +80,11 @@ class MyTransactionsComponent extends Component {
 
                     <tbody>
                       {this.trades.map((trade, i) => (
-                        <TradeRow key={i} trade={trade} />
+                        <TradeRow
+                          key={i}
+                          trade={trade}
+                          account={this.props.account}
+                        />
                       ))}
                     </tbody>
                   </Table>
