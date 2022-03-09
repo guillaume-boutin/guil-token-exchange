@@ -6,6 +6,7 @@ export const TextInput = ({
   min = null,
   max = null,
   onChange,
+  className = "",
   ...props
 }) => (
   <input
@@ -13,7 +14,7 @@ export const TextInput = ({
     value={value}
     min={min}
     max={max}
-    className={styles.textInput}
+    className={`${styles.textInput} ${className}`.trim()}
     onChange={onChange}
     {...props}
   />

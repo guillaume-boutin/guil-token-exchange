@@ -12,7 +12,26 @@
     .inputRow {
       display: flex;
       flex-direction: row;
-      gap: 4px;
+      //gap: 4px;
+
+      .numberInput {
+        border-right: none;
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        -moz-outline-radius-topright: 0;
+        -moz-outline-radius-bottomright: 0;
+
+        &:focus {
+          -moz-outline-radius-topright: 0;
+          -moz-outline-radius-bottomright: 0;
+        }
+      }
+
+      .allButton {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        margin-right: 6px;
+      }
     }
   }
 }

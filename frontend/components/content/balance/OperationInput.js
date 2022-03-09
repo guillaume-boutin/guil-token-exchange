@@ -17,10 +17,16 @@ export const OperationInput = ({ label, max, onSubmit }) => {
     setAmount(e.target.value);
   };
 
-  const onClick = () => {
+  const onActionClick = () => {
     onSubmit(amount);
     setAmount(0);
   };
+
+  const onAllClick = () => {
+    setAmount(max.toNumber());
+  };
+
+  const disabled = amount <= 0 || amount > max.toNumber();
 
   return (
     <div className={style.inputRow}>
@@ -29,10 +35,15 @@ export const OperationInput = ({ label, max, onSubmit }) => {
         value={amount}
         min={0}
         max={max.toString()}
+        className={style.numberInput}
         onChange={onChange}
       />
 
-      <Button onClick={onClick} disabled={amount <= 0}>
+      <Button className={style.allButton} onClick={onAllClick}>
+        all
+      </Button>
+
+      <Button onClick={onActionClick} disabled={disabled}>
         {label}
       </Button>
     </div>

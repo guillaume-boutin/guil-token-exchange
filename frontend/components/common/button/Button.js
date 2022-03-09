@@ -7,11 +7,9 @@ export const Button = ({
   disabled = false,
   ...props
 }) => {
-  const classes = `${styles.button} ${className ?? ""}`.trim();
-
   return (
     <button
-      className={classes}
+      className={`${styles.button} ${className}`.trim()}
       onClick={onClick}
       disabled={disabled}
       {...props}

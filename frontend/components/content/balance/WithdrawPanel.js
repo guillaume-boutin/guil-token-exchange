@@ -26,7 +26,7 @@ const _WithdrawPanel = ({
   };
 
   const onWithdrawEth = async (value) => {
-    const amount = web3.web3.utils.toWei(value, "ether");
+    const amount = web3.web3.utils.toWei(value.toString(), "ether");
 
     await exchange.contract.methods
       .withdrawEther(amount)
@@ -42,7 +42,7 @@ const _WithdrawPanel = ({
   };
 
   const onWithdrawGuil = async (value) => {
-    const amount = web3.web3.utils.toWei(value, "ether");
+    const amount = web3.web3.utils.toWei(value.toString(), "ether");
 
     exchange.contract.methods
       .withdraw({

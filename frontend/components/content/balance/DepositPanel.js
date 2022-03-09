@@ -26,7 +26,7 @@ const _DepositPanel = ({
   };
 
   const onDepositEth = async (value) => {
-    const amount = web3.web3.utils.toWei(value, "ether");
+    const amount = web3.web3.utils.toWei(value.toString(), "ether");
 
     await exchange.contract.methods
       .depositEther()
@@ -40,7 +40,7 @@ const _DepositPanel = ({
   };
 
   const onDepositGuil = async (value) => {
-    const amount = web3.web3.utils.toWei(value, "ether");
+    const amount = web3.web3.utils.toWei(value.toString(), "ether");
 
     guilToken.contract.methods
       .approve(exchange.contractAddress, amount)
