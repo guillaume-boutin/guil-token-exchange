@@ -27,7 +27,7 @@
       max-height: 50%;
 
       .tableRow {
-        &.selfOwned {
+        &.disabled {
           color: var(--zinc-500);
 
           .buy {
@@ -42,7 +42,7 @@
           background-color: var(--zinc-600);
           cursor: pointer;
 
-          &.selfOwned {
+          &.disabled {
             background-color: revert;
             cursor: default;
           }

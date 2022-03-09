@@ -20,7 +20,11 @@ class AppComponent extends Component {
 
   boundMethods() {
     return [
+      this.onDepositEvent,
+      this.onWithdrawEvent,
+      this.onOrderEvent,
       this.onTradeEvent,
+      this.onCancelEvent,
       this.refreshTradeTakerBalances,
       this.refreshTradePlacerBalances,
     ];
@@ -48,84 +52,83 @@ class AppComponent extends Component {
   async loadExchangeContract(web3) {
     const contract = await this.web3Service.getExchangeContract(web3);
 
-    contract.events.Deposit({}, async (error, event) => {
-      const account = this.props.web3.account;
-      if (account !== event.returnValues.user) return;
-
-      const tokenAddress = event.returnValues.token.contractAddress;
-      const amount = new BigNumber(event.returnValues.token.amount);
-
-      if (tokenAddress === ETHER_ADDRESS) {
-        this.props.exchange.addToEthBalance(amount);
-        await this.props.web3.loadEthBalance();
-      } else {
-        this.props.guilToken.addToBalance(amount.negated());
-        this.props.exchange.addToGuilBalance(amount);
-      }
-
-      this.props.exchange.setBalancesLoading(false);
-    });
-
-    contract.events.Withdraw({}, async (error, event) => {
-      const account = this.props.web3.account;
-      if (account !== event.returnValues.user) return;
-
-      const tokenAddress = event.returnValues.token.contractAddress;
-      const amount = new BigNumber(event.returnValues.token.amount);
-
-      if (tokenAddress === ETHER_ADDRESS) {
-        this.props.exchange.addToEthBalance(amount.negated());
-        await this.props.web3.loadEthBalance();
-      } else {
-        this.props.exchange.addToGuilBalance(amount.negated());
-        this.props.guilToken.addToBalance(amount);
-      }
-
-      this.props.exchange.setBalancesLoading(false);
-    });
-
-    contract.events.Order({}, (error, event) => {
-      const order = new OrderFactory().fromEventValues(event.returnValues);
-
-      this.props.exchange.addToOrders(order);
-
-      const account = this.props.web3.account;
-      if (account !== order.user) return;
-
-      if (order.offer.isEth) {
-        this.props.exchange.addToEthBalance(order.offer.amount.negated());
-      } else {
-        this.props.exchange.addToGuilBalance(order.offer.amount.negated());
-      }
-    });
-
-    contract.events.Cancel({}, (error, event) => {
-      const cancelledOrder = new HandledOrderFactory().fromEventValues(
-        event.returnValues
-      );
-      this.props.exchange.addToCancelledOrders(cancelledOrder);
-
-      const account = this.props.web3.account;
-
-      if (account !== cancelledOrder.order.user) return;
-
-      if (cancelledOrder.order.offer.isEth) {
-        this.props.exchange.addToEthBalance(cancelledOrder.order.offer.amount);
-      } else {
-        this.props.exchange.addToGuilBalance(cancelledOrder.order.offer.amount);
-      }
-
-      this.props.exchange.setOrderCancelling(false);
-    });
-
+    contract.events.Deposit({}, this.onDepositEvent);
+    contract.events.Withdraw({}, this.onWithdrawEvent);
+    contract.events.Order({}, this.onOrderEvent);
+    contract.events.Cancel({}, this.onCancelEvent);
     contract.events.Trade({}, this.onTradeEvent);
 
     this.props.exchange.setContract(contract);
   }
 
-  async loadGuilTokenContract(web3) {
-    const contract = await this.web3Service.getGuilTokenContract(web3);
-    this.props.guilToken.setContract(contract);
+  async onDepositEvent(error, event) {
+    const account = this.props.web3.account;
+    if (account !== event.returnValues.user) return;
+
+    const tokenAddress = event.returnValues.token.contractAddress;
+    const amount = new BigNumber(event.returnValues.token.amount);
+
+    if (tokenAddress === ETHER_ADDRESS) {
+      this.props.exchange.addToEthBalance(amount);
+      await this.props.web3.loadEthBalance();
+    } else {
+      this.props.guilToken.addToBalance(amount.negated());
+      this.props.exchange.addToGuilBalance(amount);
+    }
+
+    this.props.exchange.setBalancesLoading(false);
+  }
+
+  async onWithdrawEvent(error, event) {
+    const account = this.props.web3.account;
+    if (account !== event.returnValues.user) return;
+
+    const tokenAddress = event.returnValues.token.contractAddress;
+    const amount = new BigNumber(event.returnValues.token.amount);
+
+    if (tokenAddress === ETHER_ADDRESS) {
+      this.props.exchange.addToEthBalance(amount.negated());
+      await this.props.web3.loadEthBalance();
+    } else {
+      this.props.exchange.addToGuilBalance(amount.negated());
+      this.props.guilToken.addToBalance(amount);
+    }
+
+    this.props.exchange.setBalancesLoading(false);
+  }
+
+  onOrderEvent(error, event) {
+    const order = new OrderFactory().fromEventValues(event.returnValues);
+
+    this.props.exchange.addToOrders(order);
+
+    const account = this.props.web3.account;
+    if (account !== order.user) return;
+
+    if (order.offer.isEth) {
+      this.props.exchange.addToEthBalance(order.offer.amount.negated());
+    } else {
+      this.props.exchange.addToGuilBalance(order.offer.amount.negated());
+    }
+  }
+
+  onCancelEvent(error, event) {
+    const cancelledOrder = new HandledOrderFactory().fromEventValues(
+      event.returnValues
+    );
+    this.props.exchange.addToCancelledOrders(cancelledOrder);
+
+    const account = this.props.web3.account;
+
+    if (account !== cancelledOrder.order.user) return;
+
+    if (cancelledOrder.order.offer.isEth) {
+      this.props.exchange.addToEthBalance(cancelledOrder.order.offer.amount);
+    } else {
+      this.props.exchange.addToGuilBalance(cancelledOrder.order.offer.amount);
+    }
+
+    this.props.exchange.setOrderCancelling(false);
   }
 
   onTradeEvent(error, event) {
@@ -183,6 +186,11 @@ class AppComponent extends Component {
 
     this.props.exchange.addToGuilBalance(guilAmount);
     this.props.exchange.addToEthBalance(ethAmount);
+  }
+
+  async loadGuilTokenContract(web3) {
+    const contract = await this.web3Service.getGuilTokenContract(web3);
+    this.props.guilToken.setContract(contract);
   }
 
   render() {

@@ -1,15 +1,32 @@
 import { Order } from "../../../entities";
 import style from "./OrderBook.module.scss";
 import { connect } from "../../../context";
+import BigNumber from "bignumber.js";
 
 /**
  * @param props
  * @param {string} props.account
  * @param {function(Order, string)} props.fillOrder
  * @param {Order} props.order
+ * @param {BigNumber} props.guilBalance
+ * @param {BigNumber} props.ethBalance
  */
-const _OrderRow = ({ account, fillOrder, order }) => {
+const _OrderRow = ({ account, fillOrder, order, guilBalance, ethBalance }) => {
   const isSelfOwned = order.user === account;
+
+  const isBuy = order.transactionType === "buy";
+
+  const isSell = order.transactionType === "sell";
+
+  const isDisabled = () => {
+    if (isSelfOwned) return true;
+
+    if (isBuy) {
+      return order.demand.amount.isGreaterThan(ethBalance);
+    }
+
+    return order.demand.amount.isGreaterThan(guilBalance);
+  };
 
   const onClick = () => {
     if (isSelfOwned) return;
@@ -18,12 +35,8 @@ const _OrderRow = ({ account, fillOrder, order }) => {
   };
 
   const trClasses = `${style.tableRow} ${
-    isSelfOwned ? style.selfOwned : ""
+    isDisabled() ? style.disabled : ""
   }`.trim();
-
-  const isBuy = order.transactionType === "buy";
-
-  const isSell = order.transactionType === "sell";
 
   const formattedGuilAmount = (amount) => {
     amount = amount.shiftedBy(-18);
@@ -63,6 +76,8 @@ export const OrderRow = connect(
   ({ web3, exchange }) => ({
     account: web3.account,
     fillOrder: exchange.fillOrder,
+    guilBalance: exchange.guilBalance,
+    ethBalance: exchange.ethBalance,
   }),
   _OrderRow
 );
