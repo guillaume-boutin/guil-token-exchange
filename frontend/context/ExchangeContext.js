@@ -29,10 +29,6 @@ export const ExchangeProvider = ({ children }) => {
 
     const feePercent = await contract.methods.feePercent().call();
 
-    console.log(feePercent);
-
-    console.log(new BigNumber(feePercent).shiftedBy(-4).toString());
-
     _setFeePercent(feePercent);
   };
 

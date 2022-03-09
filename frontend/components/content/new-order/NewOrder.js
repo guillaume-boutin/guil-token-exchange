@@ -7,6 +7,7 @@ import { useState } from "react";
 import { connect } from "../../../context";
 import { ETHER_ADDRESS } from "../../../helpers";
 import { Table } from "../../common/table";
+import BigNumber from "bignumber.js";
 
 const _NewOrder = ({ web3, exchange, guilToken }) => {
   const [buyGuilAmount, setBuyGuilAmount] = useState(0);
@@ -14,13 +15,29 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
   const [sellGuilAmount, setSellGuilAmount] = useState(0);
   const [sellGuilPrice, setSellGuilPrice] = useState(0);
 
-  const buyDisabled = buyGuilAmount <= 0 || buyGuilPrice <= 0;
-
-  const sellDisabled = sellGuilAmount <= 0 || sellGuilPrice <= 0;
-
   const noEthFunds = exchange.ethBalance <= 0;
 
-  const noGuilFunds = true;
+  const noGuilFunds = exchange.guilBalance <= 0;
+
+  const ethPayAmount = new BigNumber(buyGuilAmount).multipliedBy(
+    new BigNumber(buyGuilPrice)
+  );
+
+  const buyDisabled =
+    buyGuilAmount <= 0 ||
+    buyGuilPrice <= 0 ||
+    ethPayAmount.shiftedBy(18).isGreaterThan(exchange.ethBalance);
+
+  const ethEarnAmount = new BigNumber(sellGuilAmount).multipliedBy(
+    new BigNumber(sellGuilPrice)
+  );
+
+  const sellDisabled =
+    sellGuilAmount <= 0 ||
+    sellGuilPrice <= 0 ||
+    new BigNumber(sellGuilAmount)
+      .shiftedBy(18)
+      .isGreaterThan(exchange.guilBalance);
 
   const onBuyGuilAmountChange = (e) => {
     setBuyGuilAmount(e.target.value);
@@ -130,7 +147,7 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                     <tr>
                       <td>
                         <label htmlFor="buy-token-amount-input">
-                          Amount (GUIL)
+                          You get (GUIL)
                         </label>
                       </td>
                     </tr>
@@ -170,13 +187,21 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                     </tr>
 
                     <tr>
+                      <td>You pay (ETH)</td>
+                    </tr>
+
+                    <tr>
+                      <td>{ethPayAmount.toString()}</td>
+                    </tr>
+
+                    <tr>
                       <td>
                         <Button
                           className={style.blockButton}
                           onClick={onBuyClick}
                           disabled={buyDisabled}
                         >
-                          Place Buy Order
+                          Place Order
                         </Button>
                       </td>
                     </tr>
@@ -199,7 +224,7 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                     <tr>
                       <td>
                         <label htmlFor="sell-token-amount-input">
-                          Amount (GUIL)
+                          You give (GUIL)
                         </label>
                       </td>
                     </tr>
@@ -239,13 +264,21 @@ const _NewOrder = ({ web3, exchange, guilToken }) => {
                     </tr>
 
                     <tr>
+                      <td>You earn (ETH)</td>
+                    </tr>
+
+                    <tr>
+                      <td>{ethEarnAmount.toString()}</td>
+                    </tr>
+
+                    <tr>
                       <td>
                         <Button
                           className={style.blockButton}
                           onClick={onSellClick}
                           disabled={sellDisabled}
                         >
-                          Place Sell Order
+                          Place Order
                         </Button>
                       </td>
                     </tr>
