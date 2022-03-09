@@ -51,13 +51,13 @@ contract("Exchange", ([deployer, feeAccount, user1, user2, user3]) => {
     assert.equal(sellerGuilBalance.toString(), toWei(70));
 
     const buyerGuilBalance = await exchange.balanceOf(user2, guilToken.address);
-    assert.equal(buyerGuilBalance.toString(), toWei(30 - (70 * 3.14) / 100));
+    assert.equal(buyerGuilBalance.toString(), toWei(30));
 
     const buyerEthBalance = await exchange.balanceOf(user2, ETHER_ADDRESS);
-    assert.equal(buyerEthBalance.toString(), toWei(0.7));
+    assert.equal(buyerEthBalance.toString(), toWei(0.7 - (0.7 * 3.14) / 100));
 
-    const feeAmount = await exchange.balanceOf(feeAccount, guilToken.address);
-    assert.equal(feeAmount.toString(), toWei((70 * 3.14) / 100));
+    const feeAmount = await exchange.balanceOf(feeAccount, ETHER_ADDRESS);
+    assert.equal(feeAmount.toString(), toWei((0.7 * 3.14) / 100));
   });
 
   it("emits a Trade event", async () => {
