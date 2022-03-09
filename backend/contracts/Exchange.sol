@@ -157,22 +157,21 @@ contract Exchange {
     require(_order.user != msg.sender);
 
     uint _takerBalance = balanceOf(msg.sender, _order.demand.contractAddress);
-    uint _feeAmount = _order.demand.amount.mul(feePercent).div(10000);
-
-    require(_takerBalance >= _order.demand.amount.add(_feeAmount));
+    require(_takerBalance >= _order.demand.amount);
 
     uint _sellerBalance = offerBalances[_order.user][_order.offer.contractAddress];
     require(_sellerBalance >= _order.offer.amount);
 
-    _Token memory _feeAddedDemand = _Token(_order.demand.contractAddress, _order.demand.amount.add(_feeAmount));
+    uint _feeAmount = _order.offer.amount.mul(feePercent).div(10000);
+    _Token memory _feeSubtractedOffer = _Token(_order.offer.contractAddress, _order.offer.amount.sub(_feeAmount));
 
-    _subtractFromBalance(msg.sender, _feeAddedDemand);
+    _subtractFromBalance(msg.sender, _order.demand);
     _addToBalance(_order.user, _order.demand);
 
     _subtractFromOfferBalance(_order.user, _order.offer);
-    _addToBalance(msg.sender, _order.offer);
+    _addToBalance(msg.sender, _feeSubtractedOffer);
 
-    _addToBalance(feeAccount, _Token(_order.demand.contractAddress, _feeAmount));
+    _addToBalance(feeAccount, _Token(_order.offer.contractAddress, _feeAmount));
 
     filledOrders[_id] = _order;
     delete openOrders[_id];
