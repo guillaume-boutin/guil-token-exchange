@@ -5,10 +5,10 @@ import BigNumber from "bignumber.js";
 
 /**
  * @param props
- * @param {string} props.walletEthBalance
- * @param {string} props.exchangeEthBalance
- * @param {string} props.walletGuilBalance
- * @param {string} props.exchangeGuilBalance
+ * @param {BigNumber} props.walletEthBalance
+ * @param {BigNumber} props.exchangeEthBalance
+ * @param {BigNumber} props.walletGuilBalance
+ * @param {BigNumber} props.exchangeGuilBalance
  */
 const _DepositPanel = ({
   web3,
@@ -19,6 +19,12 @@ const _DepositPanel = ({
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
+  const formatAmount = (amount) => {
+    if (amount >= 10000) return amount.toFixed(0);
+
+    return amount.precision(4).toString();
+  };
+
   const onDepositEth = async (value) => {
     const amount = web3.web3.utils.toWei(value, "ether");
 
@@ -74,28 +80,36 @@ const _DepositPanel = ({
           <tr>
             <td>ETH</td>
 
-            <td>{walletEthBalance}</td>
+            <td>{formatAmount(walletEthBalance)}</td>
 
-            <td>{exchangeEthBalance}</td>
+            <td>{formatAmount(exchangeEthBalance)}</td>
           </tr>
 
           <tr>
             <td colSpan="3">
-              <OperationInput label="Deposit" onSubmit={onDepositEth} />
+              <OperationInput
+                label="Deposit"
+                max={walletEthBalance}
+                onSubmit={onDepositEth}
+              />
             </td>
           </tr>
 
           <tr>
             <td>GUIL</td>
 
-            <td>{walletGuilBalance}</td>
+            <td>{formatAmount(walletGuilBalance)}</td>
 
-            <td>{exchangeGuilBalance}</td>
+            <td>{formatAmount(exchangeGuilBalance)}</td>
           </tr>
 
           <tr>
             <td colSpan="3">
-              <OperationInput label="Deposit" onSubmit={onDepositGuil} />
+              <OperationInput
+                label="Deposit"
+                max={walletGuilBalance}
+                onSubmit={onDepositGuil}
+              />
             </td>
           </tr>
         </tbody>

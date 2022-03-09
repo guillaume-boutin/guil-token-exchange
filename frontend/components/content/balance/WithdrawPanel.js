@@ -5,10 +5,10 @@ import BigNumber from "bignumber.js";
 
 /**
  * @param props
- * @param {string} props.walletEthBalance
- * @param {string} props.exchangeEthBalance
- * @param {string} props.walletGuilBalance
- * @param {string} props.exchangeGuilBalance
+ * @param {BigNumber} props.walletEthBalance
+ * @param {BigNumber} props.exchangeEthBalance
+ * @param {BigNumber} props.walletGuilBalance
+ * @param {BigNumber} props.exchangeGuilBalance
  */
 const _WithdrawPanel = ({
   web3,
@@ -19,6 +19,12 @@ const _WithdrawPanel = ({
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
+  const formatAmount = (amount) => {
+    if (amount >= 10000) return amount.toFixed(0);
+
+    return amount.precision(4).toString();
+  };
+
   const onWithdrawEth = async (value) => {
     const amount = web3.web3.utils.toWei(value, "ether");
 
@@ -66,28 +72,36 @@ const _WithdrawPanel = ({
         <tr>
           <td>ETH</td>
 
-          <td>{walletEthBalance}</td>
+          <td>{formatAmount(walletEthBalance)}</td>
 
-          <td>{exchangeEthBalance}</td>
+          <td>{formatAmount(exchangeEthBalance)}</td>
         </tr>
 
         <tr>
           <td colSpan="3">
-            <OperationInput label="Withdraw" onSubmit={onWithdrawEth} />
+            <OperationInput
+              label="Withdraw"
+              max={exchangeEthBalance}
+              onSubmit={onWithdrawEth}
+            />
           </td>
         </tr>
 
         <tr>
           <td>GUIL</td>
 
-          <td>{walletGuilBalance}</td>
+          <td>{formatAmount(walletGuilBalance)}</td>
 
-          <td>{exchangeGuilBalance}</td>
+          <td>{formatAmount(exchangeGuilBalance)}</td>
         </tr>
 
         <tr>
           <td colSpan="3">
-            <OperationInput label="Withdraw" onSubmit={onWithdrawGuil} />
+            <OperationInput
+              label="Withdraw"
+              max={exchangeGuilBalance}
+              onSubmit={onWithdrawGuil}
+            />
           </td>
         </tr>
       </tbody>

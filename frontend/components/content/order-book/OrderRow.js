@@ -29,7 +29,7 @@ const _OrderRow = ({ account, fillOrder, order, guilBalance, ethBalance }) => {
   };
 
   const onClick = () => {
-    if (isSelfOwned) return;
+    if (isDisabled()) return;
 
     fillOrder(order, account);
   };

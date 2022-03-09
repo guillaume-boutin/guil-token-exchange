@@ -35,25 +35,19 @@ class _Balance extends Component {
   }
 
   get walletEthBalance() {
-    return this.formatAmount(this.props.web3.ethBalance.shiftedBy(-18));
+    return this.props.web3.ethBalance.shiftedBy(-18);
   }
 
   get exchangeEthBalance() {
-    return this.formatAmount(this.props.exchange.ethBalance.shiftedBy(-18));
+    return this.props.exchange.ethBalance.shiftedBy(-18);
   }
 
   get walletGuilBalance() {
-    return this.formatAmount(this.props.guilToken.balance.shiftedBy(-18));
+    return this.props.guilToken.balance.shiftedBy(-18);
   }
 
   get exchangeGuilBalance() {
-    return this.formatAmount(this.props.exchange.guilBalance.shiftedBy(-18));
-  }
-
-  formatAmount(amount) {
-    if (amount >= 10000) return amount.toFixed(0);
-
-    return amount.precision(4).toString();
+    return this.props.exchange.guilBalance.shiftedBy(-18);
   }
 
   render() {

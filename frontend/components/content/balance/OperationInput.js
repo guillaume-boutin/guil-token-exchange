@@ -1,10 +1,16 @@
 import { TextInput } from "../../common/form";
 import { Button } from "../../common/button";
-
-import style from "./Balance.module.scss";
+import BigNumber from "bignumber.js";
 import { useState } from "react";
+import style from "./Balance.module.scss";
 
-export const OperationInput = ({ label, onSubmit }) => {
+/**
+ * @param props;
+ * @param {string} props.label
+ * @param {BigNumber} props.max
+ * @param {function} props.onSubmit
+ */
+export const OperationInput = ({ label, max, onSubmit }) => {
   const [amount, setAmount] = useState(0);
 
   const onChange = (e) => {
@@ -18,7 +24,13 @@ export const OperationInput = ({ label, onSubmit }) => {
 
   return (
     <div className={style.inputRow}>
-      <TextInput type="number" value={amount} min={0} onChange={onChange} />
+      <TextInput
+        type="number"
+        value={amount}
+        min={0}
+        max={max.toString()}
+        onChange={onChange}
+      />
 
       <Button onClick={onClick} disabled={amount <= 0}>
         {label}

@@ -3,11 +3,12 @@
   //background-color: #007bff;
   background-color: var(--blue-800);
   padding: 0.25rem 0.75rem;
-  font-size: 0.875rem;
+  font-size: 0.7rem;
   cursor: pointer;
   border: 0 solid transparent;
   border-radius: 4px;
   outline: 0;
+  font-weight: 600;
 
   &:hover {
     //background-color: #0069d9;
@@ -16,6 +17,6 @@
 
   &:disabled {
     cursor: revert;
-    background-color: var(--blue-500);
+    background-color: var(--blue-400);
   }
 }
