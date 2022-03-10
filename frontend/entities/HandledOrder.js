@@ -10,11 +10,11 @@ export class HandledOrder {
   /**
    * @param props
    * @param {Order} props.order
-   * @param {moment.Moment} props.timestamp
+   * @param {number} props.timestamp
    */
   constructor({ order, timestamp }) {
     this.order = order;
-    this.timestamp = timestamp;
+    this._timestamp = timestamp;
   }
 
   /**
@@ -44,13 +44,20 @@ export class HandledOrder {
   get demand() {
     return this.order.demand;
   }
+
+  /**
+   * @return {moment.Moment}
+   */
+  get timestamp() {
+    return moment.unix(this._timestamp);
+  }
 }
 
 export class HandledOrderFactory {
   fromEventValues({ order, timestamp }) {
     return new HandledOrder({
       order: new OrderFactory().fromEventValues(order),
-      timestamp: moment.unix(timestamp),
+      timestamp,
     });
   }
 }

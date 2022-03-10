@@ -7,7 +7,7 @@ import BigNumber from "bignumber.js";
  * @property {string} user;
  * @property {Token} offer;
  * @property {Token} demand;
- * @property {moment.Moment} timestamp;
+ * @property {number} timestamp;
  */
 export class Order {
   /**
@@ -16,14 +16,14 @@ export class Order {
    * @param props.user {string}
    * @param props.offer {Token}
    * @param props.demand {Token}
-   * @param props.timestamp {moment.Moment}
+   * @param props.timestamp {number}
    */
   constructor({ id, user, offer, demand, timestamp }) {
     this.id = id;
     this.user = user;
     this.offer = offer;
     this.demand = demand;
-    this.timestamp = timestamp;
+    this._timestamp = timestamp;
   }
 
   /**
@@ -67,6 +67,13 @@ export class Order {
   get price() {
     return this.ether.amount.dividedBy(this.token.amount);
   }
+
+  /**
+   * @return {moment.Moment}
+   */
+  get timestamp() {
+    return moment.unix(this._timestamp);
+  }
 }
 
 export class OrderFactory {
@@ -85,7 +92,7 @@ export class OrderFactory {
         address: demand.contractAddress,
         amount: new BigNumber(demand.amount),
       }),
-      timestamp: moment.unix(timestamp),
+      timestamp,
     });
   }
 }

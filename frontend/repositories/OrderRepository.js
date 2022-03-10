@@ -5,6 +5,7 @@ import {
   HandledOrderFactory,
 } from "../entities";
 import moment from "moment";
+import { FilledOrderFactory } from "../entities/FilledOrder";
 
 export class OrderRepository {
   /** @private */
@@ -38,7 +39,7 @@ export class OrderRepository {
     });
 
     return response.map(({ returnValues }) =>
-      new HandledOrderFactory().fromEventValues(returnValues)
+      new FilledOrderFactory().fromEventValues(returnValues)
     );
   }
 

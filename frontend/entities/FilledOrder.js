@@ -1,5 +1,4 @@
 import { Order, OrderFactory } from "./Order";
-import moment from "moment";
 import { HandledOrder } from "./HandledOrder";
 
 export class FilledOrder extends HandledOrder {
@@ -14,7 +13,7 @@ export class FilledOrderFactory {
     return new FilledOrder({
       order: new OrderFactory().fromEventValues(order),
       user,
-      timestamp: moment.unix(timestamp),
+      timestamp,
     });
   }
 }

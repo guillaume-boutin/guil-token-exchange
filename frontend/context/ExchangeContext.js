@@ -133,7 +133,13 @@ export const ExchangeProvider = ({ children }) => {
   };
 
   const addToGuilBalance = (value) => {
-    setGuilBalance(guilBalance.plus(value));
+    console.log("add to Guil", value.shiftedBy(-18).toString());
+
+    const newValue = guilBalance.plus(value);
+
+    console.log("new Guil balance", newValue.shiftedBy(-18).toString());
+
+    setGuilBalance(newValue);
   };
 
   return (

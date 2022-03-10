@@ -50,6 +50,8 @@ class AppComponent extends Component {
   }
 
   async loadExchangeContract(web3) {
+    if (this.props.exchange.contract) return;
+
     const contract = await this.web3Service.getExchangeContract(web3);
 
     contract.events.Deposit({}, this.onDepositEvent);
@@ -132,6 +134,7 @@ class AppComponent extends Component {
   }
 
   onTradeEvent(error, event) {
+    console.log("onTradeEvent");
     const trade = new FilledOrderFactory().fromEventValues(event.returnValues);
     this.props.exchange.addToFilledOrders(trade);
 
@@ -139,14 +142,13 @@ class AppComponent extends Component {
     const placer = trade.order.user;
     const taker = trade.user;
 
-    if (account !== placer && account !== taker) return;
-
-    this.refreshTradeTakerBalances(trade);
-    this.refreshTradePlacerBalances(trade);
-
-    if (account !== taker) return;
-
-    this.props.exchange.setOrderFilling(false);
+    if (account === placer) {
+      this.refreshTradePlacerBalances(trade);
+      this.props.exchange.setOrderFilling(false);
+    }
+    if (account === taker) {
+      this.refreshTradeTakerBalances(trade);
+    }
   }
 
   /**
@@ -171,10 +173,13 @@ class AppComponent extends Component {
    * @param {FilledOrder} trade
    */
   refreshTradeTakerBalances(trade) {
+    console.log("refreshTradeTakerBalances");
     let guilAmount, ethAmount;
     const feeAmount = trade.offer.amount.multipliedBy(
       this.props.exchange.feeRate
     );
+
+    console.log(feeAmount.shiftedBy(-18).toString());
 
     if (trade.isBuy) {
       guilAmount = trade.offer.amount.minus(feeAmount);
@@ -189,6 +194,8 @@ class AppComponent extends Component {
   }
 
   async loadGuilTokenContract(web3) {
+    if (this.props.guilToken.contract) return;
+
     const contract = await this.web3Service.getGuilTokenContract(web3);
     this.props.guilToken.setContract(contract);
   }
