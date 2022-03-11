@@ -14,8 +14,8 @@ export class TradeRow extends Component {
     return this.props.trade.order.token.amount.shiftedBy(-18).toString();
   }
 
-  get tradeType() {
-    return this.props.trade.order.transactionType;
+  get isBuy() {
+    return this.props.trade.order.isBuy;
   }
 
   get price() {
@@ -29,7 +29,7 @@ export class TradeRow extends Component {
       <tr>
         <td className={style.textMuted}>{this.time}</td>
 
-        <td className={style[this.tradeType]}>{this.amount}</td>
+        <td className={style[this.isBuy ? "buy" : "sell"]}>{this.amount}</td>
 
         <td>{this.price}</td>
       </tr>

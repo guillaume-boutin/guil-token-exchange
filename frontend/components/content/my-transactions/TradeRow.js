@@ -14,7 +14,7 @@ export class TradeRow extends Component {
 
   get amount() {
     const amount = this.props.trade.order.token.amount.shiftedBy(-18);
-    return `${this.isBuy ? "+" : "-"}${amount}`;
+    return `${this.isEarning ? "+" : "-"}${amount}`;
   }
 
   get price() {
@@ -25,10 +25,10 @@ export class TradeRow extends Component {
     return price.toPrecision(4);
   }
 
-  get isBuy() {
-    return this.props.trade.order.user === this.props.account
-      ? this.props.trade.order.transactionType === "sell"
-      : this.props.trade.order.transactionType === "buy";
+  get isEarning() {
+    const trade = this.props.trade;
+    const account = this.props.account;
+    return trade.getEarning(account).is(trade.token);
   }
 
   render() {
@@ -36,7 +36,9 @@ export class TradeRow extends Component {
       <tr>
         <td className={style.textMuted}>{this.time}</td>
 
-        <td className={style[this.isBuy ? "buy" : "sell"]}>{this.amount}</td>
+        <td className={style[this.isEarning ? "earning" : "paying"]}>
+          {this.amount}
+        </td>
 
         <td>{this.price}</td>
       </tr>

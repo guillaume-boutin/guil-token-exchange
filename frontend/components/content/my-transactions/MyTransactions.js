@@ -3,7 +3,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "../../common/tabs";
 import { Table } from "../../common/table";
 import { Component } from "../../Component";
 import { connect } from "../../../context";
-import { Order, HandledOrder } from "../../../entities";
+import { Order } from "../../../entities";
 import { TradeRow } from "./TradeRow";
 import { OrderRow } from "./OrderRow";
 import style from "./MyTransactions.module.scss";
@@ -29,10 +29,7 @@ class MyTransactionsComponent extends Component {
 
   get trades() {
     return this.props.trades
-      .filter(
-        (t) =>
-          t.order.user === this.props.account || t.user === this.props.account
-      )
+      .filter((t) => t.isActor(this.props.account))
       .sort((a, b) => (b.timestamp.isBefore(a.timestamp) ? -1 : 1));
   }
 
@@ -126,7 +123,7 @@ export const MyTransactions = connect(
   ({ web3, exchange }) => ({
     account: web3.account,
     orders: exchange.openOrders,
-    trades: exchange.filledOrders,
+    trades: exchange.trades,
     cancelOrder: exchange.cancelOrder,
     anyOrdersLoading: exchange.anyOrdersLoading,
   }),

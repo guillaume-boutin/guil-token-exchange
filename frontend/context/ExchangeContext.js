@@ -13,8 +13,8 @@ export const ExchangeProvider = ({ children }) => {
   const [feePercent, _setFeePercent] = useState(null);
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
-  const [filledOrders, setFilledOrders] = useState([]);
-  const [filledOrdersLoading, setFilledOrdersLoading] = useState(false);
+  const [trades, setTrades] = useState([]);
+  const [tradesLoading, setTradesLoading] = useState(false);
   const [orderFilling, setOrderFilling] = useState(false);
   const [cancelledOrders, setCancelledOrders] = useState([]);
   const [cancelledOrdersLoading, setCancelledOrdersLoading] = useState(false);
@@ -37,9 +37,7 @@ export const ExchangeProvider = ({ children }) => {
   const feeRate = feePercent ? new BigNumber(feePercent).shiftedBy(-4) : null;
 
   const openOrders = orders.filter((order) => {
-    let index = filledOrders.findIndex(
-      (filledOrder) => filledOrder.order.id === order.id
-    );
+    let index = trades.findIndex((trades) => trades.order.id === order.id);
 
     if (index > -1) return false;
 
@@ -54,13 +52,11 @@ export const ExchangeProvider = ({ children }) => {
     setOrders([...orders, order]);
   };
 
-  const addToFilledOrders = (filledOrder) => {
-    const index = filledOrders.find(
-      (fo) => fo.order.id === filledOrder.order.id
-    );
+  const addToTrades = (trade) => {
+    const index = trades.find((fo) => fo.order.id === trade.order.id);
     if (index > -1) return;
 
-    setFilledOrders([filledOrder, ...filledOrders]);
+    setTrades([trade, ...trades]);
   };
 
   const addToCancelledOrders = (cancelledOrder) => {
@@ -126,20 +122,30 @@ export const ExchangeProvider = ({ children }) => {
   };
 
   const anyOrdersLoading =
-    ordersLoading || filledOrdersLoading || cancelledOrdersLoading;
+    ordersLoading || tradesLoading || cancelledOrdersLoading;
 
   const addToEthBalance = (value) => {
     setEthBalance(ethBalance.plus(value));
   };
 
   const addToGuilBalance = (value) => {
-    console.log("add to Guil", value.shiftedBy(-18).toString());
+    setGuilBalance(guilBalance.plus(value));
+  };
 
-    const newValue = guilBalance.plus(value);
+  const addToBalance = (token) => {
+    if (token.address === ETHER_ADDRESS) {
+      return setEthBalance(ethBalance.plus(token.amount));
+    }
 
-    console.log("new Guil balance", newValue.shiftedBy(-18).toString());
+    setGuilBalance(guilBalance.plus(token.amount));
+  };
 
-    setGuilBalance(newValue);
+  const subtractFromBalance = (token) => {
+    if (token.address === ETHER_ADDRESS) {
+      return setEthBalance(ethBalance.minus(token.amount));
+    }
+
+    setGuilBalance(guilBalance.minus(token.amount));
   };
 
   return (
@@ -153,10 +159,10 @@ export const ExchangeProvider = ({ children }) => {
         setOrders,
         ordersLoading,
         setOrdersLoading,
-        filledOrders,
-        setFilledOrders,
-        filledOrdersLoading,
-        setFilledOrdersLoading,
+        trades,
+        setTrades,
+        tradesLoading,
+        setTradesLoading,
         cancelledOrders,
         setCancelledOrders,
         cancelledOrdersLoading,
@@ -179,13 +185,15 @@ export const ExchangeProvider = ({ children }) => {
         orderFilling,
         setOrderFilling,
         addToOrders,
-        addToFilledOrders,
+        addToTrades,
         addToCancelledOrders,
         balancesLoading,
         setBalancesLoading,
         anyOrdersLoading,
         addToEthBalance,
         addToGuilBalance,
+        addToBalance,
+        subtractFromBalance,
       }}
     >
       {children}

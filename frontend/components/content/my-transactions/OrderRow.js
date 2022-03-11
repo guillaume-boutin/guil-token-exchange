@@ -15,9 +15,9 @@ export class OrderRow extends Component {
     return this.props.order.timestamp.format("h:mm:ss a M/D");
   }
 
-  get amount() {
-    const amount = this.props.order.token.amount.shiftedBy(-18);
-    return `${this.isBuy ? "+" : "-"}${amount}`;
+  get displayAmount() {
+    const amount = this.props.order.token.amount.shiftedBy(-18).toString();
+    return `${this.isEarning ? "+" : "-"}${amount}`;
   }
 
   get price() {
@@ -28,8 +28,9 @@ export class OrderRow extends Component {
     return price.toPrecision(4);
   }
 
-  get isBuy() {
-    return this.props.order.transactionType === "buy";
+  get isEarning() {
+    const order = this.props.order;
+    return order.token.is(order.offer);
   }
 
   onCancelClick(e) {
@@ -39,7 +40,9 @@ export class OrderRow extends Component {
   render() {
     return (
       <tr>
-        <td className={style[this.isBuy ? "buy" : "sell"]}>{this.amount}</td>
+        <td className={style[this.isEarning ? "earning" : "paying"]}>
+          {this.displayAmount}
+        </td>
 
         <td>{this.price}</td>
 

@@ -4,10 +4,13 @@ import styles from "./App.module.scss";
 import { connect } from "../../context";
 import { Component } from "../Component";
 import { Web3Service } from "../../services";
-import { HandledOrderFactory, OrderFactory } from "../../entities";
-import { ETHER_ADDRESS } from "../../helpers";
-import { FilledOrder, FilledOrderFactory } from "../../entities/FilledOrder";
-import BigNumber from "bignumber.js";
+import {
+  HandledOrderFactory,
+  OrderFactory,
+  TokenFactory,
+} from "../../entities";
+import { Token } from "../../entities";
+import { TradeFactory } from "../../entities/Trade";
 
 class AppComponent extends Component {
   /** @private {Web3Service} */ web3Service;
@@ -25,8 +28,9 @@ class AppComponent extends Component {
       this.onOrderEvent,
       this.onTradeEvent,
       this.onCancelEvent,
-      this.refreshTradeTakerBalances,
-      this.refreshTradePlacerBalances,
+      this.refreshExchangeBalances,
+      this.addToExchangeBalance,
+      this.subtractFromExchangeBalance,
     ];
   }
 
@@ -63,21 +67,27 @@ class AppComponent extends Component {
     this.props.exchange.setContract(contract);
   }
 
+  async loadGuilTokenContract(web3) {
+    if (this.props.guilToken.contract) return;
+
+    const contract = await this.web3Service.getGuilTokenContract(web3);
+    this.props.guilToken.setContract(contract);
+  }
+
   async onDepositEvent(error, event) {
     const account = this.props.web3.account;
     if (account !== event.returnValues.user) return;
 
-    const tokenAddress = event.returnValues.token.contractAddress;
-    const amount = new BigNumber(event.returnValues.token.amount);
+    const token = new TokenFactory().fromExchangeTransferEvent(
+      event.returnValues
+    );
 
-    if (tokenAddress === ETHER_ADDRESS) {
-      this.props.exchange.addToEthBalance(amount);
-      await this.props.web3.loadEthBalance();
-    } else {
-      this.props.guilToken.addToBalance(amount.negated());
-      this.props.exchange.addToGuilBalance(amount);
-    }
+    this.subtractFromWalletBalance(token);
+    this.addToExchangeBalance(token);
 
+    if (!token.isEth) return;
+
+    await this.props.web3.loadEthBalance();
     this.props.exchange.setBalancesLoading(false);
   }
 
@@ -85,17 +95,16 @@ class AppComponent extends Component {
     const account = this.props.web3.account;
     if (account !== event.returnValues.user) return;
 
-    const tokenAddress = event.returnValues.token.contractAddress;
-    const amount = new BigNumber(event.returnValues.token.amount);
+    const token = new TokenFactory().fromExchangeTransferEvent(
+      event.returnValues
+    );
 
-    if (tokenAddress === ETHER_ADDRESS) {
-      this.props.exchange.addToEthBalance(amount.negated());
-      await this.props.web3.loadEthBalance();
-    } else {
-      this.props.exchange.addToGuilBalance(amount.negated());
-      this.props.guilToken.addToBalance(amount);
-    }
+    this.addToWalletBalance(token);
+    this.subtractFromExchangeBalance(token);
 
+    if (!token.isEth) return;
+
+    await this.props.web3.loadEthBalance();
     this.props.exchange.setBalancesLoading(false);
   }
 
@@ -107,11 +116,7 @@ class AppComponent extends Component {
     const account = this.props.web3.account;
     if (account !== order.user) return;
 
-    if (order.offer.isEth) {
-      this.props.exchange.addToEthBalance(order.offer.amount.negated());
-    } else {
-      this.props.exchange.addToGuilBalance(order.offer.amount.negated());
-    }
+    this.subtractFromExchangeBalance(order.offer);
   }
 
   onCancelEvent(error, event) {
@@ -124,80 +129,79 @@ class AppComponent extends Component {
 
     if (account !== cancelledOrder.order.user) return;
 
-    if (cancelledOrder.order.offer.isEth) {
-      this.props.exchange.addToEthBalance(cancelledOrder.order.offer.amount);
-    } else {
-      this.props.exchange.addToGuilBalance(cancelledOrder.order.offer.amount);
-    }
+    this.addToExchangeBalance(cancelledOrder.order.offer);
 
     this.props.exchange.setOrderCancelling(false);
   }
 
   onTradeEvent(error, event) {
-    console.log("onTradeEvent");
-    const trade = new FilledOrderFactory().fromEventValues(event.returnValues);
-    this.props.exchange.addToFilledOrders(trade);
+    const trade = new TradeFactory().fromEventValues(event.returnValues);
+    this.props.exchange.addToTrades(trade);
 
     const account = this.props.web3.account;
-    const placer = trade.order.user;
-    const taker = trade.user;
 
-    if (account === placer) {
-      this.refreshTradePlacerBalances(trade);
-      this.props.exchange.setOrderFilling(false);
-    }
-    if (account === taker) {
-      this.refreshTradeTakerBalances(trade);
-    }
+    if (!trade.isActor(account)) return;
+
+    this.refreshExchangeBalances(trade);
+
+    if (!trade.isTaker(account)) return;
+
+    this.props.exchange.setOrderFilling(false);
   }
 
   /**
-   * @param {FilledOrder} trade
+   * @param {Trade} trade
    */
-  refreshTradePlacerBalances(trade) {
-    let guilAmount, ethAmount;
+  refreshExchangeBalances(trade) {
+    const account = this.props.web3.account;
+    const feeRate = this.props.exchange.feeRate;
 
-    if (trade.isBuy) {
-      guilAmount = trade.offer.amount.negated();
-      ethAmount = trade.demand.amount;
-    } else {
-      guilAmount = trade.demand.amount;
-      ethAmount = trade.offer.amount.negated();
-    }
+    const earning = trade.getEarning(account);
+    const fee = trade.getFee(account, feeRate);
 
-    this.props.exchange.addToGuilBalance(guilAmount);
-    this.props.exchange.addToEthBalance(ethAmount);
+    console.log(earning, fee);
+
+    const paying = trade.getPaying(account);
+
+    this.addToExchangeBalance(earning.minus(fee));
+    this.subtractFromExchangeBalance(paying);
   }
 
   /**
-   * @param {FilledOrder} trade
+   * @param {Token} token
    */
-  refreshTradeTakerBalances(trade) {
-    console.log("refreshTradeTakerBalances");
-    let guilAmount, ethAmount;
-    const feeAmount = trade.offer.amount.multipliedBy(
-      this.props.exchange.feeRate
-    );
+  addToWalletBalance(token) {
+    if (token.isEth) return;
 
-    console.log(feeAmount.shiftedBy(-18).toString());
-
-    if (trade.isBuy) {
-      guilAmount = trade.offer.amount.minus(feeAmount);
-      ethAmount = trade.demand.amount.negated();
-    } else {
-      guilAmount = trade.demand.amount.negated();
-      ethAmount = trade.offer.amount.minus(feeAmount);
-    }
-
-    this.props.exchange.addToGuilBalance(guilAmount);
-    this.props.exchange.addToEthBalance(ethAmount);
+    this.props.guilToken.addToBalance(token.amount);
   }
 
-  async loadGuilTokenContract(web3) {
-    if (this.props.guilToken.contract) return;
+  /**
+   * @param {Token} token
+   */
+  subtractFromWalletBalance(token) {
+    if (token.isEth) return;
 
-    const contract = await this.web3Service.getGuilTokenContract(web3);
-    this.props.guilToken.setContract(contract);
+    this.props.guilToken.addToBalance(token.amount.negated());
+  }
+
+  /**
+   * @param {Token} token
+   */
+  addToExchangeBalance(token) {
+    if (token.isEth) return this.props.exchange.addToEthBalance(token.amount);
+
+    this.props.exchange.addToGuilBalance(token.amount);
+  }
+
+  /**
+   * @param {Token} token
+   */
+  subtractFromExchangeBalance(token) {
+    if (token.isEth)
+      return this.props.exchange.addToEthBalance(token.amount.negated());
+
+    this.props.exchange.addToGuilBalance(token.amount.negated());
   }
 
   render() {

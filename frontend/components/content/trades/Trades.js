@@ -8,13 +8,13 @@ import { Spinner } from "../../common/spinner";
 
 class TradesComponent extends Component {
   get trades() {
-    return this.props.exchange.filledOrders.sort((a, b) =>
+    return this.props.exchange.trades.sort((a, b) =>
       b.timestamp.isBefore(a.timestamp) ? -1 : 1
     );
   }
 
   get isLoading() {
-    return this.props.exchange.filledOrdersLoading;
+    return this.props.exchange.tradesLoading;
   }
 
   render() {

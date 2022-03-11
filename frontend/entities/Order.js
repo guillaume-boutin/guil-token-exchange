@@ -19,11 +19,18 @@ export class Order {
    * @param props.timestamp {number}
    */
   constructor({ id, user, offer, demand, timestamp }) {
-    this.id = id;
+    this._id = id;
     this.user = user;
     this.offer = offer;
     this.demand = demand;
     this._timestamp = timestamp;
+  }
+
+  /**
+   * @return {number}
+   */
+  get id() {
+    return this._id;
   }
 
   /**

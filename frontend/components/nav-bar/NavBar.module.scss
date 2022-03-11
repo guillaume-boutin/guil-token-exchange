@@ -1,6 +1,6 @@
 .navBar {
   //background-color: #007bff;
-  background-color: var(--blue-600);
+  background-color: var(--blue-700);
   padding: 0.5rem 1rem;
   height: var(--nav-bar-height);
 
@@ -16,11 +16,13 @@
     }
 
     .account {
-      color: rgba(255, 255, 255, 0.5);
+      //color: rgba(255, 255, 255, 0.5);
+      color: var(--zinc-300);
       text-decoration: none;
 
       &:hover {
-        color: rgba(255, 255, 255, 0.75);
+        //color: rgba(255, 255, 255, 0.75);
+        color: var(--zinc-100);
       }
     }
   }

@@ -21,7 +21,7 @@ class _Grid extends Component {
   async componentDidMount() {
     await Promise.all([
       this.loadOrders(),
-      this.loadFilledOrders(),
+      this.loadTrades(),
       this.loadCancelledOrders(),
     ]);
   }
@@ -33,11 +33,11 @@ class _Grid extends Component {
     this.props.exchange.setOrdersLoading(false);
   }
 
-  async loadFilledOrders() {
-    this.props.exchange.setFilledOrdersLoading(true);
-    const filledOrders = await this.orderRepository.getFilledOrders();
-    this.props.exchange.setFilledOrders(filledOrders);
-    this.props.exchange.setFilledOrdersLoading(false);
+  async loadTrades() {
+    this.props.exchange.setTradesLoading(true);
+    const trades = await this.orderRepository.getTrades();
+    this.props.exchange.setTrades(trades);
+    this.props.exchange.setTradesLoading(false);
   }
 
   async loadCancelledOrders() {

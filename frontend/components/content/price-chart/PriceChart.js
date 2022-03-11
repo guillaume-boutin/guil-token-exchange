@@ -13,7 +13,7 @@ const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 /**
  * @property {HandledOrder[]} props.trades
- * @property {boolean} props.filledOrdersLoading
+ * @property {boolean} props.tradesLoading
  */
 class PriceChartComponent extends Component {
   get groupedTrades() {
@@ -30,10 +30,10 @@ class PriceChartComponent extends Component {
       const priceSort = trades.sort((a, b) => a.order.price - b.order.price);
 
       return [
-        timeSort[0].order.price,
-        priceSort[priceSort.length - 1].order.price,
-        priceSort[0].order.price,
-        timeSort[timeSort.length - 1].order.price,
+        timeSort[0].order.price.precision(4),
+        priceSort[priceSort.length - 1].order.price.precision(4),
+        priceSort[0].order.price.precision(4),
+        timeSort[timeSort.length - 1].order.price.precision(4),
       ];
     });
   }
@@ -59,11 +59,13 @@ class PriceChartComponent extends Component {
 
     const [secondLastTrade, lastTrade] = this.lastTwoTrades;
 
-    return lastTrade.order.price - secondLastTrade.order.price;
+    return lastTrade.order.price
+      .minus(secondLastTrade.order.price)
+      .toPrecision(4);
   }
 
   get isLoading() {
-    return this.props.filledOrdersLoading;
+    return this.props.tradesLoading;
   }
 
   render() {
@@ -88,7 +90,7 @@ class PriceChartComponent extends Component {
           {!this.isLoading && (
             <>
               <h4 className={styles.priceTitle}>
-                GUIL/ETH {caret} {latestPriceChange.toPrecision(4)}
+                GUIL/ETH {caret} {latestPriceChange}
               </h4>
 
               <div className={styles.priceChart}>
@@ -109,8 +111,8 @@ class PriceChartComponent extends Component {
 
 export const PriceChart = connect(
   ({ exchange }) => ({
-    trades: exchange.filledOrders,
-    filledOrdersLoading: exchange.filledOrdersLoading,
+    trades: exchange.trades,
+    tradesLoading: exchange.tradesLoading,
   }),
   PriceChartComponent
 );
