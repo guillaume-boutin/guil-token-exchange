@@ -1,5 +1,5 @@
-import { assert } from "chai";
-import { ETHER_ADDRESS, EVM_REVERT, toWei } from "../helpers";
+const { assert } = require("chai");
+const { ETHER_ADDRESS, toWei } = require("../helpers");
 
 const Exchange = artifacts.require("./Exchange");
 const GuilToken = artifacts.require("./GuilToken");

@@ -1,6 +1,6 @@
-import _chai from "chai";
-import chaiAsPromised from "chai-as-promised";
-import { ETHER_ADDRESS, EVM_REVERT, toWei } from "../helpers";
+const _chai = require("chai");
+const chaiAsPromised = require("chai-as-promised");
+const { EVM_REVERT, toWei } = require("../helpers");
 
 const chai = _chai.use(chaiAsPromised);
 const assert = chai.assert;

@@ -1,5 +1,5 @@
-import { assert } from "chai";
-import { toWei } from "../helpers";
+const { assert } = require("chai");
+const { toWei } = require("../helpers");
 
 const GuilTokenContract = artifacts.require("./GuilToken");
 

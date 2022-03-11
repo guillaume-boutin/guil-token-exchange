@@ -16,6 +16,14 @@ module.exports = async (done) => {
   done();
 };
 
+const randEth = () => {
+  return toWei(Math.round(100 + 30 * (Math.random() - 0.5)) / 100000);
+};
+
+const randGuil = () => {
+  return toWei(Math.round(100 + 30 * (Math.random() - 0.5)));
+};
+
 const handle = async () => {
   // Fetch accounts from wallet - these are unlocked
   const accounts = await web3.eth.getAccounts();
@@ -28,38 +36,38 @@ const handle = async () => {
   const exchange = await Exchange.deployed();
   console.log("Exchange fetched", exchange.address);
 
-  // Give tokens to account[1]
-  const sender = accounts[0];
-  const receiver = accounts[1];
-  let amount = web3.utils.toWei("10000", "ether"); // 10,000 tokens
-
-  await guilToken.transfer(receiver, amount, { from: sender });
-  console.log(`Transferred ${amount} tokens from ${sender} to ${receiver}`);
-
   // Set up exchange users
+  // Give tokens to user1
   const [user1, user2] = accounts;
 
+  const guilTokensTransfer = 10000;
+  await guilToken.transfer(user2, toWei(guilTokensTransfer), { from: user1 });
+  console.log(
+    `Transferred ${guilTokensTransfer} tokens from ${user1} to ${user2}`
+  );
+
   // User 1 Deposits Ether
-  amount = 1;
-  await exchange.depositEther({ from: user1, value: toWei(amount) });
-  console.log(`Deposited ${amount} Ether from ${user1}`);
+  ethDeposit = 1;
+  await exchange.depositEther({ from: user1, value: toWei(ethDeposit) });
+  console.log(`Deposited ${ethDeposit} Ether from ${user1}`);
 
   // User 2 Approves Tokens
-  amount = 10000;
-  await guilToken.approve(exchange.address, toWei(amount), { from: user2 });
-  console.log(`Approved ${amount} tokens from ${user2}`);
+  await guilToken.approve(exchange.address, toWei(guilTokensTransfer), {
+    from: user2,
+  });
+  console.log(`Approved ${guilTokensTransfer} tokens from ${user2}`);
 
   // User 2 Deposits Tokens
   await exchange.deposit(
     {
       contractAddress: guilToken.address,
-      amount: toWei(amount),
+      amount: toWei(guilTokensTransfer),
     },
     {
       from: user2,
     }
   );
-  console.log(`Deposited ${amount} tokens from ${user2}`);
+  console.log(`Deposited ${guilTokensTransfer} tokens from ${user2}`);
 
   ////////////////////////////
   // Seed a Cancelled Order //
@@ -70,11 +78,11 @@ const handle = async () => {
   result = await exchange.placeOrder(
     {
       contractAddress: ETHER_ADDRESS,
-      amount: toWei(0.1),
+      amount: randEth(),
     },
     {
       contractAddress: guilToken.address,
-      amount: toWei(100),
+      amount: randGuil(),
     },
     { from: user1 }
   );
@@ -93,11 +101,11 @@ const handle = async () => {
   result = await exchange.placeOrder(
     {
       contractAddress: ETHER_ADDRESS,
-      amount: toWei(0.1),
+      amount: randEth(),
     },
     {
       contractAddress: guilToken.address,
-      amount: toWei(100),
+      amount: randGuil(),
     },
     { from: user1 }
   );
@@ -114,12 +122,12 @@ const handle = async () => {
   // User 1 makes another order
   result = await exchange.placeOrder(
     {
-      contractAddress: guilToken.address,
-      amount: toWei(50),
+      contractAddress: ETHER_ADDRESS,
+      amount: randEth(),
     },
     {
-      contractAddress: ETHER_ADDRESS,
-      amount: toWei(0.01),
+      contractAddress: guilToken.address,
+      amount: randGuil(),
     },
     { from: user1 }
   );
@@ -137,11 +145,11 @@ const handle = async () => {
   result = await exchange.placeOrder(
     {
       contractAddress: ETHER_ADDRESS,
-      amount: toWei(0.15),
+      amount: randEth(),
     },
     {
       contractAddress: guilToken.address,
-      amount: toWei(200),
+      amount: randGuil(),
     },
     { from: user1 }
   );
@@ -164,11 +172,11 @@ const handle = async () => {
     result = await exchange.placeOrder(
       {
         contractAddress: ETHER_ADDRESS,
-        amount: toWei(0.01),
+        amount: randEth(),
       },
       {
         contractAddress: guilToken.address,
-        amount: toWei(10 * i),
+        amount: randGuil(),
       },
       { from: user1 }
     );
@@ -182,11 +190,11 @@ const handle = async () => {
     result = await exchange.placeOrder(
       {
         contractAddress: guilToken.address,
-        amount: toWei(10 * i),
+        amount: randGuil(),
       },
       {
         contractAddress: ETHER_ADDRESS,
-        amount: toWei(0.01),
+        amount: randEth(),
       },
       { from: user2 }
     );

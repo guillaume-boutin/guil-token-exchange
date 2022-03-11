@@ -118,9 +118,9 @@ contract Exchange {
   }
 
   function placeOrder(_Token memory _offer, _Token memory _demand) public {
-    require(_offer.amount > 0);
-    require(_demand.amount > 0);
-    require(balances[msg.sender][_offer.contractAddress] >= _offer.amount);
+    require(_offer.amount > 0, "offer must be greater than 0");
+    require(_demand.amount > 0, "demand must be greater than 0");
+    require(balances[msg.sender][_offer.contractAddress] >= _offer.amount, "offer too high for available funds");
 
     ordersCount = ordersCount.add(1);
     uint _id = ordersCount;
