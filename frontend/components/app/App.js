@@ -84,11 +84,11 @@ class AppComponent extends Component {
 
     this.subtractFromWalletBalance(token);
     this.addToExchangeBalance(token);
-
-    if (!token.isEth) return;
-
-    await this.props.web3.loadEthBalance();
     this.props.exchange.setBalancesLoading(false);
+
+    if (token.isEth) {
+      await this.props.web3.loadEthBalance();
+    }
   }
 
   async onWithdrawEvent(error, event) {
@@ -102,10 +102,9 @@ class AppComponent extends Component {
     this.addToWalletBalance(token);
     this.subtractFromExchangeBalance(token);
 
-    if (!token.isEth) return;
-
-    await this.props.web3.loadEthBalance();
-    this.props.exchange.setBalancesLoading(false);
+    if (token.isEth) {
+      await this.props.web3.loadEthBalance();
+    }
   }
 
   onOrderEvent(error, event) {
@@ -158,8 +157,6 @@ class AppComponent extends Component {
 
     const earning = trade.getEarning(account);
     const fee = trade.getFee(account, feeRate);
-
-    console.log(earning, fee);
 
     const paying = trade.getPaying(account);
 

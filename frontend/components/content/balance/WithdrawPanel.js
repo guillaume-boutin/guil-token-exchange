@@ -33,9 +33,7 @@ const _WithdrawPanel = ({
       .send({
         from: web3.account,
       })
-      .on("transactionHash", (hash) => {
-        exchange.setEthBalanceLoading(true);
-      })
+      .on("transactionHash", (hash) => {})
       .on("error", (error) => {
         console.error(error);
       });
@@ -50,9 +48,7 @@ const _WithdrawPanel = ({
         amount,
       })
       .send({ from: web3.account })
-      .on("transactionHash", (hash) => {
-        exchange.setGuilBalanceLoading(true);
-      })
+      .on("transactionHash", (hash) => {})
       .on("error", (error) => {});
   };
 

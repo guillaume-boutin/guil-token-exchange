@@ -1,297 +1,153 @@
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { Tabs, Tab, TabList, TabPanel, TabPanels } from "../../common/tabs";
-import { TextInput } from "../../common/form";
-import { Button } from "../../common/button";
 import style from "./NewOrder.module.scss";
-import { useState } from "react";
 import { connect } from "../../../context";
 import { ETHER_ADDRESS } from "../../../helpers";
-import { Table } from "../../common/table";
 import BigNumber from "bignumber.js";
+import { Component } from "../../Component";
+import { OperationPanel } from "./OperationPanel";
+import { Spinner } from "../../common/spinner";
 
-const _NewOrder = ({ web3, exchange, guilToken }) => {
-  const [buyGuilAmount, setBuyGuilAmount] = useState(0);
-  const [buyGuilPrice, setBuyGuilPrice] = useState(0);
-  const [sellGuilAmount, setSellGuilAmount] = useState(0);
-  const [sellGuilPrice, setSellGuilPrice] = useState(0);
+class _NewOrder extends Component {
+  boundMethods() {
+    return [this.placeBuyOrder, this.placeSellOrder];
+  }
 
-  const noEthFunds = exchange.ethBalance <= 0;
+  get isLoading() {
+    return (
+      this.props.exchange.tradesLoading ||
+      this.props.exchange.ethBalanceLoading ||
+      this.props.exchange.guilBalanceLoading
+    );
+  }
 
-  const noGuilFunds = exchange.guilBalance <= 0;
+  get currentPrice() {
+    const lastTrade =
+      this.props.exchange.trades
+        .sort((a, b) => (a.timestamp.isBefore(b.timestamp) ? -1 : 1))
+        .slice(-1)[0] ?? null;
 
-  const ethPayAmount = new BigNumber(buyGuilAmount).multipliedBy(
-    new BigNumber(buyGuilPrice)
-  );
+    return lastTrade ? lastTrade.order.price.toPrecision(4) : "0";
+  }
 
-  const buyDisabled =
-    buyGuilAmount <= 0 ||
-    buyGuilPrice <= 0 ||
-    ethPayAmount.shiftedBy(18).isGreaterThan(exchange.ethBalance);
+  get noEthFunds() {
+    return this.props.exchange.ethBalance <= 0;
+  }
 
-  const ethEarnAmount = new BigNumber(sellGuilAmount).multipliedBy(
-    new BigNumber(sellGuilPrice)
-  );
+  get noGuilFunds() {
+    return this.props.exchange.guilBalance <= 0;
+  }
 
-  const sellDisabled =
-    sellGuilAmount <= 0 ||
-    sellGuilPrice <= 0 ||
-    new BigNumber(sellGuilAmount)
-      .shiftedBy(18)
-      .isGreaterThan(exchange.guilBalance);
+  placeBuyOrder(amount, price) {
+    amount = new BigNumber(amount);
+    price = new BigNumber(price);
 
-  const onBuyGuilAmountChange = (e) => {
-    setBuyGuilAmount(e.target.value);
-  };
-
-  const onBuyGuilPriceChange = (e) => {
-    setBuyGuilPrice(e.target.value);
-  };
-
-  const onBuyClick = () => {
-    placeBuyOrder(buyGuilAmount, buyGuilPrice);
-  };
-
-  const onSellGuilAmountChange = (e) => {
-    setSellGuilAmount(e.target.value);
-  };
-
-  const onSellGuilPriceChange = (e) => {
-    setSellGuilPrice(e.target.value);
-  };
-
-  const onSellClick = () => {
-    placeSellOrder(sellGuilAmount, sellGuilPrice);
-  };
-
-  const placeBuyOrder = (amount, price) => {
     const offer = {
       contractAddress: ETHER_ADDRESS,
-      amount: web3.web3.utils.toWei(
-        safeMultiply(amount, price).toString(),
+      amount: this.props.web3.web3.utils.toWei(
+        amount.times(price).toString(),
         "ether"
       ),
     };
 
     const demand = {
-      contractAddress: guilToken.contractAddress,
-      amount: web3.web3.utils.toWei(amount, "ether"),
+      contractAddress: this.props.guilToken.contractAddress,
+      amount: this.props.web3.web3.utils.toWei(amount.toString(), "ether"),
     };
 
-    exchange.contract.methods
+    this.props.exchange.contract.methods
       .placeOrder(offer, demand)
-      .send({ from: web3.account })
+      .send({ from: this.props.web3.account })
       .on("transactionHash", (hash) => {});
+  }
 
-    setBuyGuilAmount(0);
-    setBuyGuilPrice(0);
-  };
+  placeSellOrder(amount, price) {
+    amount = new BigNumber(amount);
+    price = new BigNumber(price);
 
-  const placeSellOrder = (amount, price) => {
     const offer = {
-      contractAddress: guilToken.contractAddress,
-      amount: web3.web3.utils.toWei(amount, "ether"),
+      contractAddress: this.props.guilToken.contractAddress,
+      amount: this.props.web3.web3.utils.toWei(amount.toString(), "ether"),
     };
 
     const demand = {
       contractAddress: ETHER_ADDRESS,
-      amount: web3.web3.utils.toWei(
-        safeMultiply(amount, price).toString(),
+      amount: this.props.web3.web3.utils.toWei(
+        amount.times(price).toString(),
         "ether"
       ),
     };
 
-    exchange.contract.methods
+    this.props.exchange.contract.methods
       .placeOrder(offer, demand)
-      .send({ from: web3.account })
-      .on("transactionHash", (hash) => {});
+      .send({ from: this.props.web3.account })
+      .on("transactionHash", (hash) => {
+        console.log("placingSellOrder");
+      });
+  }
 
-    setSellGuilAmount(0);
-    setSellGuilPrice(0);
-  };
+  render() {
+    return (
+      <Card>
+        <CardHeader>
+          <h3>New Order</h3>
+        </CardHeader>
 
-  const safeMultiply = (x, y) => {
-    const xDecimalPart = (x - Math.round(x)).toString().split(".")[1] ?? "";
-    const yDecimalPart = (y - Math.round(y)).toString().split(".")[1] ?? "";
+        <CardBody className={style.carbBody}>
+          {this.isLoading && <Spinner />}
 
-    const power = xDecimalPart.length + yDecimalPart.length;
+          {!this.isLoading && (
+            <Tabs className={style.tabs}>
+              <TabList as="nav">
+                <Tab as="a">Buy</Tab>
 
-    return Math.round(10 ** power * x * y) / 10 ** power;
-  };
+                <Tab as="a">Sell</Tab>
+              </TabList>
 
-  return (
-    <Card>
-      <CardHeader>
-        <h3>New Order</h3>
-      </CardHeader>
+              <TabPanels as="div">
+                <TabPanel as="div" className={style.tabPanel}>
+                  {this.noEthFunds && (
+                    <div className={style.noFunds}>
+                      You have no ETH funds. Deposit ETH in the Exchange, or
+                      sell some GUIL from the Order Book.
+                    </div>
+                  )}
 
-      <CardBody className={style.carbBody}>
-        <Tabs className={style.tabs}>
-          <TabList as="nav">
-            <Tab as="a">Buy</Tab>
+                  {!this.noEthFunds && (
+                    <OperationPanel
+                      operation="buy"
+                      currentPrice={this.currentPrice}
+                      maxPayingAmount={this.props.exchange.ethBalance}
+                      onSubmit={this.placeBuyOrder}
+                    />
+                  )}
+                </TabPanel>
 
-            <Tab as="a">Sell</Tab>
-          </TabList>
+                <TabPanel as="div" className={style.tabPanel}>
+                  {this.noGuilFunds && (
+                    <div className={style.noFunds}>
+                      You have no GUIL funds. Deposit some GUIL in the Exchange,
+                      or buy some from the Order Book. first.
+                    </div>
+                  )}
 
-          <TabPanels as="div">
-            <TabPanel as="div" className={style.tabPanel}>
-              {noEthFunds && (
-                <div className={style.noFunds}>
-                  You have no ETH funds. Deposit ETH in the Exchange, or sell
-                  some GUIL from the Order Book.
-                </div>
-              )}
-
-              {!noEthFunds && (
-                <Table>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <label htmlFor="buy-token-amount-input">
-                          You get (GUIL)
-                        </label>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        <TextInput
-                          type="number"
-                          value={buyGuilAmount}
-                          min="0"
-                          id="buy-token-amount-input"
-                          placeholder="Buy Amount"
-                          onChange={onBuyGuilAmountChange}
-                        />
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        <label htmlFor="buy-token-price-input">
-                          Price (GUIL/ETH)
-                        </label>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        <TextInput
-                          type="number"
-                          value={buyGuilPrice}
-                          min="0"
-                          id="buy-token-price-input"
-                          placeholder="Buy Price"
-                          onChange={onBuyGuilPriceChange}
-                        />
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>You pay (ETH)</td>
-                    </tr>
-
-                    <tr>
-                      <td>{ethPayAmount.toString()}</td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        <Button
-                          className={style.blockButton}
-                          onClick={onBuyClick}
-                          disabled={buyDisabled}
-                        >
-                          Place Order
-                        </Button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-              )}
-            </TabPanel>
-
-            <TabPanel as="div" className={style.tabPanel}>
-              {noGuilFunds && (
-                <div className={style.noFunds}>
-                  You have no GUIL funds. Deposit some GUIL in the Exchange, or
-                  buy some from the Order Book. first.
-                </div>
-              )}
-
-              {!noGuilFunds && (
-                <Table>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <label htmlFor="sell-token-amount-input">
-                          You give (GUIL)
-                        </label>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        <TextInput
-                          type="number"
-                          value={sellGuilAmount}
-                          min="0"
-                          id="sell-token-amount-input"
-                          placeholder="Sell Amount"
-                          onChange={onSellGuilAmountChange}
-                        />
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        <label htmlFor="sell-token-price-input">
-                          Price (GUIL/ETH)
-                        </label>
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        <TextInput
-                          type="number"
-                          value={sellGuilPrice}
-                          min="0"
-                          id="sell-token-price-input"
-                          placeholder="Sell Price"
-                          onChange={onSellGuilPriceChange}
-                        />
-                      </td>
-                    </tr>
-
-                    <tr>
-                      <td>You earn (ETH)</td>
-                    </tr>
-
-                    <tr>
-                      <td>{ethEarnAmount.toString()}</td>
-                    </tr>
-
-                    <tr>
-                      <td>
-                        <Button
-                          className={style.blockButton}
-                          onClick={onSellClick}
-                          disabled={sellDisabled}
-                        >
-                          Place Order
-                        </Button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-              )}
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </CardBody>
-    </Card>
-  );
-};
+                  {!this.noGuilFunds && (
+                    <OperationPanel
+                      operation="sell"
+                      currentPrice={this.currentPrice}
+                      maxPayingAmount={this.props.exchange.guilBalance}
+                      onSubmit={this.placeSellOrder}
+                    />
+                  )}
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          )}
+        </CardBody>
+      </Card>
+    );
+  }
+}
 
 export const NewOrder = connect(
   ({ web3, exchange, guilToken }) => ({ web3, exchange, guilToken }),

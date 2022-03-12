@@ -49,6 +49,9 @@ export const ExchangeProvider = ({ children }) => {
   });
 
   const addToOrders = (order) => {
+    const index = orders.find((o) => o.id === order.id);
+    if (index > -1) return;
+
     setOrders([...orders, order]);
   };
 

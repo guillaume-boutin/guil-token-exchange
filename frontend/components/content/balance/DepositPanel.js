@@ -34,9 +34,7 @@ const _DepositPanel = ({
         from: web3.account,
         value: amount,
       })
-      .on("transactionHash", (hash) => {
-        exchange.setEthBalanceLoading(true);
-      });
+      .on("transactionHash", (hash) => {});
   };
 
   const onDepositGuil = async (value) => {
@@ -46,8 +44,6 @@ const _DepositPanel = ({
       .approve(exchange.contractAddress, amount)
       .send({ from: web3.account })
       .on("transactionHash", (hash) => {
-        exchange.setGuilBalanceLoading(true);
-
         const contractAddress = guilToken.contractAddress;
 
         exchange.contract.methods

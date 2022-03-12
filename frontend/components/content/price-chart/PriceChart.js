@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { chartOptions, dummyData } from "./config";
 import { connect } from "../../../context";
 import { Component } from "../../Component";
-import { HandledOrder } from "../../../entities";
+import { Trade } from "../../../entities/Trade";
 import _groupBy from "lodash/groupBy";
 import moment from "moment";
 import { Spinner } from "../../common/spinner";
@@ -12,7 +12,7 @@ import { Spinner } from "../../common/spinner";
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 /**
- * @property {HandledOrder[]} props.trades
+ * @property {Trade[]} props.trades
  * @property {boolean} props.tradesLoading
  */
 class PriceChartComponent extends Component {
@@ -24,10 +24,12 @@ class PriceChartComponent extends Component {
 
   get candlesticks() {
     return Object.values(this.groupedTrades).map((trades) => {
-      const timeSort = trades.sort((a, b) =>
+      const timeSort = [...trades].sort((a, b) =>
         a.timestamp.isBefore(b.timestamp) ? -1 : 1
       );
-      const priceSort = trades.sort((a, b) => a.order.price - b.order.price);
+      const priceSort = [...trades].sort(
+        (a, b) => a.order.price - b.order.price
+      );
 
       return [
         timeSort[0].order.price.precision(4),
@@ -47,10 +49,28 @@ class PriceChartComponent extends Component {
     }));
   }
 
+  /**
+   * @return {Trade[]}
+   */
   get lastTwoTrades() {
     return this.props.trades
       .sort((a, b) => (a.timestamp.isBefore(b.timestamp) ? -1 : 1))
       .slice(-2);
+  }
+
+  /**
+   * @return {Trade|null}
+   */
+  get lastTrade() {
+    return this.lastTwoTrades[1] ?? null;
+  }
+
+  get lastPrice() {
+    const lastTrade = this.lastTrade;
+
+    if (!lastTrade) return "";
+
+    return lastTrade.order.price.toPrecision(4);
   }
 
   get latestPriceChange() {
@@ -90,7 +110,7 @@ class PriceChartComponent extends Component {
           {!this.isLoading && (
             <>
               <h4 className={styles.priceTitle}>
-                GUIL/ETH {caret} {latestPriceChange}
+                GUIL/ETH {caret} {this.lastPrice}
               </h4>
 
               <div className={styles.priceChart}>

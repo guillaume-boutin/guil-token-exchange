@@ -3,7 +3,7 @@ import { Token } from "./Token";
 import BigNumber from "bignumber.js";
 import moment from "moment";
 
-class Trade {
+export class Trade {
   /**
    * @param props;
    * @param {number} props.id
