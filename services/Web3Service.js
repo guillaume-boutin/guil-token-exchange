@@ -1,6 +1,6 @@
 import Web3 from "web3";
-import ExchangeJson from "../../backend/abis/Exchange.json";
-import GuilTokenJson from "../../backend/abis/GuilToken.json";
+import ExchangeJson from "../ethereum/abis/Exchange.json";
+import GuilTokenJson from "../ethereum/abis/GuilToken.json";
 
 export class Web3Service {
   /**

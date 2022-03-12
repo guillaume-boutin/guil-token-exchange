@@ -10,9 +10,9 @@ module.exports = {
       network_id: "*",
     },
   },
-  contracts_directory: "./contracts/",
-  contracts_build_directory: "./abis/",
-  migrations_directory: "./migrations/",
+  contracts_directory: "./ethereum/contracts/",
+  contracts_build_directory: "./ethereum/abis/",
+  migrations_directory: "./ethereum/migrations/",
 
   // Configure your compilers
   compilers: {
