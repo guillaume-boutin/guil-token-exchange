@@ -1,7 +1,7 @@
 // import { Component } from "../Component";
 import { Balance } from "./balance";
 import { OrderBook } from "./order-book";
-import { PriceChart } from "./price-chart";
+// import { PriceChart } from "./price-chart";
 // import { Trades } from "./trades";
 import { NewOrder } from "./new-order";
 // import { MyTransactions } from "./my-transactions";
@@ -85,9 +85,9 @@ export const _Grid = () => {
         <OrderBook />
       </div>
 
-      <div className={styles.priceChart}>
-        <PriceChart />
-      </div>
+      {/*<div className={styles.priceChart}>*/}
+      {/*  <PriceChart />*/}
+      {/*</div>*/}
 
       {/*<div className={styles.trades}>*/}
       {/*  <Trades />*/}
