@@ -82,7 +82,6 @@ class _NewOrder extends Component {
       .placeOrder(offer, demand)
       .send({ from: this.props.web3.account })
       .on("transactionHash", (hash) => {
-        console.log("placingSellOrder");
       });
   }
 

@@ -24,10 +24,10 @@ export const ExchangeProvider = ({ children }) => {
   const [guilBalance, _setGuilBalance] = useState(null);
   const [guilBalanceLoading, setGuilBalanceLoading] = useState(false);
 
-  const setContract = async (contract) => {
-    _setContract(contract);
+  const setContract = async (value) => {
+    _setContract(value);
 
-    const feePercent = await contract.methods.feePercent().call();
+    const feePercent = await value.methods.feePercent().call();
 
     _setFeePercent(feePercent);
   };
@@ -49,21 +49,21 @@ export const ExchangeProvider = ({ children }) => {
   });
 
   const addToOrders = (order) => {
-    const index = orders.find((o) => o.id === order.id);
+    const index = orders.findIndex((o) => o.id === order.id);
     if (index > -1) return;
 
     setOrders([...orders, order]);
   };
 
   const addToTrades = (trade) => {
-    const index = trades.find((fo) => fo.order.id === trade.order.id);
+    const index = trades.findIndex((fo) => fo.order.id === trade.order.id);
     if (index > -1) return;
 
     setTrades([trade, ...trades]);
   };
 
   const addToCancelledOrders = (cancelledOrder) => {
-    const index = cancelledOrders.find(
+    const index = cancelledOrders.findIndex(
       (co) => co.order.id === cancelledOrder.order.id
     );
     if (index > -1) return;

@@ -47,7 +47,7 @@ const handle = async () => {
   );
 
   // User 1 Deposits Ether
-  ethDeposit = 1;
+  ethDeposit = 0.1;
   await exchange.depositEther({ from: user1, value: toWei(ethDeposit) });
   console.log(`Deposited ${ethDeposit} Ether from ${user1}`);
 
