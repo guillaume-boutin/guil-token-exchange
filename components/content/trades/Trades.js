@@ -1,58 +1,53 @@
 import { Component } from "../../Component";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { Table } from "../../common/table";
-import { connect } from "../../../context";
+import { Context } from "../../../context";
 import { TradeRow } from "./TradeRow";
 import styles from "./Trade.module.scss";
 import { Spinner } from "../../common/spinner";
+import { useContext } from "react";
+import { observer } from "mobx-react-lite";
 
-class TradesComponent extends Component {
-  get trades() {
-    return this.props.exchange.trades.sort((a, b) =>
-      b.timestamp.isBefore(a.timestamp) ? -1 : 1
-    );
-  }
+const TradesComponent = () => {
+  const { ordersStore } = useContext(Context);
 
-  get isLoading() {
-    return this.props.exchange.tradesLoading;
-  }
+  const isLoading = ordersStore.trades === null;
 
-  render() {
-    return (
-      <Card className={styles.card}>
-        <CardHeader>
-          <h3>Trades</h3>
-        </CardHeader>
+  const trades = [...(ordersStore.trades ?? [])].sort((a, b) =>
+    b.timestamp.isBefore(a.timestamp) ? -1 : 1
+  );
 
-        <CardBody className={styles.cardBody}>
-          {this.isLoading && <Spinner />}
+  return (
+    <Card className={styles.card}>
+      <CardHeader>
+        <h3>Trades</h3>
+      </CardHeader>
 
-          {!this.isLoading && (
-            <Table>
-              <thead>
-                <tr>
-                  <th>Time</th>
+      <CardBody className={styles.cardBody}>
+        {isLoading && <Spinner />}
 
-                  <th>GUIL</th>
+        {!isLoading && (
+          <Table>
+            <thead>
+              <tr>
+                <th>Time</th>
 
-                  <th>GUIL/ETH</th>
-                </tr>
-              </thead>
+                <th>GUIL</th>
 
-              <tbody>
-                {this.trades.map((trade, i) => (
-                  <TradeRow key={i} trade={trade} />
-                ))}
-              </tbody>
-            </Table>
-          )}
-        </CardBody>
-      </Card>
-    );
-  }
-}
+                <th>GUIL/ETH</th>
+              </tr>
+            </thead>
 
-export const Trades = connect(
-  ({ exchange }) => ({ exchange }),
-  TradesComponent
-);
+            <tbody>
+              {trades.map((trade, i) => (
+                <TradeRow key={i} trade={trade} />
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </CardBody>
+    </Card>
+  );
+};
+
+export const Trades = observer(TradesComponent);

@@ -1,9 +1,9 @@
 import { Component } from "../../Component";
-import { HandledOrder } from "../../../entities";
+import { Trade } from "../../../entities";
 import style from "./Trade.module.scss";
 
 /**
- * @property {HandledOrder} props.trade
+ * @property {Trade} props.trade
  */
 export class TradeRow extends Component {
   get time() {
