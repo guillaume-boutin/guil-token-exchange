@@ -2,12 +2,14 @@ import styles from "./NavBar.module.scss";
 import { Component } from "../Component";
 import { connect } from "../../context";
 
-class NavBarComponent extends Component {
+export class NavBar extends Component {
   get accountEtherscanUrl() {
     return `https://etherscan.io/address/${this.props.account}`;
   }
 
   render() {
+    console.log(this.props.account);
+
     return (
       <nav className={styles.navBar}>
         <div className={styles.row}>
@@ -25,10 +27,3 @@ class NavBarComponent extends Component {
     );
   }
 }
-
-export const NavBar = connect(
-  ({ web3 }) => ({
-    account: web3.account,
-  }),
-  NavBarComponent
-);

@@ -1,51 +1,26 @@
-import {
-  ExchangeConsumer,
-  ExchangeProvider,
-  GuilTokenConsumer,
-  GuilTokenProvider,
-  Web3Consumer,
-  Web3Provider,
-} from ".";
-import { Component } from "../components";
+import { createContext } from "react";
+import { Web3Store } from "../stores";
 
-export class ContextProvider extends Component {
-  render() {
-    return (
-      <Web3Provider>
-        <ExchangeProvider>
-          <GuilTokenProvider>{this.props.children}</GuilTokenProvider>
-        </ExchangeProvider>
-      </Web3Provider>
-    );
-  }
-}
+const web3Store = new Web3Store();
 
-const ContextConsumer = ({ children }) => (
-  <Web3Consumer>
-    {(web3) => (
-      <ExchangeConsumer>
-        {(exchange) => (
-          <GuilTokenConsumer>
-            {(guilToken) => {
-              return children({ web3, exchange, guilToken });
-            }}
-          </GuilTokenConsumer>
-        )}
-      </ExchangeConsumer>
-    )}
-  </Web3Consumer>
-);
+export const Context = createContext({ web3Store });
 
-export const connect = (mapContextToProps, Component) => {
-  return (props) => (
-    <ContextConsumer>
-      {(contextProps) => {
-        const mergedProps = {
-          ...mapContextToProps(contextProps),
-          ...props,
-        };
-        return <Component {...mergedProps} />;
-      }}
-    </ContextConsumer>
-  );
-};
+// export const ContextProvider = ({ children }) => (
+//   <Context.Provider
+//     value={{
+//       web3Store: new Web3Store(),
+//     }}
+//   >
+//     {children}
+//   </Context.Provider>
+// );
+//
+// export const ContextConsumer = ({ children }) => (
+//   <Context.Consumer>
+//     {(context) =>
+//       observer(({ web3Store }) => children({ web3Store: context.web3Store }))
+//     }
+//   </Context.Consumer>
+// );
+//
+// export const connect = (mapContextToProps, Component) => <Component />;

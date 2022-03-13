@@ -1,8 +1,8 @@
 import { NavBar } from "../nav-bar";
-import { Content } from "../content";
+// import { Content } from "../content";
 import styles from "./App.module.scss";
 import { connect } from "../../context";
-import { Component } from "../Component";
+// import { Component } from "../Component";
 import { Web3Service } from "../../services";
 import {
   HandledOrderFactory,
@@ -11,212 +11,222 @@ import {
 } from "../../entities";
 import { Token } from "../../entities";
 import { TradeFactory } from "../../entities/Trade";
+import { observer } from "mobx-react-lite";
+import { Web3Store } from "../../stores";
+import { Context } from "../../context";
+import { useContext, useEffect, useState } from "react";
 
-class AppComponent extends Component {
-  /** @private {Web3Service} */ web3Service;
+const AppComponent = () => {
+  const { web3Store } = useContext(Context);
+  console.log();
 
-  constructor(props) {
-    super(props);
+  const web3Service = new Web3Service();
 
-    this.web3Service = new Web3Service();
-  }
+  useEffect(() => {
+    load().then();
+  }, []);
 
-  boundMethods() {
-    return [
-      this.onDepositEvent,
-      this.onWithdrawEvent,
-      this.onOrderEvent,
-      this.onTradeEvent,
-      this.onCancelEvent,
-      this.refreshExchangeBalances,
-      this.addToExchangeBalance,
-      this.subtractFromExchangeBalance,
-    ];
-  }
+  // boundMethods() {
+  //   return [
+  //     this.onDepositEvent,
+  //     this.onWithdrawEvent,
+  //     this.onOrderEvent,
+  //     this.onTradeEvent,
+  //     this.onCancelEvent,
+  //     this.refreshExchangeBalances,
+  //     this.addToExchangeBalance,
+  //     this.subtractFromExchangeBalance,
+  //   ];
+  // }
 
-  async componentDidMount() {
-    const web3 = await this.web3Service.getWeb3();
-    if (!web3) return;
-
-    this.props.web3.setWeb3(web3);
-    this.props.web3.setWeb3Loaded(true);
+  const load = async () => {
+    await loadWeb3Sdk();
 
     await Promise.all([
-      this.loadAccount(web3),
-      this.loadExchangeContract(web3),
-      this.loadGuilTokenContract(web3),
+      loadAccount(),
+      loadExchangeContract(),
+      loadGuilTokenContract(),
     ]);
-  }
+  };
 
-  async loadAccount(web3) {
-    const account = await this.web3Service.getAccount(web3);
-    this.props.web3.setAccount(account);
-  }
+  const loadWeb3Sdk = async () => {
+    const sdk = await web3Service.getWeb3();
+    if (!sdk) return;
 
-  async loadExchangeContract(web3) {
-    if (this.props.exchange.contract) return;
+    web3Store.setSdk(sdk);
+    console.log(web3Store.sdk);
+  };
 
-    const contract = await this.web3Service.getExchangeContract(web3);
+  const loadAccount = async () => {
+    if (!web3Store.sdk) return;
 
-    contract.events.Deposit({}, this.onDepositEvent);
-    contract.events.Withdraw({}, this.onWithdrawEvent);
-    contract.events.Order({}, this.onOrderEvent);
-    contract.events.Cancel({}, this.onCancelEvent);
-    contract.events.Trade({}, this.onTradeEvent);
+    const account = await web3Service.getAccount(web3Store.sdk);
+    web3Store.setAccount(account);
+    console.log(web3Store.account);
+  };
 
-    this.props.exchange.setContract(contract);
-  }
+  const loadExchangeContract = async () => {
+    if (!web3Store.sdk) return;
 
-  async loadGuilTokenContract(web3) {
-    if (this.props.guilToken.contract) return;
+    if (web3Store.exchangeContract) return;
 
-    const contract = await this.web3Service.getGuilTokenContract(web3);
-    this.props.guilToken.setContract(contract);
-  }
+    const contract = await web3Service.getExchangeContract(web3Store.sdk);
 
-  async onDepositEvent(error, event) {
-    const account = this.props.web3.account;
-    if (account !== event.returnValues.user) return;
+    // contract.events.Deposit({}, this.onDepositEvent);
+    // contract.events.Withdraw({}, this.onWithdrawEvent);
+    // contract.events.Order({}, this.onOrderEvent);
+    // contract.events.Cancel({}, this.onCancelEvent);
+    // contract.events.Trade({}, this.onTradeEvent);
 
-    const token = new TokenFactory().fromExchangeTransferEvent(
-      event.returnValues
-    );
+    web3Store.setExchangeContract(contract);
+    console.log(web3Store.exchangeContract);
+  };
 
-    this.subtractFromWalletBalance(token);
-    this.addToExchangeBalance(token);
-    this.props.exchange.setBalancesLoading(false);
+  const loadGuilTokenContract = async () => {
+    if (!web3Store.sdk) return;
 
-    if (token.isEth) {
-      await this.props.web3.loadEthBalance();
-    }
-  }
+    if (web3Store.guilTokenContract) return;
 
-  async onWithdrawEvent(error, event) {
-    const account = this.props.web3.account;
-    if (account !== event.returnValues.user) return;
+    const contract = await web3Service.getGuilTokenContract(web3Store.sdk);
+    web3Store.setGuilTokenContract(contract);
+  };
 
-    const token = new TokenFactory().fromExchangeTransferEvent(
-      event.returnValues
-    );
+  // async onDepositEvent(error, event) {
+  //   const account = this.props.web3.account;
+  //   if (account !== event.returnValues.user) return;
+  //
+  //   const token = new TokenFactory().fromExchangeTransferEvent(
+  //     event.returnValues
+  //   );
+  //
+  //   this.subtractFromWalletBalance(token);
+  //   this.addToExchangeBalance(token);
+  //   this.props.exchange.setBalancesLoading(false);
+  //
+  //   if (token.isEth) {
+  //     await this.props.web3.loadEthBalance();
+  //   }
+  // }
+  //
+  // async onWithdrawEvent(error, event) {
+  //   const account = this.props.web3.account;
+  //   if (account !== event.returnValues.user) return;
+  //
+  //   const token = new TokenFactory().fromExchangeTransferEvent(
+  //     event.returnValues
+  //   );
+  //
+  //   this.addToWalletBalance(token);
+  //   this.subtractFromExchangeBalance(token);
+  //
+  //   if (token.isEth) {
+  //     await this.props.web3.loadEthBalance();
+  //   }
+  // }
+  //
+  // onOrderEvent(error, event) {
+  //   const order = new OrderFactory().fromEventValues(event.returnValues);
+  //
+  //   this.props.exchange.addToOrders(order);
+  //
+  //   const account = this.props.web3.account;
+  //   if (account !== order.user) return;
+  //
+  //   this.subtractFromExchangeBalance(order.offer);
+  // }
+  //
+  // onCancelEvent(error, event) {
+  //   const cancelledOrder = new HandledOrderFactory().fromEventValues(
+  //     event.returnValues
+  //   );
+  //   this.props.exchange.addToCancelledOrders(cancelledOrder);
+  //
+  //   const account = this.props.web3.account;
+  //
+  //   if (account !== cancelledOrder.order.user) return;
+  //
+  //   this.addToExchangeBalance(cancelledOrder.order.offer);
+  //
+  //   this.props.exchange.setOrderCancelling(false);
+  // }
+  //
+  // onTradeEvent(error, event) {
+  //   const trade = new TradeFactory().fromEventValues(event.returnValues);
+  //   this.props.exchange.addToTrades(trade);
+  //
+  //   const account = this.props.web3.account;
+  //
+  //   if (!trade.isActor(account)) return;
+  //
+  //   this.refreshExchangeBalances(trade);
+  //
+  //   if (!trade.isTaker(account)) return;
+  //
+  //   this.props.exchange.setOrderFilling(false);
+  // }
+  //
+  // /**
+  //  * @param {Trade} trade
+  //  */
+  // refreshExchangeBalances(trade) {
+  //   const account = this.props.web3.account;
+  //   const feeRate = this.props.exchange.feeRate;
+  //
+  //   const earning = trade.getEarning(account);
+  //   const fee = trade.getFee(account, feeRate);
+  //
+  //   const paying = trade.getPaying(account);
+  //
+  //   this.addToExchangeBalance(earning.minus(fee));
+  //   this.subtractFromExchangeBalance(paying);
+  // }
+  //
+  // /**
+  //  * @param {Token} token
+  //  */
+  // addToWalletBalance(token) {
+  //   if (token.isEth) return;
+  //
+  //   this.props.guilToken.addToBalance(token.amount);
+  // }
+  //
+  // /**
+  //  * @param {Token} token
+  //  */
+  // subtractFromWalletBalance(token) {
+  //   if (token.isEth) return;
+  //
+  //   this.props.guilToken.addToBalance(token.amount.negated());
+  // }
+  //
+  // /**
+  //  * @param {Token} token
+  //  */
+  // addToExchangeBalance(token) {
+  //   if (token.isEth) return this.props.exchange.addToEthBalance(token.amount);
+  //
+  //   this.props.exchange.addToGuilBalance(token.amount);
+  // }
+  //
+  // /**
+  //  * @param {Token} token
+  //  */
+  // subtractFromExchangeBalance(token) {
+  //   if (token.isEth)
+  //     return this.props.exchange.addToEthBalance(token.amount.negated());
+  //
+  //   this.props.exchange.addToGuilBalance(token.amount.negated());
+  // }
 
-    this.addToWalletBalance(token);
-    this.subtractFromExchangeBalance(token);
+  console.log("render");
 
-    if (token.isEth) {
-      await this.props.web3.loadEthBalance();
-    }
-  }
+  return (
+    <div className={styles.app}>
+      <NavBar account={web3Store.account} />
 
-  onOrderEvent(error, event) {
-    const order = new OrderFactory().fromEventValues(event.returnValues);
+      {/*<Content />*/}
+    </div>
+  );
+};
 
-    this.props.exchange.addToOrders(order);
-
-    const account = this.props.web3.account;
-    if (account !== order.user) return;
-
-    this.subtractFromExchangeBalance(order.offer);
-  }
-
-  onCancelEvent(error, event) {
-    const cancelledOrder = new HandledOrderFactory().fromEventValues(
-      event.returnValues
-    );
-    this.props.exchange.addToCancelledOrders(cancelledOrder);
-
-    const account = this.props.web3.account;
-
-    if (account !== cancelledOrder.order.user) return;
-
-    this.addToExchangeBalance(cancelledOrder.order.offer);
-
-    this.props.exchange.setOrderCancelling(false);
-  }
-
-  onTradeEvent(error, event) {
-    const trade = new TradeFactory().fromEventValues(event.returnValues);
-    this.props.exchange.addToTrades(trade);
-
-    const account = this.props.web3.account;
-
-    if (!trade.isActor(account)) return;
-
-    this.refreshExchangeBalances(trade);
-
-    if (!trade.isTaker(account)) return;
-
-    this.props.exchange.setOrderFilling(false);
-  }
-
-  /**
-   * @param {Trade} trade
-   */
-  refreshExchangeBalances(trade) {
-    const account = this.props.web3.account;
-    const feeRate = this.props.exchange.feeRate;
-
-    const earning = trade.getEarning(account);
-    const fee = trade.getFee(account, feeRate);
-
-    const paying = trade.getPaying(account);
-
-    this.addToExchangeBalance(earning.minus(fee));
-    this.subtractFromExchangeBalance(paying);
-  }
-
-  /**
-   * @param {Token} token
-   */
-  addToWalletBalance(token) {
-    if (token.isEth) return;
-
-    this.props.guilToken.addToBalance(token.amount);
-  }
-
-  /**
-   * @param {Token} token
-   */
-  subtractFromWalletBalance(token) {
-    if (token.isEth) return;
-
-    this.props.guilToken.addToBalance(token.amount.negated());
-  }
-
-  /**
-   * @param {Token} token
-   */
-  addToExchangeBalance(token) {
-    if (token.isEth) return this.props.exchange.addToEthBalance(token.amount);
-
-    this.props.exchange.addToGuilBalance(token.amount);
-  }
-
-  /**
-   * @param {Token} token
-   */
-  subtractFromExchangeBalance(token) {
-    if (token.isEth)
-      return this.props.exchange.addToEthBalance(token.amount.negated());
-
-    this.props.exchange.addToGuilBalance(token.amount.negated());
-  }
-
-  render() {
-    return (
-      <div className={styles.app}>
-        <NavBar />
-
-        <Content />
-      </div>
-    );
-  }
-}
-
-export const App = connect(
-  ({ web3, exchange, guilToken }) => ({
-    web3,
-    exchange,
-    guilToken,
-  }),
-  AppComponent
-);
+export const App = observer(AppComponent);
