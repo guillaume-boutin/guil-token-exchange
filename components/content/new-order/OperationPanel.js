@@ -1,142 +1,112 @@
-import { Component } from "../../Component";
 import { Table } from "../../common/table";
 import { TextInput } from "../../common/form";
 import { Button } from "../../common/button";
 import BigNumber from "bignumber.js";
 import style from "./NewOrder.module.scss";
+import { useState } from "react";
 
-export class OperationPanel extends Component {
-  constructor(props) {
-    super(props);
-  }
+const OperationPanel = ({
+  operation,
+  currentPrice,
+  maxPayingAmount,
+  onSubmit,
+}) => {
+  const [amount, setAmount] = useState(0);
+  const [price, setPrice] = useState(currentPrice);
 
-  initialState(props) {
-    return {
-      amount: 0,
-      price: props.currentPrice,
-    };
-  }
+  const amountLabel =
+    operation === "buy" ? "You get (GUIL)" : "You give (GUIL)";
 
-  boundMethods() {
-    return [this.onAmountChange, this.onPriceChange, this.onSubmit];
-  }
+  const inReturnLabel =
+    operation === "buy" ? "You pay (ETH)" : "You earn (ETH)";
 
-  get amountLabel() {
-    return this.props.operation === "buy"
-      ? "You get (GUIL)"
-      : "You give (GUIL)";
-  }
+  const inReturnAmount = new BigNumber(amount).times(new BigNumber(price));
 
-  get inReturnLabel() {
-    return this.props.operation === "buy" ? "You pay (ETH)" : "You earn (ETH)";
-  }
-
-  /**
-   * @return {BigNumber}
-   */
-  get inReturnAmount() {
-    return new BigNumber(this.state.amount).times(
-      new BigNumber(this.state.price)
-    );
-  }
-
-  get disabled() {
-    return (
-      this.state.amount <= 0 ||
-      this.state.price <= 0 ||
-      this.exceedsMaxPayingAmount
-    );
-  }
-
-  get exceedsMaxPayingAmount() {
-    if (this.props.operation === "buy") {
-      return this.inReturnAmount
-        .shiftedBy(18)
-        .isGreaterThan(this.props.maxPayingAmount);
+  const exceedsMaxPayingAmount = (() => {
+    if (operation === "buy") {
+      return inReturnAmount.shiftedBy(18).isGreaterThan(maxPayingAmount);
     }
 
-    return new BigNumber(this.state.amount)
-      .shiftedBy(18)
-      .isGreaterThan(this.props.maxPayingAmount);
-  }
+    return new BigNumber(amount).shiftedBy(18).isGreaterThan(maxPayingAmount);
+  })();
 
-  onAmountChange(e) {
-    this.setState({ amount: +e.target.value });
-  }
+  const disabled = amount <= 0 || price <= 0 || exceedsMaxPayingAmount;
 
-  onPriceChange(e) {
-    this.setState({ price: +e.target.value });
-  }
+  const onAmountChange = (e) => {
+    setAmount(+e.target.value);
+  };
 
-  onSubmit() {
-    this.props.onSubmit(this.state.amount, this.state.price);
-  }
+  const onPriceChange = (e) => {
+    setPrice(+e.target.value);
+  };
 
-  render() {
-    return (
-      <Table>
-        <tbody>
-          <tr>
-            <td>
-              <label htmlFor="sell-token-amount-input">
-                {this.amountLabel}
-              </label>
-            </td>
-          </tr>
+  const _onSubmit = () => {
+    onSubmit(amount, price);
+  };
 
-          <tr>
-            <td>
-              <TextInput
-                type="number"
-                value={this.state.amount}
-                min="0"
-                id="sell-token-amount-input"
-                placeholder="Buy Amount"
-                onChange={this.onAmountChange}
-              />
-            </td>
-          </tr>
+  return (
+    <Table>
+      <tbody>
+        <tr>
+          <td>
+            <label htmlFor="sell-token-amount-input">{amountLabel}</label>
+          </td>
+        </tr>
 
-          <tr>
-            <td>
-              <label htmlFor="sell-token-price-input">Price (GUIL/ETH)</label>
-            </td>
-          </tr>
+        <tr>
+          <td>
+            <TextInput
+              type="number"
+              value={amount}
+              min="0"
+              id="sell-token-amount-input"
+              placeholder="Buy Amount"
+              onChange={onAmountChange}
+            />
+          </td>
+        </tr>
 
-          <tr>
-            <td>
-              <TextInput
-                type="number"
-                value={this.state.price}
-                min="0"
-                id="sell-token-price-input"
-                placeholder="Sell Price"
-                onChange={this.onPriceChange}
-              />
-            </td>
-          </tr>
+        <tr>
+          <td>
+            <label htmlFor="sell-token-price-input">Price (GUIL/ETH)</label>
+          </td>
+        </tr>
 
-          <tr>
-            <td>{this.inReturnLabel}</td>
-          </tr>
+        <tr>
+          <td>
+            <TextInput
+              type="number"
+              value={price}
+              min="0"
+              id="sell-token-price-input"
+              placeholder="Sell Price"
+              onChange={onPriceChange}
+            />
+          </td>
+        </tr>
 
-          <tr>
-            <td>{this.inReturnAmount.toString()}</td>
-          </tr>
+        <tr>
+          <td>{inReturnLabel}</td>
+        </tr>
 
-          <tr>
-            <td>
-              <Button
-                className={style.blockButton}
-                onClick={this.onSubmit}
-                disabled={this.disabled}
-              >
-                Place Order
-              </Button>
-            </td>
-          </tr>
-        </tbody>
-      </Table>
-    );
-  }
-}
+        <tr>
+          <td>{inReturnAmount.toString()}</td>
+        </tr>
+
+        <tr>
+          <td>
+            <Button
+              className={style.blockButton}
+              onClick={_onSubmit}
+              disabled={disabled}
+            >
+              Place Order
+            </Button>
+          </td>
+        </tr>
+      </tbody>
+    </Table>
+  );
+};
+
+export { OperationPanel };
