@@ -9,11 +9,9 @@ import { useContext } from "react";
  * @param {Order} props.order
  */
 export const OrderRow = ({ order }) => {
-  const {
-    web3Store: { account },
-  } = useContext(Context);
+  const { web3Store } = useContext(Context);
 
-  const isSelfOwned = order.user === account;
+  const isSelfOwned = order.user === web3Store.account;
 
   const isBuy = order.transactionType === "buy";
 
@@ -36,10 +34,10 @@ export const OrderRow = ({ order }) => {
    * @param {Order} order
    * @param {string} account
    */
-  const fillOrder = (order, account) => {
+  const fillOrder = (order) => {
     web3Store.exchangeContract.methods
       .fillOrder(order.id)
-      .send({ from: account })
+      .send({ from: web3Store.account })
       .on("transactionHash", (hash) => {})
       .on("error", (error) => {});
   };
@@ -47,7 +45,7 @@ export const OrderRow = ({ order }) => {
   const onClick = () => {
     if (isDisabled()) return;
 
-    fillOrder(order, account);
+    fillOrder(order);
   };
 
   const trClasses = `${style.tableRow} ${

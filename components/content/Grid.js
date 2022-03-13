@@ -3,7 +3,7 @@ import { Balance } from "./balance";
 import { OrderBook } from "./order-book";
 // import { PriceChart } from "./price-chart";
 // import { Trades } from "./trades";
-// import { NewOrder } from "./new-order";
+import { NewOrder } from "./new-order";
 // import { MyTransactions } from "./my-transactions";
 // import { connect } from "../../context";
 import { OrderRepository } from "../../repositories/OrderRepository";
@@ -93,9 +93,9 @@ export const _Grid = () => {
       {/*  <Trades />*/}
       {/*</div>*/}
 
-      {/*<div className={styles.newOrder}>*/}
-      {/*  <NewOrder />*/}
-      {/*</div>*/}
+      <div className={styles.newOrder}>
+        <NewOrder />
+      </div>
 
       {/*<div className={styles.myTransactions}>*/}
       {/*  <MyTransactions />*/}

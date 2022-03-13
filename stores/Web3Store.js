@@ -14,6 +14,7 @@ export class Web3Store {
       sdk: observable,
       account: observable,
       exchangeContract: observable,
+      exchangeContractAddress: computed,
       guilTokenContract: observable,
       guilTokenContractAddress: computed,
       setSdk: action,
@@ -28,6 +29,13 @@ export class Web3Store {
    */
   get guilTokenContractAddress() {
     return this.guilTokenContract?.options.address;
+  }
+
+  /**
+   * @return {string|null}
+   */
+  get exchangeContractAddress() {
+    return this.exchangeContract?.options.address;
   }
 
   setSdk(sdk) {
