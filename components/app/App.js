@@ -1,5 +1,5 @@
 import { NavBar } from "../nav-bar";
-// import { Content } from "../content";
+import { Content } from "../content";
 import styles from "./App.module.scss";
 import { connect } from "../../context";
 // import { Component } from "../Component";
@@ -18,7 +18,6 @@ import { useContext, useEffect, useState } from "react";
 
 const AppComponent = () => {
   const { web3Store } = useContext(Context);
-  console.log();
 
   const web3Service = new Web3Service();
 
@@ -54,7 +53,6 @@ const AppComponent = () => {
     if (!sdk) return;
 
     web3Store.setSdk(sdk);
-    console.log(web3Store.sdk);
   };
 
   const loadAccount = async () => {
@@ -62,7 +60,6 @@ const AppComponent = () => {
 
     const account = await web3Service.getAccount(web3Store.sdk);
     web3Store.setAccount(account);
-    console.log(web3Store.account);
   };
 
   const loadExchangeContract = async () => {
@@ -79,7 +76,6 @@ const AppComponent = () => {
     // contract.events.Trade({}, this.onTradeEvent);
 
     web3Store.setExchangeContract(contract);
-    console.log(web3Store.exchangeContract);
   };
 
   const loadGuilTokenContract = async () => {
@@ -218,13 +214,11 @@ const AppComponent = () => {
   //   this.props.exchange.addToGuilBalance(token.amount.negated());
   // }
 
-  console.log("render");
-
   return (
     <div className={styles.app}>
       <NavBar account={web3Store.account} />
 
-      {/*<Content />*/}
+      <Content />
     </div>
   );
 };

@@ -3,10 +3,11 @@ import {
   HandledOrder,
   OrderFactory,
   HandledOrderFactory,
+  Trade,
+  TradeFactory,
 } from "../entities";
 import moment from "moment";
 import { FilledOrderFactory } from "../entities/FilledOrder";
-import { TradeFactory } from "../entities/Trade";
 
 export class OrderRepository {
   /** @private */
@@ -31,7 +32,7 @@ export class OrderRepository {
   }
 
   /**
-   * @returns {Promise<HandledOrder[]>}
+   * @returns {Promise<Trade[]>}
    */
   async getTrades() {
     const response = await this._contract.getPastEvents("Trade", {

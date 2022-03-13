@@ -8,8 +8,6 @@ export class NavBar extends Component {
   }
 
   render() {
-    console.log(this.props.account);
-
     return (
       <nav className={styles.navBar}>
         <div className={styles.row}>

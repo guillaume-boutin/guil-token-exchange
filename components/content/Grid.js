@@ -1,81 +1,66 @@
-import { Component } from "../Component";
-import { Balance } from "./balance";
-import { OrderBook } from "./order-book";
-import { PriceChart } from "./price-chart";
-import { Trades } from "./trades";
-import { NewOrder } from "./new-order";
-import { MyTransactions } from "./my-transactions";
-import { connect } from "../../context";
+// import { Component } from "../Component";
+// import { Balance } from "./balance";
+// import { OrderBook } from "./order-book";
+// import { PriceChart } from "./price-chart";
+// import { Trades } from "./trades";
+// import { NewOrder } from "./new-order";
+// import { MyTransactions } from "./my-transactions";
+// import { connect } from "../../context";
 import { OrderRepository } from "../../repositories/OrderRepository";
 import styles from "./Content.module.scss";
+import { useContext, useEffect } from "react";
+import { Context } from "../../context";
 
-class _Grid extends Component {
-  /** @private {OrderRepository} */ orderRepository;
+export const Grid = () => {
+  const { web3Store, ordersStore } = useContext(Context);
+  const orderRepository = new OrderRepository(web3Store.exchangeContract);
 
-  constructor(props) {
-    super(props);
+  useEffect(() => {
+    Promise.all([loadOrders(), loadTrades(), loadCancelledOrders()]).then();
+  }, []);
 
-    this.orderRepository = new OrderRepository(props.exchange.contract);
-  }
+  const loadOrders = async () => {
+    const orders = await orderRepository.getOrders();
+    ordersStore.setOrders(orders);
+  };
 
-  async componentDidMount() {
-    await Promise.all([
-      this.loadOrders(),
-      this.loadTrades(),
-      this.loadCancelledOrders(),
-    ]);
-  }
+  const loadTrades = async () => {
+    const trades = await orderRepository.getTrades();
+    ordersStore.setTrades(trades);
+  };
 
-  async loadOrders() {
-    this.props.exchange.setOrdersLoading(true);
-    const orders = await this.orderRepository.getOrders();
-    this.props.exchange.setOrders(orders);
-    this.props.exchange.setOrdersLoading(false);
-  }
+  const loadCancelledOrders = async () => {
+    const cancelledOrders = await orderRepository.getCancelledOrders();
+    ordersStore.setCancelledOrders(cancelledOrders);
+  };
 
-  async loadTrades() {
-    this.props.exchange.setTradesLoading(true);
-    const trades = await this.orderRepository.getTrades();
-    this.props.exchange.setTrades(trades);
-    this.props.exchange.setTradesLoading(false);
-  }
+  return (
+    <div className={styles.grid}>
+      {/*<div className={styles.balance}>*/}
+      {/*  <Balance />*/}
+      {/*</div>*/}
 
-  async loadCancelledOrders() {
-    this.props.exchange.setCancelledOrdersLoading(true);
-    const cancelledOrders = await this.orderRepository.getCancelledOrders();
-    this.props.exchange.setCancelledOrders(cancelledOrders);
-    this.props.exchange.setCancelledOrdersLoading(false);
-  }
+      {/*<div className={styles.orderBook}>*/}
+      {/*  <OrderBook />*/}
+      {/*</div>*/}
 
-  render() {
-    return (
-      <div className={styles.grid}>
-        <div className={styles.balance}>
-          <Balance />
-        </div>
+      {/*<div className={styles.priceChart}>*/}
+      {/*  <PriceChart />*/}
+      {/*</div>*/}
 
-        <div className={styles.orderBook}>
-          <OrderBook />
-        </div>
+      {/*<div className={styles.trades}>*/}
+      {/*  <Trades />*/}
+      {/*</div>*/}
 
-        <div className={styles.priceChart}>
-          <PriceChart />
-        </div>
+      {/*<div className={styles.newOrder}>*/}
+      {/*  <NewOrder />*/}
+      {/*</div>*/}
 
-        <div className={styles.trades}>
-          <Trades />
-        </div>
+      {/*<div className={styles.myTransactions}>*/}
+      {/*  <MyTransactions />*/}
+      {/*</div>*/}
+    </div>
+  );
+};
 
-        <div className={styles.newOrder}>
-          <NewOrder />
-        </div>
-
-        <div className={styles.myTransactions}>
-          <MyTransactions />
-        </div>
-      </div>
-    );
-  }
-}
-
-export const Grid = connect(({ exchange }) => ({ exchange }), _Grid);
+// export const Grid = connect(({ exchange }) => ({ exchange }), _Grid);
