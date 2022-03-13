@@ -1,6 +1,5 @@
 import styles from "./NavBar.module.scss";
 import { Component } from "../Component";
-import { connect } from "../../context";
 
 export class NavBar extends Component {
   get accountEtherscanUrl() {

@@ -14,13 +14,17 @@ const _OrderBook = () => {
     ordersStore.cancelledOrders === null ||
     ordersStore.trades === null;
 
-  const buyOrders = ordersStore.openOrders
-    .filter((openOrder) => openOrder.transactionType === "buy")
-    .sort((a, b) => a.price - b.price);
+  const buyOrders = () => {
+    return ordersStore.openOrders
+      .filter((openOrder) => openOrder.transactionType === "buy")
+      .sort((a, b) => a.price - b.price);
+  };
 
-  const sellOrders = ordersStore.openOrders
-    .filter((openOrder) => openOrder.transactionType === "sell")
-    .sort((a, b) => b.price - a.price);
+  const sellOrders = () => {
+    return ordersStore.openOrders
+      .filter((openOrder) => openOrder.transactionType === "sell")
+      .sort((a, b) => b.price - a.price);
+  };
 
   return (
     <Card className={styles.card}>
@@ -34,11 +38,11 @@ const _OrderBook = () => {
         {!isLoading && (
           <>
             <div className={styles.tableContainer}>
-              <OrderTable orders={buyOrders} />
+              <OrderTable orders={buyOrders()} />
             </div>
 
             <div className={styles.tableContainer}>
-              <OrderTable orders={sellOrders} />
+              <OrderTable orders={sellOrders()} />
             </div>
           </>
         )}

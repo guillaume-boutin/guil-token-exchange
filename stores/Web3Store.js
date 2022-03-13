@@ -16,6 +16,7 @@ export class Web3Store {
       exchangeContract: observable,
       guilTokenContract: observable,
       setSdk: action,
+      setAccount: action,
       setExchangeContract: action,
       setGuilTokenContract: action,
     });
