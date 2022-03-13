@@ -16,7 +16,9 @@ const PriceChartComponent = () => {
 
   const isLoading = ordersStore.trades === null;
 
-  const groupedTrades = _groupBy(ordersStore.trades, (t) =>
+  const trades = ordersStore.trades ?? [];
+
+  const groupedTrades = _groupBy(trades, (t) =>
     t.timestamp.startOf("hour").unix()
   );
 
@@ -43,7 +45,7 @@ const PriceChartComponent = () => {
     y: candlesticks[index],
   }));
 
-  const lastTwoTrades = [...ordersStore.trades]
+  const lastTwoTrades = [...trades]
     .sort((a, b) => (a.timestamp.isBefore(b.timestamp) ? -1 : 1))
     .slice(-2);
 
