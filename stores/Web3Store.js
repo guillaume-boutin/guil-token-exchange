@@ -1,9 +1,12 @@
-import {action, makeObservable, observable} from "mobx";
+import { action, makeObservable, observable } from "mobx";
 
 export class Web3Store {
   sdk = null;
-  account = null;
+
+  /** @public {string|null} account */ account = null;
+
   exchangeContract = null;
+
   guilTokenContract = null;
 
   constructor() {
@@ -15,7 +18,7 @@ export class Web3Store {
       setSdk: action,
       setExchangeContract: action,
       setGuilTokenContract: action,
-    })
+    });
   }
 
   setSdk(sdk) {

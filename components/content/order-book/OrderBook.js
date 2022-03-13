@@ -1,64 +1,57 @@
-import React, { Component } from "react";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { OrderTable } from ".";
-import { connect } from "../../../context";
 import styles from "./OrderBook.module.scss";
 import { Spinner } from "../../common/spinner";
+import { useContext } from "react";
+import { Context } from "../../../context";
+import { observer } from "mobx-react-lite";
 
-/**
- * @property {Order[]} props.openOrders
- */
-class _OrderBook extends Component {
-  constructor(props) {
-    super(props);
-  }
+const _OrderBook = () => {
+  const { ordersStore } = useContext(Context);
 
-  get isLoading() {
-    return this.props.exchange.anyOrdersLoading;
-  }
+  const isLoading =
+    ordersStore.orders === null ||
+    ordersStore.cancelledOrders === null ||
+    ordersStore.trades === null;
 
-  get buyOrders() {
-    return this.props.exchange.openOrders
-      .filter((openOrder) => openOrder.transactionType === "buy")
-      .sort((a, b) => a.price - b.price);
-  }
+  const buyOrders = ordersStore.openOrders
+    .filter((openOrder) => openOrder.transactionType === "buy")
+    .sort((a, b) => a.price - b.price);
 
-  get sellOrders() {
-    return this.props.exchange.openOrders
-      .filter((openOrder) => openOrder.transactionType === "sell")
-      .sort((a, b) => b.price - a.price);
-  }
+  const sellOrders = ordersStore.openOrders
+    .filter((openOrder) => openOrder.transactionType === "sell")
+    .sort((a, b) => b.price - a.price);
 
-  render() {
-    return (
-      <Card className={styles.card}>
-        <CardHeader className={styles.cardHeader}>
-          <h3>Order Book</h3>
-        </CardHeader>
+  return (
+    <Card className={styles.card}>
+      <CardHeader className={styles.cardHeader}>
+        <h3>Order Book</h3>
+      </CardHeader>
 
-        <CardBody className={styles.cardBody}>
-          {this.isLoading && <Spinner />}
+      <CardBody className={styles.cardBody}>
+        {isLoading && <Spinner />}
 
-          {!this.isLoading && (
-            <>
-              <div className={styles.tableContainer}>
-                <OrderTable orders={this.buyOrders} />
-              </div>
+        {!isLoading && (
+          <>
+            <div className={styles.tableContainer}>
+              <OrderTable orders={buyOrders} />
+            </div>
 
-              <div className={styles.tableContainer}>
-                <OrderTable orders={this.sellOrders} />
-              </div>
-            </>
-          )}
-        </CardBody>
-      </Card>
-    );
-  }
-}
+            <div className={styles.tableContainer}>
+              <OrderTable orders={sellOrders} />
+            </div>
+          </>
+        )}
+      </CardBody>
+    </Card>
+  );
+};
 
-export const OrderBook = connect(
-  ({ exchange }) => ({
-    exchange,
-  }),
-  _OrderBook
-);
+export const OrderBook = observer(_OrderBook);
+
+// export const OrderBook = connect(
+//   ({ exchange }) => ({
+//     exchange,
+//   }),
+//   _OrderBook
+// );

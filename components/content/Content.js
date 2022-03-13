@@ -1,14 +1,22 @@
 import styles from "./Content.module.scss";
 import { Grid } from ".";
+import { useContext } from "react";
+import { Context } from "../../context";
+import { observer } from "mobx-react-lite";
 
-export const Content = ({ sdk, exchangeContract, guilTokenContract }) => {
+const _Content = () => {
+  const {
+    web3Store: { sdk, exchangeContract, guilTokenContract },
+  } = useContext(Context);
+
   const canRender =
-    sdk !== null || exchangeContract !== null || guilTokenContract !== null;
+    sdk !== null && exchangeContract !== null && guilTokenContract !== null;
 
   return (
     <div className={styles.content}>
-      {/*{canRender ? <>Can Render</> : <>Could not load web3</>}*/}
       {canRender ? <Grid /> : <>Could not load web3</>}
     </div>
   );
 };
+
+export const Content = observer(_Content);

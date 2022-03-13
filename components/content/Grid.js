@@ -1,6 +1,6 @@
 // import { Component } from "../Component";
 // import { Balance } from "./balance";
-// import { OrderBook } from "./order-book";
+import { OrderBook } from "./order-book";
 // import { PriceChart } from "./price-chart";
 // import { Trades } from "./trades";
 // import { NewOrder } from "./new-order";
@@ -10,8 +10,9 @@ import { OrderRepository } from "../../repositories/OrderRepository";
 import styles from "./Content.module.scss";
 import { useContext, useEffect } from "react";
 import { Context } from "../../context";
+import { observer } from "mobx-react-lite";
 
-export const Grid = () => {
+export const _Grid = () => {
   const { web3Store, ordersStore } = useContext(Context);
   const orderRepository = new OrderRepository(web3Store.exchangeContract);
 
@@ -40,9 +41,9 @@ export const Grid = () => {
       {/*  <Balance />*/}
       {/*</div>*/}
 
-      {/*<div className={styles.orderBook}>*/}
-      {/*  <OrderBook />*/}
-      {/*</div>*/}
+      <div className={styles.orderBook}>
+        <OrderBook />
+      </div>
 
       {/*<div className={styles.priceChart}>*/}
       {/*  <PriceChart />*/}
@@ -63,4 +64,4 @@ export const Grid = () => {
   );
 };
 
-// export const Grid = connect(({ exchange }) => ({ exchange }), _Grid);
+export const Grid = observer(_Grid);
