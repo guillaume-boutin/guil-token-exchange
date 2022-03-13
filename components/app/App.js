@@ -17,19 +17,17 @@ import { Context } from "../../context";
 import { useContext, useEffect, useState } from "react";
 
 const AppComponent = () => {
-  const { web3Store } = useContext(Context);
-
+  const { web3Store, ordersStore } = useContext(Context);
   const web3Service = new Web3Service();
+
+  const [eventSubscriptions, setEventSubscriptions] = useState([]);
 
   useEffect(() => {
     load().then();
-  });
-
-  useEffect(() => {
     return () => {
-      console.log("unmounting App");
+      unsubscribeAllEvents();
     };
-  });
+  }, []);
 
   const load = async () => {
     await loadWeb3Sdk();
@@ -68,13 +66,11 @@ const AppComponent = () => {
     // contract.events.Cancel({}, this.onCancelEvent);
     // contract.events.Trade({}, this.onTradeEvent);
 
-    contract.events
-      .Order({}, (error, event) => {
-        console.log("events.Order callback", event);
-      })
-      .on("data", (event) => {
-        console.log("Orders on data", event);
-      });
+    const orderEventSubscription = contract.events
+      .Order({})
+      .on("data", onOrderEvent);
+
+    setEventSubscriptions([...eventSubscriptions, orderEventSubscription]);
 
     web3Store.setExchangeContract(contract);
   };
@@ -86,6 +82,13 @@ const AppComponent = () => {
 
     const contract = await web3Service.getGuilTokenContract(web3Store.sdk);
     web3Store.setGuilTokenContract(contract);
+  };
+
+  const unsubscribeAllEvents = () => {
+    console.log("unsubscribing", eventSubscriptions);
+    eventSubscriptions.forEach((s) => {
+      s.unsubscribe();
+    });
   };
 
   // async onDepositEvent(error, event) {
@@ -121,16 +124,16 @@ const AppComponent = () => {
   //   }
   // }
   //
-  // onOrderEvent(error, event) {
-  //   const order = new OrderFactory().fromEventValues(event.returnValues);
-  //
-  //   this.props.exchange.addToOrders(order);
-  //
-  //   const account = this.props.web3.account;
-  //   if (account !== order.user) return;
-  //
-  //   this.subtractFromExchangeBalance(order.offer);
-  // }
+  const onOrderEvent = (event) => {
+    const order = new OrderFactory().fromEventValues(event.returnValues);
+
+    ordersStore.addToOrders(order);
+
+    // const account = web3Store.account;
+    // if (account !== order.user) return;
+
+    // this.subtractFromExchangeBalance(order.offer);
+  };
   //
   // onCancelEvent(error, event) {
   //   const cancelledOrder = new HandledOrderFactory().fromEventValues(
