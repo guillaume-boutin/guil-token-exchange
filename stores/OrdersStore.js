@@ -26,6 +26,8 @@ export class OrdersStore {
   }
 
   get openOrders() {
+    if (!this.orders || !this.trades || !this.cancelledOrders) return [];
+
     return this.orders.filter((order) => {
       let index = this.trades.findIndex((trade) => trade.order.id === order.id);
 

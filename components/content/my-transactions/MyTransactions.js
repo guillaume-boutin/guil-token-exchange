@@ -17,7 +17,7 @@ const MyTransactionsComponent = () => {
     !ordersStore.orders || !ordersStore.cancelledOrders || !ordersStore.trades;
 
   /** @type {Order[]} */
-  const orders = [...(ordersStore.orders ?? [])]
+  const orders = [...(ordersStore.openOrders ?? [])]
     .filter((o) => o.user === web3Store.account)
     .sort((a, b) => (b.timestamp.isBefore(a.timestamp) ? -1 : 1));
 

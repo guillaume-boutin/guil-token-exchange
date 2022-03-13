@@ -70,7 +70,20 @@ const AppComponent = () => {
       .Order({})
       .on("data", onOrderEvent);
 
-    setEventSubscriptions([...eventSubscriptions, orderEventSubscription]);
+    const cancelOrderEventSubscription = contract.events
+      .Cancel({})
+      .on("data", onOrderCancelledEvent);
+
+    const tradeEventSubscription = contract.events
+      .Trade({})
+      .on("data", onTradeEvent);
+
+    setEventSubscriptions([
+      ...eventSubscriptions,
+      orderEventSubscription,
+      cancelOrderEventSubscription,
+      tradeEventSubscription,
+    ]);
 
     web3Store.setExchangeContract(contract);
   };
@@ -85,7 +98,7 @@ const AppComponent = () => {
   };
 
   const unsubscribeAllEvents = () => {
-    console.log("unsubscribing", eventSubscriptions);
+    console.log("unsubscribing!!", eventSubscriptions);
     eventSubscriptions.forEach((s) => {
       s.unsubscribe();
     });
@@ -134,36 +147,37 @@ const AppComponent = () => {
 
     // this.subtractFromExchangeBalance(order.offer);
   };
-  //
-  // onCancelEvent(error, event) {
-  //   const cancelledOrder = new HandledOrderFactory().fromEventValues(
-  //     event.returnValues
-  //   );
-  //   this.props.exchange.addToCancelledOrders(cancelledOrder);
-  //
-  //   const account = this.props.web3.account;
-  //
-  //   if (account !== cancelledOrder.order.user) return;
-  //
-  //   this.addToExchangeBalance(cancelledOrder.order.offer);
-  //
-  //   this.props.exchange.setOrderCancelling(false);
-  // }
-  //
-  // onTradeEvent(error, event) {
-  //   const trade = new TradeFactory().fromEventValues(event.returnValues);
-  //   this.props.exchange.addToTrades(trade);
-  //
-  //   const account = this.props.web3.account;
-  //
-  //   if (!trade.isActor(account)) return;
-  //
-  //   this.refreshExchangeBalances(trade);
-  //
-  //   if (!trade.isTaker(account)) return;
-  //
-  //   this.props.exchange.setOrderFilling(false);
-  // }
+
+  const onOrderCancelledEvent = (event) => {
+    const cancelledOrder = new HandledOrderFactory().fromEventValues(
+      event.returnValues
+    );
+
+    ordersStore.addToCancelledOrders(cancelledOrder);
+
+    // const account = this.props.web3.account;
+    //
+    // if (account !== cancelledOrder.order.user) return;
+    //
+    // this.addToExchangeBalance(cancelledOrder.order.offer);
+    //
+    // this.props.exchange.setOrderCancelling(false);
+  };
+
+  const onTradeEvent = (event) => {
+    const trade = new TradeFactory().fromEventValues(event.returnValues);
+    ordersStore.addToTrades(trade);
+
+    // const account = web3Store.account;
+    //
+    // if (!trade.isActor(account)) return;
+    //
+    // this.refreshExchangeBalances(trade);
+    //
+    // if (!trade.isTaker(account)) return;
+    //
+    // this.props.exchange.setOrderFilling(false);
+  };
   //
   // /**
   //  * @param {Trade} trade
