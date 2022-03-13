@@ -1,4 +1,3 @@
-import { Component } from "../../Component";
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { Table } from "../../common/table";
 import { Context } from "../../../context";

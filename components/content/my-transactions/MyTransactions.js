@@ -1,131 +1,113 @@
 import { Card, CardHeader, CardBody } from "../../common/card";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "../../common/tabs";
 import { Table } from "../../common/table";
-import { Component } from "../../Component";
-import { connect } from "../../../context";
+import { Context } from "../../../context";
 import { Order } from "../../../entities";
 import { TradeRow } from "./TradeRow";
 import { OrderRow } from "./OrderRow";
 import style from "./MyTransactions.module.scss";
 import { Spinner } from "../../common/spinner";
+import { useContext } from "react";
+import { observer } from "mobx-react-lite";
 
-/**
- * @property {string} props.account
- * @property {Order[]} props.orders
- * @property {FilledOrder[]} props.trades
- * @property {function(Order, string)} props.cancelOrder
- * @property {boolean} props.anyOrdersLoading
- */
-class MyTransactionsComponent extends Component {
-  boundMethods() {
-    return [this.onCancelOrder];
-  }
+const MyTransactionsComponent = () => {
+  const { web3Store, ordersStore } = useContext(Context);
 
-  get orders() {
-    return this.props.orders
-      .filter((o) => o.user === this.props.account)
-      .sort((a, b) => (b.timestamp.isBefore(a.timestamp) ? -1 : 1));
-  }
+  const isLoading =
+    !ordersStore.orders || !ordersStore.cancelledOrders || !ordersStore.trades;
 
-  get trades() {
-    return this.props.trades
-      .filter((t) => t.isActor(this.props.account))
-      .sort((a, b) => (b.timestamp.isBefore(a.timestamp) ? -1 : 1));
-  }
+  /** @type {Order[]} */
+  const orders = [...(ordersStore.orders ?? [])]
+    .filter((o) => o.user === web3Store.account)
+    .sort((a, b) => (b.timestamp.isBefore(a.timestamp) ? -1 : 1));
+
+  /** @type {Trade[]} */
+  const trades = [...(ordersStore.trades ?? [])]
+    .filter((t) => t.isActor(web3Store.account))
+    .sort((a, b) => (b.timestamp.isBefore(a.timestamp) ? -1 : 1));
 
   /**
    * @param {Order} order
    */
-  onCancelOrder(order) {
-    this.props.cancelOrder(order, this.props.account);
-  }
+  const _onCancelOrder = (order) => {
+    web3Store.exchangeContract.methods
+      .cancelOrder(order.id)
+      .send({ from: web3Store.account })
+      .on("transactionHash", (hash) => {})
+      .on("error", (error) => {});
+  };
 
-  get isLoading() {
-    return this.props.anyOrdersLoading;
-  }
+  return (
+    <Card className={style.card}>
+      <CardHeader>
+        <h3>My Transactions</h3>
+      </CardHeader>
 
-  render() {
-    return (
-      <Card className={style.card}>
-        <CardHeader>
-          <h3>My Transactions</h3>
-        </CardHeader>
+      <CardBody className={style.cardBody}>
+        {isLoading && <Spinner />}
 
-        <CardBody className={style.cardBody}>
-          {this.isLoading && <Spinner />}
+        {!isLoading && (
+          <Tabs className={style.tabs}>
+            <TabList as="nav">
+              <Tab as="a">Trades</Tab>
 
-          {!this.isLoading && (
-            <Tabs className={style.tabs}>
-              <TabList as="nav">
-                <Tab as="a">Trades</Tab>
+              <Tab as="a">Orders</Tab>
+            </TabList>
 
-                <Tab as="a">Orders</Tab>
-              </TabList>
+            <TabPanels as="div" className={style.tabPanels}>
+              <TabPanel as="div" className={style.tabPanel}>
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
 
-              <TabPanels as="div" className={style.tabPanels}>
-                <TabPanel as="div" className={style.tabPanel}>
-                  <Table>
-                    <thead>
-                      <tr>
-                        <th>Time</th>
+                      <th>GUIL</th>
 
-                        <th>GUIL</th>
+                      <th>GUIL/ETH</th>
+                    </tr>
+                  </thead>
 
-                        <th>GUIL/ETH</th>
-                      </tr>
-                    </thead>
+                  <tbody>
+                    {trades.map((trade, i) => (
+                      <TradeRow
+                        key={i}
+                        trade={trade}
+                        account={web3Store.account}
+                      />
+                    ))}
+                  </tbody>
+                </Table>
+              </TabPanel>
 
-                    <tbody>
-                      {this.trades.map((trade, i) => (
-                        <TradeRow
-                          key={i}
-                          trade={trade}
-                          account={this.props.account}
-                        />
-                      ))}
-                    </tbody>
-                  </Table>
-                </TabPanel>
+              <TabPanel as="div" className={style.tabPanel}>
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>Amount</th>
 
-                <TabPanel as="div" className={style.tabPanel}>
-                  <Table>
-                    <thead>
-                      <tr>
-                        <th>Amount</th>
+                      <th>GUIL/ETH</th>
 
-                        <th>GUIL/ETH</th>
+                      <th>Cancel</th>
+                    </tr>
+                  </thead>
 
-                        <th>Cancel</th>
-                      </tr>
-                    </thead>
+                  <tbody>
+                    {orders.map((order, i) => (
+                      <OrderRow
+                        key={i}
+                        order={order}
+                        onCancel={_onCancelOrder}
+                      />
+                    ))}
+                  </tbody>
+                </Table>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        )}
+      </CardBody>
+    </Card>
+  );
+};
 
-                    <tbody>
-                      {this.orders.map((order, i) => (
-                        <OrderRow
-                          key={i}
-                          order={order}
-                          onCancel={this.onCancelOrder}
-                        />
-                      ))}
-                    </tbody>
-                  </Table>
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          )}
-        </CardBody>
-      </Card>
-    );
-  }
-}
-
-export const MyTransactions = connect(
-  ({ web3, exchange }) => ({
-    account: web3.account,
-    orders: exchange.openOrders,
-    trades: exchange.trades,
-    cancelOrder: exchange.cancelOrder,
-    anyOrdersLoading: exchange.anyOrdersLoading,
-  }),
-  MyTransactionsComponent
-);
+export const MyTransactions = observer(MyTransactionsComponent);

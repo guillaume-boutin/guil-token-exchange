@@ -1,10 +1,10 @@
-import { HandledOrder } from "../../../entities";
+import { Trade } from "../../../entities";
 import { Component } from "../../Component";
 import style from "./MyTransactions.module.scss";
 
 /**
  * @property props
- * @property {FilledOrder} props.trade
+ * @property {Trade} props.trade
  * @property {string} props.account
  */
 export class TradeRow extends Component {

@@ -4,8 +4,7 @@ import { OrderBook } from "./order-book";
 import { PriceChart } from "./price-chart";
 import { Trades } from "./trades";
 import { NewOrder } from "./new-order";
-// import { MyTransactions } from "./my-transactions";
-// import { connect } from "../../context";
+import { MyTransactions } from "./my-transactions";
 import { OrderRepository } from "../../repositories/OrderRepository";
 import styles from "./Content.module.scss";
 import { useContext, useEffect } from "react";
@@ -97,9 +96,9 @@ export const _Grid = () => {
         <NewOrder />
       </div>
 
-      {/*<div className={styles.myTransactions}>*/}
-      {/*  <MyTransactions />*/}
-      {/*</div>*/}
+      <div className={styles.myTransactions}>
+        <MyTransactions />
+      </div>
     </div>
   );
 };

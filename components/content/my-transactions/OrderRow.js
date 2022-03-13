@@ -1,14 +1,16 @@
-import { Component } from "../../Component";
 import { Order } from "../../../entities";
 import style from "./MyTransactions.module.scss";
+import React, { Component } from "react";
 
 /**
  * @property {Order} props.order
  * @property {function(Order)} props.onCancel
  */
 export class OrderRow extends Component {
-  boundMethods() {
-    return [this.onCancelClick];
+  constructor(props) {
+    super(props);
+
+    this.onCancelClick = this.onCancelClick.bind(this);
   }
 
   get time() {
