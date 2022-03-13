@@ -23,7 +23,7 @@ const AppComponent = () => {
 
   useEffect(() => {
     load().then();
-  }, []);
+  });
 
   // boundMethods() {
   //   return [

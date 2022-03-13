@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 
 export class Web3Store {
   sdk = null;
@@ -15,11 +15,19 @@ export class Web3Store {
       account: observable,
       exchangeContract: observable,
       guilTokenContract: observable,
+      guilTokenContractAddress: computed,
       setSdk: action,
       setAccount: action,
       setExchangeContract: action,
       setGuilTokenContract: action,
     });
+  }
+
+  /**
+   * @return {string|null}
+   */
+  get guilTokenContractAddress() {
+    return this.guilTokenContract?.options.address;
   }
 
   setSdk(sdk) {

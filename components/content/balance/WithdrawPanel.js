@@ -1,7 +1,8 @@
 import { Table } from "../../common/table";
 import { OperationInput } from "./OperationInput";
-import { connect } from "../../../context";
-import BigNumber from "bignumber.js";
+import { Context } from "../../../context";
+import { useContext } from "react";
+import { observer } from "mobx-react-lite";
 
 /**
  * @param props
@@ -19,16 +20,21 @@ const _WithdrawPanel = ({
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
+  const {
+    web3Store: { sdk, exchangeContract, guilTokenContract },
+  } = useContext(Context);
+
   const formatAmount = (amount) => {
+    amount = amount.shiftedBy(-18);
     if (amount >= 10000) return amount.toFixed(0);
 
     return amount.precision(4).toString();
   };
 
   const onWithdrawEth = async (value) => {
-    const amount = web3.web3.utils.toWei(value.toString(), "ether");
+    const amount = sdk.utils.toWei(value.toString(), "ether");
 
-    await exchange.contract.methods
+    await exchangeContract.methods
       .withdrawEther(amount)
       .send({
         from: web3.account,
@@ -40,9 +46,9 @@ const _WithdrawPanel = ({
   };
 
   const onWithdrawGuil = async (value) => {
-    const amount = web3.web3.utils.toWei(value.toString(), "ether");
+    const amount = sdk.utils.toWei(value.toString(), "ether");
 
-    exchange.contract.methods
+    exchangeContract.methods
       .withdraw({
         contractAddress: guilToken.contractAddress,
         amount,
@@ -77,7 +83,7 @@ const _WithdrawPanel = ({
           <td colSpan="3">
             <OperationInput
               label="Withdraw"
-              max={exchangeEthBalance}
+              max={exchangeEthBalance.shiftedBy(-18)}
               onSubmit={onWithdrawEth}
             />
           </td>
@@ -95,7 +101,7 @@ const _WithdrawPanel = ({
           <td colSpan="3">
             <OperationInput
               label="Withdraw"
-              max={exchangeGuilBalance}
+              max={exchangeGuilBalance.shiftedBy(-18)}
               onSubmit={onWithdrawGuil}
             />
           </td>
@@ -105,7 +111,4 @@ const _WithdrawPanel = ({
   );
 };
 
-export const WithdrawPanel = connect(
-  ({ web3, exchange, guilToken }) => ({ web3, exchange, guilToken }),
-  _WithdrawPanel
-);
+export const WithdrawPanel = observer(_WithdrawPanel);

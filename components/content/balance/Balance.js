@@ -1,104 +1,69 @@
 import { Card, CardBody, CardHeader } from "../../common/card";
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "../../common/tabs";
 import { DepositPanel, WithdrawPanel } from ".";
-import { connect } from "../../../context";
-import { Component } from "../../Component";
+import { Context } from "../../../context";
 import { Spinner } from "../../common/spinner";
 import style from "./Balance.module.scss";
+import { useContext } from "react";
+import { observer } from "mobx-react-lite";
 
-class _Balance extends Component {
-  async componentDidMount() {
-    await Promise.all([
-      this.props.web3.loadEthBalance(),
-      this.props.exchange.loadEthBalance(this.props.web3.account),
-      this.props.guilToken.loadBalance(this.props.web3.account),
-      this.props.exchange.loadGuilBalance(
-        this.props.web3.account,
-        this.props.guilToken.contractAddress
-      ),
-    ]);
-  }
+const _Balance = () => {
+  const {
+    balancesStore: {
+      walletEthBalance,
+      exchangeEthBalance,
+      walletGuilBalance,
+      exchangeGuilBalance,
+    },
+  } = useContext(Context);
 
-  get isLoading() {
-    return (
-      this.props.web3.ethBalance === null ||
-      this.props.guilToken.balance === null ||
-      this.props.exchange.ethBalance === null ||
-      this.props.exchange.guilBalance === null
-    );
+  const isLoading = [
+    walletEthBalance,
+    exchangeEthBalance,
+    walletGuilBalance,
+    exchangeGuilBalance,
+  ].some((balance) => balance === null);
 
-    return (
-      this.props.web3.ethBalanceLoading ||
-      this.props.guilToken.balanceLoading ||
-      this.props.exchange.balancesLoading
-    );
-  }
+  return (
+    <Card className={style.card}>
+      <CardHeader className={style.cardHeader}>
+        <h3>Balance</h3>
+      </CardHeader>
 
-  get walletEthBalance() {
-    return this.props.web3.ethBalance.shiftedBy(-18);
-  }
+      <CardBody className={style.cardBody}>
+        {isLoading && <Spinner />}
 
-  get exchangeEthBalance() {
-    return this.props.exchange.ethBalance.shiftedBy(-18);
-  }
+        {!isLoading && (
+          <Tabs>
+            <TabList as="nav">
+              <Tab as="a">Deposit</Tab>
 
-  get walletGuilBalance() {
-    return this.props.guilToken.balance.shiftedBy(-18);
-  }
+              <Tab as="a">Withdraw</Tab>
+            </TabList>
+            <TabPanels as="div">
+              <TabPanel>
+                <DepositPanel
+                  walletEthBalance={walletEthBalance}
+                  exchangeEthBalance={exchangeEthBalance}
+                  walletGuilBalance={walletGuilBalance}
+                  exchangeGuilBalance={exchangeGuilBalance}
+                />
+              </TabPanel>
 
-  get exchangeGuilBalance() {
-    return this.props.exchange.guilBalance.shiftedBy(-18);
-  }
+              <TabPanel>
+                <WithdrawPanel
+                  walletEthBalance={walletEthBalance}
+                  exchangeEthBalance={exchangeEthBalance}
+                  walletGuilBalance={walletGuilBalance}
+                  exchangeGuilBalance={exchangeGuilBalance}
+                />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        )}
+      </CardBody>
+    </Card>
+  );
+};
 
-  render() {
-    return (
-      <Card className={style.card}>
-        <CardHeader className={style.cardHeader}>
-          <h3>Balance</h3>
-        </CardHeader>
-
-        <CardBody className={style.cardBody}>
-          {this.isLoading && <Spinner />}
-
-          {!this.isLoading && (
-            <Tabs>
-              <TabList as="nav">
-                <Tab as="a">Deposit</Tab>
-
-                <Tab as="a">Withdraw</Tab>
-              </TabList>
-              <TabPanels as="div">
-                <TabPanel>
-                  <DepositPanel
-                    walletEthBalance={this.walletEthBalance}
-                    exchangeEthBalance={this.exchangeEthBalance}
-                    walletGuilBalance={this.walletGuilBalance}
-                    exchangeGuilBalance={this.exchangeGuilBalance}
-                  />
-                </TabPanel>
-
-                <TabPanel>
-                  <WithdrawPanel
-                    walletEthBalance={this.walletEthBalance}
-                    exchangeEthBalance={this.exchangeEthBalance}
-                    walletGuilBalance={this.walletGuilBalance}
-                    exchangeGuilBalance={this.exchangeGuilBalance}
-                  />
-                </TabPanel>
-              </TabPanels>
-            </Tabs>
-          )}
-        </CardBody>
-      </Card>
-    );
-  }
-}
-
-export const Balance = connect(
-  ({ web3, exchange, guilToken }) => ({
-    web3,
-    exchange,
-    guilToken,
-  }),
-  _Balance
-);
+export const Balance = observer(_Balance);

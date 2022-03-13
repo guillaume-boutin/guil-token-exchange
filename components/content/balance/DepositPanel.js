@@ -1,7 +1,9 @@
 import { Table } from "../../common/table";
 import { OperationInput } from "./OperationInput";
-import { connect } from "../../../context";
+import { Context } from "../../../context";
 import BigNumber from "bignumber.js";
+import { useContext } from "react";
+import { observer } from "mobx-react-lite";
 
 /**
  * @param props
@@ -19,7 +21,12 @@ const _DepositPanel = ({
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
+  const {
+    web3Store: { sdk, exchangeContract, guilTokenContract },
+  } = useContext(Context);
+
   const formatAmount = (amount) => {
+    amount = amount.shiftedBy(-18);
     if (amount >= 10000) return amount.toFixed(0);
 
     return amount.precision(4).toString();
@@ -28,7 +35,7 @@ const _DepositPanel = ({
   const onDepositEth = async (value) => {
     const amount = web3.web3.utils.toWei(value.toString(), "ether");
 
-    await exchange.contract.methods
+    await exchangeContract.methods
       .depositEther()
       .send({
         from: web3.account,
@@ -38,9 +45,9 @@ const _DepositPanel = ({
   };
 
   const onDepositGuil = async (value) => {
-    const amount = web3.web3.utils.toWei(value.toString(), "ether");
+    const amount = sdk.utils.toWei(value.toString(), "ether");
 
-    guilToken.contract.methods
+    guilTokenContract.methods
       .approve(exchange.contractAddress, amount)
       .send({ from: web3.account })
       .on("transactionHash", (hash) => {
@@ -85,7 +92,7 @@ const _DepositPanel = ({
             <td colSpan="3">
               <OperationInput
                 label="Deposit"
-                max={walletEthBalance}
+                max={walletEthBalance.shiftedBy(-18)}
                 onSubmit={onDepositEth}
               />
             </td>
@@ -103,7 +110,7 @@ const _DepositPanel = ({
             <td colSpan="3">
               <OperationInput
                 label="Deposit"
-                max={walletGuilBalance}
+                max={walletGuilBalance.shiftedBy(-18)}
                 onSubmit={onDepositGuil}
               />
             </td>
@@ -114,7 +121,4 @@ const _DepositPanel = ({
   );
 };
 
-export const DepositPanel = connect(
-  ({ web3, exchange, guilToken }) => ({ web3, exchange, guilToken }),
-  _DepositPanel
-);
+export const DepositPanel = observer(_DepositPanel);
