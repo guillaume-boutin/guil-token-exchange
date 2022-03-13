@@ -25,18 +25,11 @@ const AppComponent = () => {
     load().then();
   });
 
-  // boundMethods() {
-  //   return [
-  //     this.onDepositEvent,
-  //     this.onWithdrawEvent,
-  //     this.onOrderEvent,
-  //     this.onTradeEvent,
-  //     this.onCancelEvent,
-  //     this.refreshExchangeBalances,
-  //     this.addToExchangeBalance,
-  //     this.subtractFromExchangeBalance,
-  //   ];
-  // }
+  useEffect(() => {
+    return () => {
+      console.log("unmounting App");
+    };
+  });
 
   const load = async () => {
     await loadWeb3Sdk();
@@ -74,6 +67,14 @@ const AppComponent = () => {
     // contract.events.Order({}, this.onOrderEvent);
     // contract.events.Cancel({}, this.onCancelEvent);
     // contract.events.Trade({}, this.onTradeEvent);
+
+    contract.events
+      .Order({}, (error, event) => {
+        console.log("events.Order callback", event);
+      })
+      .on("data", (event) => {
+        console.log("Orders on data", event);
+      });
 
     web3Store.setExchangeContract(contract);
   };
