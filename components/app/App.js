@@ -1,18 +1,14 @@
 import { NavBar } from "../nav-bar";
 import { Content } from "../content";
 import styles from "./App.module.scss";
-import { connect } from "../../context";
-// import { Component } from "../Component";
 import { Web3Service } from "../../services";
 import {
   HandledOrderFactory,
   OrderFactory,
   TokenFactory,
 } from "../../entities";
-import { Token } from "../../entities";
-import { TradeFactory } from "../../entities/Trade";
+import { TradeFactory } from "../../entities";
 import { observer } from "mobx-react-lite";
-import { Web3Store } from "../../stores";
 import { Context } from "../../context";
 import { useContext, useEffect, useState } from "react";
 import BigNumber from "bignumber.js";

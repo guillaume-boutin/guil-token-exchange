@@ -1,7 +1,6 @@
 import { Table } from "../../common/table";
 import { OperationInput } from "./OperationInput";
 import { Context } from "../../../context";
-import BigNumber from "bignumber.js";
 import { useContext } from "react";
 import { observer } from "mobx-react-lite";
 

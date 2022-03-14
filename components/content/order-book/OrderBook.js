@@ -52,10 +52,3 @@ const _OrderBook = () => {
 };
 
 export const OrderBook = observer(_OrderBook);
-
-// export const OrderBook = connect(
-//   ({ exchange }) => ({
-//     exchange,
-//   }),
-//   _OrderBook
-// );

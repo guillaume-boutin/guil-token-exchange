@@ -1,7 +1,6 @@
 import { Order } from "../../../entities";
 import style from "./OrderBook.module.scss";
 import { Context } from "../../../context";
-import BigNumber from "bignumber.js";
 import { useContext } from "react";
 
 /**
@@ -9,7 +8,7 @@ import { useContext } from "react";
  * @param {Order} props.order
  */
 export const OrderRow = ({ order }) => {
-  const { web3Store } = useContext(Context);
+  const { web3Store, balancesStore } = useContext(Context);
 
   const isSelfOwned = order.user === web3Store.account;
 
@@ -20,19 +19,17 @@ export const OrderRow = ({ order }) => {
   const isDisabled = () => {
     if (isSelfOwned) return true;
 
-    //
-    // if (isBuy) {
-    //   return order.demand.amount.isGreaterThan(ethBalance);
-    // }
-    //
-    // return order.demand.amount.isGreaterThan(guilBalance);
+    if (isBuy) {
+      return order.demand.amount.isGreaterThan(
+        balancesStore.exchangeEthBalance
+      );
+    }
 
-    return false;
+    return order.demand.amount.isGreaterThan(balancesStore.exchangeGuilBalance);
   };
 
   /**
    * @param {Order} order
-   * @param {string} account
    */
   const fillOrder = (order) => {
     web3Store.exchangeContract.methods
