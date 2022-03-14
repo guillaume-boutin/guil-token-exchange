@@ -15,9 +15,11 @@ import { observer } from "mobx-react-lite";
 import { Web3Store } from "../../stores";
 import { Context } from "../../context";
 import { useContext, useEffect, useState } from "react";
+import BigNumber from "bignumber.js";
 
 const AppComponent = () => {
-  const { web3Store, ordersStore } = useContext(Context);
+  const { web3Store, ordersStore, balancesStore, eventsStore } =
+    useContext(Context);
   const web3Service = new Web3Service();
 
   const [eventSubscriptions, setEventSubscriptions] = useState([]);
@@ -60,32 +62,24 @@ const AppComponent = () => {
 
     const contract = await web3Service.getExchangeContract(web3Store.sdk);
 
+    const feePercent = await contract.methods.feePercent().call();
+
+    console.log(feePercent);
+
     // contract.events.Deposit({}, this.onDepositEvent);
     // contract.events.Withdraw({}, this.onWithdrawEvent);
     // contract.events.Order({}, this.onOrderEvent);
     // contract.events.Cancel({}, this.onCancelEvent);
     // contract.events.Trade({}, this.onTradeEvent);
 
-    const orderEventSubscription = contract.events
-      .Order({})
-      .on("data", onOrderEvent);
-
-    const cancelOrderEventSubscription = contract.events
-      .Cancel({})
-      .on("data", onOrderCancelledEvent);
-
-    const tradeEventSubscription = contract.events
-      .Trade({})
-      .on("data", onTradeEvent);
-
     setEventSubscriptions([
       ...eventSubscriptions,
-      orderEventSubscription,
-      cancelOrderEventSubscription,
-      tradeEventSubscription,
+      contract.events.Order({}).on("data", onOrderEvent),
+      contract.events.Cancel({}).on("data", onOrderCancelledEvent),
+      contract.events.Trade({}).on("data", onTradeEvent),
     ]);
 
-    web3Store.setExchangeContract(contract);
+    await web3Store.setExchangeContract(contract);
   };
 
   const loadGuilTokenContract = async () => {
@@ -137,7 +131,18 @@ const AppComponent = () => {
   //   }
   // }
   //
+  const canHandleEvent = (event) => {
+    console.log("canHandleEvent?", event);
+    if (eventsStore.has(event)) return false;
+
+    eventsStore.addEvent(event);
+
+    return true;
+  };
+
   const onOrderEvent = (event) => {
+    if (!canHandleEvent(event)) return;
+
     const order = new OrderFactory().fromEventValues(event.returnValues);
 
     ordersStore.addToOrders(order);
@@ -149,6 +154,8 @@ const AppComponent = () => {
   };
 
   const onOrderCancelledEvent = (event) => {
+    if (!canHandleEvent(event)) return;
+
     const cancelledOrder = new HandledOrderFactory().fromEventValues(
       event.returnValues
     );
@@ -165,35 +172,36 @@ const AppComponent = () => {
   };
 
   const onTradeEvent = (event) => {
+    if (!canHandleEvent(event)) return;
+
+    console.log("handling onTradeEvent");
     const trade = new TradeFactory().fromEventValues(event.returnValues);
     ordersStore.addToTrades(trade);
 
-    // const account = web3Store.account;
-    //
-    // if (!trade.isActor(account)) return;
-    //
-    // this.refreshExchangeBalances(trade);
-    //
-    // if (!trade.isTaker(account)) return;
-    //
-    // this.props.exchange.setOrderFilling(false);
+    const account = web3Store.account;
+
+    if (!trade.isActor(account)) return;
+
+    refreshExchangeBalances(trade);
   };
-  //
-  // /**
-  //  * @param {Trade} trade
-  //  */
-  // refreshExchangeBalances(trade) {
-  //   const account = this.props.web3.account;
-  //   const feeRate = this.props.exchange.feeRate;
-  //
-  //   const earning = trade.getEarning(account);
-  //   const fee = trade.getFee(account, feeRate);
-  //
-  //   const paying = trade.getPaying(account);
-  //
-  //   this.addToExchangeBalance(earning.minus(fee));
-  //   this.subtractFromExchangeBalance(paying);
-  // }
+
+  /**
+   * @param {Trade} trade
+   */
+  const refreshExchangeBalances = (trade) => {
+    const account = web3Store.account;
+    const feeRate = web3Store.exchangeFeeRate;
+
+    const earning = trade.getEarning(account);
+    const fee = trade.getFee(account, feeRate);
+
+    const paying = trade.getPaying(account);
+
+    const netEarning = earning.minus(fee);
+
+    balancesStore.addToExchange(netEarning);
+    balancesStore.addToExchange(paying.negated());
+  };
   //
   // /**
   //  * @param {Token} token

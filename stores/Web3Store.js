@@ -1,4 +1,5 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import BigNumber from "bignumber.js";
 
 export class Web3Store {
   sdk = null;
@@ -6,6 +7,8 @@ export class Web3Store {
   /** @public {string|null} account */ account = null;
 
   exchangeContract = null;
+
+  /** @private */ exchangeFeePercent = null;
 
   guilTokenContract = null;
 
@@ -15,6 +18,7 @@ export class Web3Store {
       account: observable,
       exchangeContract: observable,
       exchangeContractAddress: computed,
+      exchangeFeeRate: computed,
       guilTokenContract: observable,
       guilTokenContractAddress: computed,
       setSdk: action,
@@ -38,6 +42,15 @@ export class Web3Store {
     return this.exchangeContract?.options.address;
   }
 
+  /**
+   * @return {BigNumber|null}
+   */
+  get exchangeFeeRate() {
+    if (!this.exchangeFeePercent) return null;
+
+    return new BigNumber(this.exchangeFeePercent).shiftedBy(-4);
+  }
+
   setSdk(sdk) {
     this.sdk = sdk;
   }
@@ -46,8 +59,11 @@ export class Web3Store {
     this.account = account;
   }
 
-  setExchangeContract(exchangeContract) {
+  async setExchangeContract(exchangeContract) {
     this.exchangeContract = exchangeContract;
+    this.exchangeFeePercent = await exchangeContract.methods
+      .feePercent()
+      .call();
   }
 
   setGuilTokenContract(guilTokenContract) {

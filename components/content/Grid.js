@@ -22,20 +22,20 @@ export const _Grid = () => {
       loadOrders(),
       loadTrades(),
       loadCancelledOrders(),
-      loadEthWalletBalance(),
-      loadEthExchangeBalance(),
-      loadGuilWalletBalance(),
-      loadGuilExchangeBalance(),
+      loadWalletEthBalance(),
+      loadExchangeEthBalance(),
+      loadWalletGuilBalance(),
+      loadExchangeGuilBalance(),
     ]).then();
   });
 
-  const loadEthWalletBalance = async () => {
+  const loadWalletEthBalance = async () => {
     const balance = await web3Store.sdk.eth.getBalance(web3Store.account);
 
     balancesStore.setWalletEthBalance(new BigNumber(balance));
   };
 
-  const loadEthExchangeBalance = async () => {
+  const loadExchangeEthBalance = async () => {
     const balance = await web3Store.exchangeContract.methods
       .balanceOf(web3Store.account, ETHER_ADDRESS)
       .call();
@@ -43,7 +43,7 @@ export const _Grid = () => {
     balancesStore.setExchangeEthBalance(new BigNumber(balance));
   };
 
-  const loadGuilWalletBalance = async () => {
+  const loadWalletGuilBalance = async () => {
     const balance = await web3Store.guilTokenContract.methods
       .balanceOf(web3Store.account)
       .call();
@@ -51,10 +51,12 @@ export const _Grid = () => {
     balancesStore.setWalletGuilBalance(new BigNumber(balance));
   };
 
-  const loadGuilExchangeBalance = async () => {
+  const loadExchangeGuilBalance = async () => {
     const balance = await web3Store.exchangeContract.methods
       .balanceOf(web3Store.account, web3Store.guilTokenContractAddress)
       .call();
+
+    console.log(balance);
 
     balancesStore.setExchangeGuilBalance(new BigNumber(balance));
   };

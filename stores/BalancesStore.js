@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { action, makeObservable, observable } from "mobx";
+import { Token } from "../entities";
 
 export class BalancesStore {
   /** @public {BigNumber|null} */ walletEthBalance = null;
@@ -20,6 +21,8 @@ export class BalancesStore {
       setExchangeEthBalance: action,
       setWalletGuilBalance: action,
       setExchangeGuilBalance: action,
+      addToWallet: action,
+      addToExchange: action,
     });
   }
 
@@ -49,5 +52,27 @@ export class BalancesStore {
    */
   setExchangeGuilBalance(value) {
     this.exchangeGuilBalance = value;
+  }
+
+  /**
+   * @param {Token} token
+   */
+  addToExchange(token) {
+    if (token.isEth) {
+      return this.setExchangeEthBalance(
+        this.exchangeEthBalance.plus(token.amount)
+      );
+    }
+
+    this.setExchangeGuilBalance(this.exchangeGuilBalance.plus(token.amount));
+  }
+
+  /**
+   * @param {Token} token
+   */
+  addToWallet(token) {
+    if (token.isEth) return;
+
+    this.setWalletGuilBalance(this.walletGuilBalance.plus(token.amount));
   }
 }
