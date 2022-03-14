@@ -1,34 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Guil Token Exchange
 
-## Getting Started
+This is my take on
+[DApp University's Bootcamp project](https://dappuniversity.teachable.com/p/blockchain-developer-bootcamp), an
+online platform for exchanging mock GUIL tokens for ETH. The backend is based on two Solidity contracts, `GuilToken.sol`,
+which in principle follows the ERC-20 standard, and `Exchange.sol` for the trading platform.
 
-First, run the development server:
+The project diverged a bit from DApp University's not so much in the
+functionalities, but in the implementations.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+- Using Next.js instead of Create React App
+- Replaced Redux for Mobx and Context for state management
+- Added live refresh of balances when Depositing, Withdrawing, or acting on an Order
+- Changed the overall architecture to follow a more object-oriented approach
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+You can see and interact with the [live version](https://guil-exchange.herokuapp.com) if you have a Kovan wallet, otherwise
+you can install it locally by running [Ganache](https://trufflesuite.com/ganache/index.html) as a local blockchain.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## How it works
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+To start trading, connect your Metamask wallet, then go to `Balance` and make a Deposit from your Wallet to the Exchange.
+Once done go to `New Order` and place an offer for either buying or selling GUIL in exchange for ETH. Your order will be
+shown on the `Order Book` for anyone interested to take it at the price you set. It will stay there until someone
+takes it, or you cancel it. Prices are set by the traders themselves, and the current price shown on the chart is simply
+the one for the latest trade taken.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Installation locally
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Clone this repo, and in addition to installing Ganache for running a local blockchain, you will need to install
+[Truffle](https://trufflesuite.com/docs/truffle/) with `npm install -g truffle`. Migrate the contracts with `truffle migrate`
+then start the project with `npm run dev`. The project will be running on http://localhost:8080.
