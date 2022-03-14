@@ -57,23 +57,14 @@ const AppComponent = () => {
 
   const loadExchangeContract = async () => {
     if (!web3Store.sdk) return;
-
     if (web3Store.exchangeContract) return;
 
     const contract = await web3Service.getExchangeContract(web3Store.sdk);
 
-    const feePercent = await contract.methods.feePercent().call();
-
-    console.log(feePercent);
-
-    // contract.events.Deposit({}, this.onDepositEvent);
-    // contract.events.Withdraw({}, this.onWithdrawEvent);
-    // contract.events.Order({}, this.onOrderEvent);
-    // contract.events.Cancel({}, this.onCancelEvent);
-    // contract.events.Trade({}, this.onTradeEvent);
-
     setEventSubscriptions([
       ...eventSubscriptions,
+      contract.events.Deposit({}).on("data", onDepositEvent),
+      contract.events.Withdraw({}).on("data", onWithdrawEvent),
       contract.events.Order({}).on("data", onOrderEvent),
       contract.events.Cancel({}).on("data", onOrderCancelledEvent),
       contract.events.Trade({}).on("data", onTradeEvent),
@@ -92,52 +83,55 @@ const AppComponent = () => {
   };
 
   const unsubscribeAllEvents = () => {
-    console.log("unsubscribing!!", eventSubscriptions);
     eventSubscriptions.forEach((s) => {
       s.unsubscribe();
     });
   };
 
-  // async onDepositEvent(error, event) {
-  //   const account = this.props.web3.account;
-  //   if (account !== event.returnValues.user) return;
-  //
-  //   const token = new TokenFactory().fromExchangeTransferEvent(
-  //     event.returnValues
-  //   );
-  //
-  //   this.subtractFromWalletBalance(token);
-  //   this.addToExchangeBalance(token);
-  //   this.props.exchange.setBalancesLoading(false);
-  //
-  //   if (token.isEth) {
-  //     await this.props.web3.loadEthBalance();
-  //   }
-  // }
-  //
-  // async onWithdrawEvent(error, event) {
-  //   const account = this.props.web3.account;
-  //   if (account !== event.returnValues.user) return;
-  //
-  //   const token = new TokenFactory().fromExchangeTransferEvent(
-  //     event.returnValues
-  //   );
-  //
-  //   this.addToWalletBalance(token);
-  //   this.subtractFromExchangeBalance(token);
-  //
-  //   if (token.isEth) {
-  //     await this.props.web3.loadEthBalance();
-  //   }
-  // }
-  //
   const canHandleEvent = (event) => {
-    console.log("canHandleEvent?", event);
     if (eventsStore.has(event)) return false;
 
     eventsStore.addEvent(event);
 
     return true;
+  };
+
+  const onDepositEvent = async (event) => {
+    if (!canHandleEvent(event)) return;
+
+    const account = web3Store.account;
+    if (account !== event.returnValues.user) return;
+
+    const token = new TokenFactory().fromExchangeTransferEvent(
+      event.returnValues
+    );
+
+    balancesStore.addToWallet(token.negated());
+    balancesStore.addToExchange(token);
+
+    if (token.isEth) {
+      const balance = await web3Store.sdk.eth.getBalance(account);
+      balancesStore.setWalletEthBalance(new BigNumber(balance));
+    }
+  };
+
+  const onWithdrawEvent = async (event) => {
+    if (!canHandleEvent(event)) return;
+
+    const account = web3Store.account;
+    if (account !== event.returnValues.user) return;
+
+    const token = new TokenFactory().fromExchangeTransferEvent(
+      event.returnValues
+    );
+
+    balancesStore.addToWallet(token);
+    balancesStore.addToExchange(token.negated());
+
+    if (token.isEth) {
+      const balance = await web3Store.sdk.eth.getBalance(account);
+      balancesStore.setWalletEthBalance(new BigNumber(balance));
+    }
   };
 
   const onOrderEvent = (event) => {
@@ -147,10 +141,10 @@ const AppComponent = () => {
 
     ordersStore.addToOrders(order);
 
-    // const account = web3Store.account;
-    // if (account !== order.user) return;
+    const account = web3Store.account;
+    if (account !== order.user) return;
 
-    // this.subtractFromExchangeBalance(order.offer);
+    balancesStore.addToExchange(order.offer.negated());
   };
 
   const onOrderCancelledEvent = (event) => {
@@ -162,19 +156,15 @@ const AppComponent = () => {
 
     ordersStore.addToCancelledOrders(cancelledOrder);
 
-    // const account = this.props.web3.account;
-    //
-    // if (account !== cancelledOrder.order.user) return;
-    //
-    // this.addToExchangeBalance(cancelledOrder.order.offer);
-    //
-    // this.props.exchange.setOrderCancelling(false);
+    const account = web3Store.account;
+    if (account !== cancelledOrder.order.user) return;
+
+    balancesStore.addToExchange(cancelledOrder.order.offer);
   };
 
   const onTradeEvent = (event) => {
     if (!canHandleEvent(event)) return;
 
-    console.log("handling onTradeEvent");
     const trade = new TradeFactory().fromEventValues(event.returnValues);
     ordersStore.addToTrades(trade);
 
@@ -192,53 +182,18 @@ const AppComponent = () => {
     const account = web3Store.account;
     const feeRate = web3Store.exchangeFeeRate;
 
-    const earning = trade.getEarning(account);
-    const fee = trade.getFee(account, feeRate);
+    let earning = trade.getEarning(account);
+
+    if (web3Store.exchangeFeeAccount !== trade.taker) {
+      const fee = trade.getFee(account, feeRate);
+      earning = earning.minus(fee);
+    }
 
     const paying = trade.getPaying(account);
 
-    const netEarning = earning.minus(fee);
-
-    balancesStore.addToExchange(netEarning);
+    balancesStore.addToExchange(earning);
     balancesStore.addToExchange(paying.negated());
   };
-  //
-  // /**
-  //  * @param {Token} token
-  //  */
-  // addToWalletBalance(token) {
-  //   if (token.isEth) return;
-  //
-  //   this.props.guilToken.addToBalance(token.amount);
-  // }
-  //
-  // /**
-  //  * @param {Token} token
-  //  */
-  // subtractFromWalletBalance(token) {
-  //   if (token.isEth) return;
-  //
-  //   this.props.guilToken.addToBalance(token.amount.negated());
-  // }
-  //
-  // /**
-  //  * @param {Token} token
-  //  */
-  // addToExchangeBalance(token) {
-  //   if (token.isEth) return this.props.exchange.addToEthBalance(token.amount);
-  //
-  //   this.props.exchange.addToGuilBalance(token.amount);
-  // }
-  //
-  // /**
-  //  * @param {Token} token
-  //  */
-  // subtractFromExchangeBalance(token) {
-  //   if (token.isEth)
-  //     return this.props.exchange.addToEthBalance(token.amount.negated());
-  //
-  //   this.props.exchange.addToGuilBalance(token.amount.negated());
-  // }
 
   return (
     <div className={styles.app}>

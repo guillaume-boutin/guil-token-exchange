@@ -56,8 +56,6 @@ export const _Grid = () => {
       .balanceOf(web3Store.account, web3Store.guilTokenContractAddress)
       .call();
 
-    console.log(balance);
-
     balancesStore.setExchangeGuilBalance(new BigNumber(balance));
   };
 

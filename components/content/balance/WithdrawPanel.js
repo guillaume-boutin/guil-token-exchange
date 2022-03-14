@@ -12,16 +12,20 @@ import { observer } from "mobx-react-lite";
  * @param {BigNumber} props.exchangeGuilBalance
  */
 const _WithdrawPanel = ({
-  web3,
-  exchange,
-  guilToken,
   walletEthBalance,
   exchangeEthBalance,
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
   const {
-    web3Store: { sdk, exchangeContract, guilTokenContract },
+    web3Store: {
+      sdk,
+      account,
+      exchangeContract,
+      exchangeContractAddress,
+      guilTokenContract,
+      guilTokenContractAddress,
+    },
   } = useContext(Context);
 
   const formatAmount = (amount) => {
@@ -37,7 +41,7 @@ const _WithdrawPanel = ({
     await exchangeContract.methods
       .withdrawEther(amount)
       .send({
-        from: web3.account,
+        from: account,
       })
       .on("transactionHash", (hash) => {})
       .on("error", (error) => {
@@ -50,10 +54,10 @@ const _WithdrawPanel = ({
 
     exchangeContract.methods
       .withdraw({
-        contractAddress: guilToken.contractAddress,
+        contractAddress: guilTokenContractAddress,
         amount,
       })
-      .send({ from: web3.account })
+      .send({ from: account })
       .on("transactionHash", (hash) => {})
       .on("error", (error) => {});
   };

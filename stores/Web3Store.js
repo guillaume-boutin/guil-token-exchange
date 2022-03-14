@@ -8,7 +8,9 @@ export class Web3Store {
 
   exchangeContract = null;
 
-  /** @private */ exchangeFeePercent = null;
+  /** @private */ _exchangeFeePercent = null;
+
+  /** @private */ _exchangeFeeAccount = null;
 
   guilTokenContract = null;
 
@@ -19,6 +21,7 @@ export class Web3Store {
       exchangeContract: observable,
       exchangeContractAddress: computed,
       exchangeFeeRate: computed,
+      exchangeFeeAccount: computed,
       guilTokenContract: observable,
       guilTokenContractAddress: computed,
       setSdk: action,
@@ -46,9 +49,16 @@ export class Web3Store {
    * @return {BigNumber|null}
    */
   get exchangeFeeRate() {
-    if (!this.exchangeFeePercent) return null;
+    if (!this._exchangeFeePercent) return null;
 
-    return new BigNumber(this.exchangeFeePercent).shiftedBy(-4);
+    return new BigNumber(this._exchangeFeePercent).shiftedBy(-4);
+  }
+
+  /**
+   * @return {string|null}
+   */
+  get exchangeFeeAccount() {
+    return this._exchangeFeeAccount;
   }
 
   setSdk(sdk) {
@@ -61,8 +71,12 @@ export class Web3Store {
 
   async setExchangeContract(exchangeContract) {
     this.exchangeContract = exchangeContract;
-    this.exchangeFeePercent = await exchangeContract.methods
+    this._exchangeFeePercent = await exchangeContract.methods
       .feePercent()
+      .call();
+
+    this._exchangeFeeAccount = await exchangeContract.methods
+      .feeAccount()
       .call();
   }
 

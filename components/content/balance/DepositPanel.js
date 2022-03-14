@@ -13,16 +13,20 @@ import { observer } from "mobx-react-lite";
  * @param {BigNumber} props.exchangeGuilBalance
  */
 const _DepositPanel = ({
-  web3,
-  exchange,
-  guilToken,
   walletEthBalance,
   exchangeEthBalance,
   walletGuilBalance,
   exchangeGuilBalance,
 }) => {
   const {
-    web3Store: { sdk, exchangeContract, guilTokenContract },
+    web3Store: {
+      sdk,
+      account,
+      exchangeContract,
+      exchangeContractAddress,
+      guilTokenContract,
+      guilTokenContractAddress,
+    },
   } = useContext(Context);
 
   const formatAmount = (amount) => {
@@ -33,12 +37,12 @@ const _DepositPanel = ({
   };
 
   const onDepositEth = async (value) => {
-    const amount = web3.web3.utils.toWei(value.toString(), "ether");
+    const amount = sdk.utils.toWei(value.toString(), "ether");
 
     await exchangeContract.methods
       .depositEther()
       .send({
-        from: web3.account,
+        from: account,
         value: amount,
       })
       .on("transactionHash", (hash) => {});
@@ -48,14 +52,14 @@ const _DepositPanel = ({
     const amount = sdk.utils.toWei(value.toString(), "ether");
 
     guilTokenContract.methods
-      .approve(exchange.contractAddress, amount)
-      .send({ from: web3.account })
+      .approve(exchangeContractAddress, amount)
+      .send({ from: account })
       .on("transactionHash", (hash) => {
-        const contractAddress = guilToken.contractAddress;
+        const contractAddress = guilTokenContractAddress;
 
-        exchange.contract.methods
+        exchangeContract.methods
           .deposit({ contractAddress, amount })
-          .send({ from: web3.account })
+          .send({ from: account })
           .on("transactionHash", (hash) => {})
           .on("error", (error) => {
             console.error(error);
