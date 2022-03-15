@@ -9,6 +9,7 @@ The project diverged a bit from DApp University's not so much in the
 functionalities, but in the implementations.
 
 - Using Next.js instead of Create React App
+- Replaced Bootstrap with my own CSS from scratch, and used [Reach UI](https://reach.tech/tabs/) for the Tabs.
 - Replaced Redux for Mobx and Context for state management
 - Added live refresh of balances when Depositing, Withdrawing, or acting on an Order
 - Changed the overall architecture to follow a more object-oriented approach
@@ -27,5 +28,7 @@ the one for the latest trade taken.
 ## Installation locally
 
 Clone this repo, and in addition to installing Ganache for running a local blockchain, you will need to install
-[Truffle](https://trufflesuite.com/docs/truffle/) with `npm install -g truffle`. Migrate the contracts with `truffle migrate`
-then start the project with `npm run dev`. The project will be running on http://localhost:8080.
+[Truffle](https://trufflesuite.com/docs/truffle/) with `npm install -g truffle`.
+
+Run an `npm install`, then migrate the contracts with `truffle migrate`.
+Start the project with `npm run dev` and visit http://localhost:8080.
